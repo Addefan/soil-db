@@ -9,6 +9,8 @@
 
 1. Вход в виртуальное окружение - `poetry shell`
 2. Установка зависимостей - `poetry intall`
+3. Выполнить миграции - `python src/manage.py migrate` 
+4. Запуск сервера для разработки на http://localhost:8000 - `python src/manage.py runserver`
 
 ## Обозначения символов в коммитах
 
