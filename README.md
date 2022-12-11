@@ -8,9 +8,9 @@
 ##  Инструкции по запуску
 
 1. Вход в виртуальное окружение - `poetry shell`
-2. Установка зависимостей - `poetry intall`
-3. Выполнить миграции - `python src/manage.py migrate` 
-4. Запуск сервера для разработки на http://localhost:8000 - `python src/manage.py runserver`
+2. Установка зависимостей - `poetry install`
+3. Выполнить миграции - `python manage.py migrate` 
+4. Запуск сервера для разработки на http://localhost:8000 - `python manage.py runserver`
 
 ## Обозначения символов в коммитах
 

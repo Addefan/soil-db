@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    ports:
+      - 5436:5432
+    environment:
+      POSTGRES_DB: soil_db
+      POSTGRES_USER: soil_user
+      POSTGRES_PASSWORD: soil
+    volumes:
+      - "db:/var/lib/postgresql/data"
+
+volumes:
+  db:
