@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "soil-db"
+version = "0.1.0"
+description = ""
+authors = [
+    "Vitaly Zorin <vitalyzorin30600000@mail.ru>",
+    "bulatsabirow <bulatsabirow@gmail.com>",
+    "lemmehoop <lemmehoop@gmail.com>",
+    "diyanovamir <amirdianov@gmail.com>"
+]
+readme = "README.md"
+packages = [{include = "soil_db"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
