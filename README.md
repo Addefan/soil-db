@@ -9,8 +9,9 @@
 
 1. Вход в виртуальное окружение - `poetry shell`
 2. Установка зависимостей - `poetry install`
-3. Выполнить миграции - `python manage.py migrate` 
-4. Запуск сервера для разработки на http://localhost:8000 - `python manage.py runserver`
+3. Поднять PostgreSQL с помощью Docker - `docker-compose up -d`
+4. Выполнить миграции - `python manage.py migrate` 
+5. Запуск сервера для разработки на http://localhost:8000 - `python manage.py runserver`
 
 ## Обозначения символов в коммитах
 
