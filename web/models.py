@@ -31,14 +31,14 @@ class Family(BaseTaxon):
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, on_update=models.CASCADE, null=True)
 
 
-class Genius(BaseTaxon):
+class Genus(BaseTaxon):
     family = models.ForeignKey(Family, on_delete=models.SET_NULL, on_update=models.CASCADE, null=True)
 
 
 class Plant(models.Model):
     number = models.IntegerField()
     organization = models.ForeignKey(Organization, on_delete=models.SET_NULL, on_update=models.CASCADE, null=True)
-    genius = models.ForeignKey(Genius, on_delete=models.SET_NULL, null=True)
+    genus = models.ForeignKey(Genus, on_delete=models.SET_NULL, null=True)
     latin_name = models.CharField(max_length=127)
     name = models.CharField(max_length=127)
 
@@ -71,7 +71,7 @@ class UserManager(DjangoUserManager):
 
 
 class Staff(models.Model, AbstractBaseUser, PermissionsMixin):
-    object = UserManager()
+    objects = UserManager()
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, on_update=models.CASCADE)
     name = models.CharField(max_length=127)
     surname = models.CharField(max_length=127)
