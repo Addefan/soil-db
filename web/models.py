@@ -22,24 +22,24 @@ class Phylum(BaseTaxon):
 
 
 class Class(BaseTaxon):
-    phylum = models.ForeignKey(Phylum, on_delete=models.SET_NULL, on_update=models.CASCADE, null=True)
+    phylum = models.ForeignKey(Phylum, on_delete=models.SET_NULL, null=True)
 
 
 class Order(BaseTaxon):
-    class_name = models.ForeignKey(Class, on_delete=models.SET_NULL, on_update=models.CASCADE, null=True)
+    class_name = models.ForeignKey(Class, on_delete=models.SET_NULL, null=True)
 
 
 class Family(BaseTaxon):
-    order = models.ForeignKey(Order, on_delete=models.SET_NULL, on_update=models.CASCADE, null=True)
+    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
 
 
 class Genus(BaseTaxon):
-    family = models.ForeignKey(Family, on_delete=models.SET_NULL, on_update=models.CASCADE, null=True)
+    family = models.ForeignKey(Family, on_delete=models.SET_NULL, null=True)
 
 
 class Plant(models.Model):
     number = models.IntegerField()
-    organization = models.ForeignKey(Organization, on_delete=models.SET_NULL, on_update=models.CASCADE, null=True)
+    organization = models.ForeignKey(Organization, on_delete=models.SET_NULL, null=True)
     genus = models.ForeignKey(Genus, on_delete=models.SET_NULL, null=True)
     latin_name = models.CharField(max_length=127)
     name = models.CharField(max_length=127)
@@ -59,9 +59,9 @@ class UserManager(DjangoUserManager):
         return self._create_user(email, password, **extra_fields)
 
 
-class Staff(models.Model, AbstractBaseUser, PermissionsMixin):
+class Staff(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, on_update=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     name = models.CharField(max_length=127)
     surname = models.CharField(max_length=127)
     email = models.EmailField(unique=True, max_length=320)
