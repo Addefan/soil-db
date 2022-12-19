@@ -11,6 +11,7 @@ class Organization(models.Model):
 
 class BaseTaxon(models.Model):
     title = models.CharField(max_length=127, unique=True)
+    latin_title = models.CharField(max_length=127, unique=True)
 
     class Meta:
         abstract = True
