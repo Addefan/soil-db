@@ -104,24 +104,58 @@ files = [
 
 [[package]]
 name = "django"
-version = "4.1.4"
+version = "4.0.8"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "Django-4.1.4-py3-none-any.whl", hash = "sha256:0b223bfa55511f950ff741983d408d78d772351284c75e9f77d2b830b6b4d148"},
-    {file = "Django-4.1.4.tar.gz", hash = "sha256:d38a4e108d2386cb9637da66a82dc8d0733caede4c83c4afdbda78af4214211b"},
+    {file = "Django-4.0.8-py3-none-any.whl", hash = "sha256:27cb08fa6458c1eff8b97c4c2d03774646fb26feeaa4587dca10c49e6d4fc6a3"},
+    {file = "Django-4.0.8.tar.gz", hash = "sha256:07e6433f263c3839939cfabeb6d7557841e0419e47759a7b7d37f6d44d40adcb"},
 ]
 
 [package.dependencies]
-asgiref = ">=3.5.2,<4"
+asgiref = ">=3.4.1,<4"
 sqlparse = ">=0.2.2"
 tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 
 [package.extras]
 argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
+
+[[package]]
+name = "django-eav2"
+version = "1.2.3"
+description = "Entity-Attribute-Value storage for Django"
+category = "main"
+optional = false
+python-versions = ">=3.7,<4.0"
+files = [
+    {file = "django-eav2-1.2.3.tar.gz", hash = "sha256:5f1fc1ac152d1463a37346a7bc2693f57d039cf0e5a401339e7b91d69387f4f7"},
+    {file = "django_eav2-1.2.3-py3-none-any.whl", hash = "sha256:134208f0d977a42b37d83a4556f65ed30c81dc45e96b37ca89d2e5dc6695ab98"},
+]
+
+[package.dependencies]
+django = ">=2.2,<4.1"
+django-jsonfield-backport = ">=1.0.4,<2.0.0"
+
+[package.extras]
+docs = ["m2r2 (>=0.3,<0.4)", "sphinx (>=5.0,<6.0)", "sphinx-autodoc-typehints (>=1.12,<2.0)", "sphinx-rtd-theme (>=1.0.0,<2.0.0)", "tomlkit (>=0.11,<0.12)"]
+
+[[package]]
+name = "django-jsonfield-backport"
+version = "1.0.5"
+description = "Backport of the cross-DB JSONField model and form fields from Django 3.1."
+category = "main"
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "django-jsonfield-backport-1.0.5.tar.gz", hash = "sha256:40c39b1f1bade47bd2715664de14983f2e0a96175f65abbad2688029c255c685"},
+    {file = "django_jsonfield_backport-1.0.5-py3-none-any.whl", hash = "sha256:727b402bad632e38539b489e48aefa6ffe03cedba76ac1f11b455423b3225a2d"},
+]
+
+[package.dependencies]
+Django = ">=2.2"
 
 [[package]]
 name = "filelock"
@@ -403,4 +437,4 @@ testing = ["coverage (>=6.2)", "coverage-enable-subprocess (>=1)", "flaky (>=3.7
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "5cf4392c6511bdb75ef5bc3efc7fc4fa1a2b1e7a57f5c86fb6be25a76268abf7"
+content-hash = "370a31e985253b8975da0f571455d07c69a1e897c9a79922f2a3b47443513e3a"
