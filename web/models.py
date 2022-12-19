@@ -1,3 +1,4 @@
+import eav
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import UserManager as DjangoUserManager, PermissionsMixin
 from django.db import models
@@ -43,19 +44,6 @@ class Plant(models.Model):
     name = models.CharField(max_length=127)
 
 
-class Property(models.Model):
-    name = models.CharField(max_length=127)
-
-
-class PlantsProperties(models.Model):
-    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, on_update=models.CASCADE)
-    property = models.ForeignKey(Property, on_delete=models.CASCADE, on_update=models.CASCADE)
-    value = models.TextField()
-
-    class Meta:
-        unique_together = (("plant", "property"),)
-
-
 class UserManager(DjangoUserManager):
     def _create_user(self, email, password, commit=True, **extra_fields):
         email = self.normalize_email(email)
@@ -78,3 +66,6 @@ class Staff(models.Model, AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, max_length=320)
 
     USERNAME_FIELD = "email"
+
+
+eav.register(Plant)

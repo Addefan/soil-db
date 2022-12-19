@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "web",
+    "eav",
+    "django_jsonfield_backport",
 ]
 
 MIDDLEWARE = [
