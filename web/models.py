@@ -8,30 +8,30 @@ class Organization(models.Model):
     address = models.CharField(max_length=255)
 
 
-class BasePlantSystem(models.Model):
-    title = models.CharField(max_length=127)
+class BaseTaxon(models.Model):
+    title = models.CharField(max_length=127, unique=True)
 
     class Meta:
         abstract = True
 
 
-class Phylum(BasePlantSystem):
+class Phylum(BaseTaxon):
     pass
 
 
-class Class(BasePlantSystem):
+class Class(BaseTaxon):
     phylum = models.ForeignKey(Phylum, on_delete=models.SET_NULL, on_update=models.CASCADE, null=True)
 
 
-class Order(BasePlantSystem):
+class Order(BaseTaxon):
     class_name = models.ForeignKey(Class, on_delete=models.SET_NULL, on_update=models.CASCADE, null=True)
 
 
-class Family(BasePlantSystem):
+class Family(BaseTaxon):
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, on_update=models.CASCADE, null=True)
 
 
-class Genius(BasePlantSystem):
+class Genius(BaseTaxon):
     family = models.ForeignKey(Family, on_delete=models.SET_NULL, on_update=models.CASCADE, null=True)
 
 
@@ -53,7 +53,7 @@ class PlantsProperties(models.Model):
     value = models.TextField()
 
     class Meta:
-        unique_together = (('plant', 'property'),)
+        unique_together = (("plant", "property"),)
 
 
 class UserManager(DjangoUserManager):
@@ -76,9 +76,5 @@ class Staff(models.Model, AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=127)
     surname = models.CharField(max_length=127)
     email = models.EmailField(unique=True, max_length=320)
-
-    @property
-    def is_staff(self):
-        return True
 
     USERNAME_FIELD = "email"
