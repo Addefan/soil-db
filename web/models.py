@@ -38,7 +38,7 @@ class Genus(BaseTaxon):
 
 
 class Plant(models.Model):
-    number = models.IntegerField()
+    number = models.IntegerField(unique=True)
     organization = models.ForeignKey(Organization, on_delete=models.SET_NULL, null=True)
     genus = models.ForeignKey(Genus, on_delete=models.SET_NULL, null=True)
     latin_name = models.CharField(max_length=127)
