@@ -1,7 +1,20 @@
 {% extends 'web/base.html' %}
 
 {% block body %}
-    <div class="container">
-
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="form w-25 mx-auto border border-light border-3 p-3">
+            <div class="text-center">
+                <h3>Авторизация</h3>
+            </div>
+            <form action="" method="post">
+                {% for field in form %}
+                    <label for="" class="mt-2">{{ field.label }}</label>
+                    {{ field }}
+                {% endfor %}
+                <div class="text-center">
+                    <button class="btn btn-success mt-3">Войти</button>
+                </div>
+            </form>
+        </div>
     </div>
 {% endblock %}
