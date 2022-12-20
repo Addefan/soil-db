@@ -1,0 +1,10 @@
+{% extends 'web/base.html' %}
+{% block begin %}Добавление растения{% endblock %}
+{% block body %}
+    <h1>Страница добавления растения</h1>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button>Добавить растение</button>
+    </form>
+{% endblock %}
