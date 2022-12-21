@@ -1,0 +1,22 @@
+{% extends 'web/base.html' %}
+{% block body %}
+    <h1>Страница растения {{ plant.name }} ({{ plant.latin_name }})</h1>
+    <table class="table table-bordered table-success">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Характеристика</th>
+                <th scope="col">Значение</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key, value in plant.items %}
+                {% if 'name' not in key %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        <td>{{ value }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
