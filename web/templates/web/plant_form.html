@@ -1,10 +1,72 @@
 {% extends 'web/base.html' %}
 {% block begin %}Добавление растения{% endblock %}
 {% block body %}
-    <h1>Страница добавления растения</h1>
-    <form action="" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button>Добавить растение</button>
-    </form>
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-md-5">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {{ form_test.as_p }}
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal">
+                        Добавить недостающие атрибуты
+                    </button>
+                    <br>
+                    <br>
+                    <button type="button" class="btn btn-success">Добавить растение</button>
+                </form>
+                <br>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Модальное окно -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Добавить атрибут</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        {{ attr_form.as_p }}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id='add_button' type="button" class="btn btn-success">Добавить</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="http://code.jquery.com/jquery-3.2.1.js"></script>
+    <script>
+        $('#add_button').on('click', function () {
+            $.ajax({
+                url: '{% url 'view_test' %}',
+                method: 'post',
+                dataType: 'html',
+                data: {
+                    'name': $('#id_name_attr').val(),
+                    'type_attr': $('#id_type_attr').val(),
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (smt) {
+                    smt = JSON.parse(smt)
+                    window.location.reload()
+                    {#if (smt['make_two_buttons'] === true) {#}
+                    {#    document.getElementById('button_backet' + smt['id']).style.display = "none";#}
+                    {#    document.getElementById('button_change_plus' + smt['id']).style.display = "";#}
+                    {#    document.getElementById('button_change_minus' + smt['id']).style.display = "";#}
+                    {#    document.getElementById('texting' + smt['id']).style.display = ""#}
+                    {#    $('#texting' + smt['id']).html(1 + 'шт')#}
+                    {#    $('#left' + smt['id']).html('Осталось ' + smt['left'] + 'шт')#}
+
+                },
+            })
+        })
+    </script>
 {% endblock %}

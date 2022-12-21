@@ -7,20 +7,30 @@ from eav.models import Attribute, Entity
 
 from web.models import Plant
 
+TYPES = [
+    ('default', 'Не выбрано'),
+    ('integer', 'Число'),
+    ('string', 'Строка'),
+    ('date', 'Дата'),
+]
+
 
 class PlantForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        for i in Entity(Plant).get_all_attributes():
+            self.fields[i.name] = forms.CharField()
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update({'class': 'form-control'})
 
     # todo словарь с присваиваемыми типами данных
-    for i in Entity(Plant).get_all_attributes():
-        locals()[i.name] = forms.CharField(required=False)
+    # for i in Entity(Plant).get_all_attributes():
+    #     locals()[i.name] = forms.CharField()
 
     class Meta:
         model = Plant
-        exclude = ['organization', 'genus']
+        fields = '__all__'
+        # exclude = ['organization', 'genus']
         # widgets = {
         #     'organization': forms.Select(),
         #     'genus': forms.Select()
@@ -33,3 +43,13 @@ class PlantForm(forms.ModelForm):
             plant.eav.__setattr__(i.name, self.cleaned_data[i.name])
         plant.save()
         return plant
+
+
+class AttributeForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for attr, value in self.fields.items():
+            self.fields[attr].widget.attrs.update({'class': 'form-control'})
+
+    name_attr = forms.CharField(label='Название')
+    type_attr = forms.ChoiceField(widget=forms.Select, choices=TYPES, label='Тип данных')
