@@ -39,6 +39,9 @@ class Family(BaseTaxon):
 class Genus(BaseTaxon):
     family = models.ForeignKey(Family, on_delete=models.SET_NULL, null=True)
 
+    def __str__(self):
+        return self.title
+
 
 class Plant(models.Model):
     number = models.IntegerField(unique=True)
