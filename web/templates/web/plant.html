@@ -1,6 +1,6 @@
 {% extends 'web/base.html' %}
 {% block body %}
-    <h1>Страница растения {{ plant.name }} ({{ plant.latin_name }})</h1>
+    <h1>Страница растения {{ name }} ({{ latin_name }})</h1>
     <table class="table table-bordered table-success">
         <thead class="thead-dark">
             <tr>
@@ -10,12 +10,10 @@
         </thead>
         <tbody>
             {% for key, value in plant.items %}
-                {% if 'name' not in key %}
-                    <tr>
-                        <td>{{ key }}</td>
-                        <td>{{ value }}</td>
-                    </tr>
-                {% endif %}
+                <tr>
+                    <td>{{ key }}</td>
+                    <td>{{ value }}</td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>

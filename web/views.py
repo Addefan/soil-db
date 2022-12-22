@@ -24,21 +24,21 @@ class PlantMixin:
     _stop_list: set = {"_state", "eav", "id"}
 
     @staticmethod
-    def get_organization_name(instance: Plant):
+    def _get_organization_name(instance: Plant):
         if hasattr(instance.organization, "name"):
             return instance.organization.name
         return "Не указано"
 
     @staticmethod
-    def get_eav_fields(plant):
+    def _get_eav_fields(plant):
         dct: dict = {}
         for attr in Entity(plant).get_all_attributes():
             value = getattr(plant.eav, attr.name, None)
-            if value:
+            if value is not None:
                 dct[attr.name] = value
         return dct
 
-    def get_plant_classification(self, plant: Plant):
+    def _get_plant_classification(self, plant: Plant):
         dct: dict = {}
         for taxon in self._taxons:
             plant = getattr(plant, taxon)
@@ -56,16 +56,25 @@ class PlantDetailView(DetailView, PlantMixin):
     slug_url_kwarg = "number"
 
     def get_queryset(self):
-        return Plant.objects.all()
+        return Plant.objects.filter(number=self.kwargs[self.slug_url_kwarg])
+
+    def get_context_data(self, **kwargs):
+        return {
+            **super(PlantDetailView, self).get_context_data(**kwargs),
+            'latin_name': self.latin_name,
+            'name': self.name,
+                }
 
     def get_object(self, queryset=None):
         instance = super(PlantDetailView, self).get_object(queryset)
+        self.latin_name = instance.latin_name
+        self.name = instance.name
         obj: dict = {
             self._translate[key]: value or "Не указано"
             for key, value in instance.__dict__.items()
             if not (key in self._stop_list or key.endswith("_id"))
-        } | {"latin_name": instance.latin_name, "name": instance.name}
-        obj |= self.get_plant_classification(instance)
-        obj["Организация"] = self.get_organization_name(instance)
-        obj |= self.get_eav_fields(instance)
+        }
+        obj |= self._get_plant_classification(instance)
+        obj["Организация"] = self._get_organization_name(instance)
+        obj |= self._get_eav_fields(instance)
         return obj
