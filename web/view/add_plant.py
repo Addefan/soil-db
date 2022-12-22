@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.views.generic import CreateView, UpdateView
 from eav.models import Attribute, Entity
 
-from web.forms import PlantForm, AttributeForm, AttributeFormView
+from web.forms import PlantForm, AttributeForm, AttributeFormView, FamilyForm, OrderForm, ClassForm, PhylumForm
 from web.models import Plant
 
 
@@ -18,6 +18,11 @@ class PlantCreateFormView(CreateView):
                           "plant_form": PlantForm() or plant_form,
                           "attr_form": AttributeForm(),
                           "attr_form_view": AttributeFormView() or attr_form_view,
+                          "family_form": FamilyForm(),
+                          "order_form": OrderForm(),
+                          "class_form": ClassForm(),
+                          "phylum_form": PhylumForm(),
+
                           "is_success": is_success
                       })
 

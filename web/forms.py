@@ -30,14 +30,14 @@ class AttributeFormView(forms.Form):
             elif i.datatype == "float":
                 self.fields[i.name] = forms.FloatField()
         for attr, value in self.fields.items():
-            self.fields[attr].widget.attrs.update({"class": "form-control"})
+            self.fields[attr].widget.attrs.update({"class": "form-control", "id": "floatingInput", "placeholder": "smt"})
 
 
 class PlantForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for attr, value in self.fields.items():
-            self.fields[attr].widget.attrs.update({"class": "form-control"})
+            self.fields[attr].widget.attrs.update({"class": "form-control", "id": "floatingInput", "placeholder": "smt"})
 
     class Meta:
         model = Plant

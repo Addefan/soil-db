@@ -2,18 +2,32 @@
 {% block begin %}Добавление растения{% endblock %}
 {% block body %}
     {% if not is_success %}
-        <div class="container">
-            <div class="row justify-content-center text-center">
-                <div class="col-md-5">
+        <div class="container d-flex justify-content-center align-items-center">
+            <div class="card" style="width: 65%">
+                <div class="card-body">
+                    <h5 class="card-title">Новое растение</h5>
                     <form action="" method="post">
                         {% csrf_token %}
-                        {{ plant_form.as_p }}
-                        {{ attr_form_view.as_p }}
+                        {% for field in plant_form %}
+                            {% if field.name == 'genus' %}
+
+                            {% else %}
+                                <div class="form-floating mb-3">
+                                    {{ field }}
+                                    <label for="floatinginput">{{ field.label }}:</label>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        {% for field in attr_form_view %}
+                            <div class="form-floating mb-3">
+                                {{ field }}
+                                <label for="floatinginput">{{ field.label }}:</label>
+                            </div>
+                        {% endfor %}
                         <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#exampleModal">
+                                data-bs-target="#exampleModal" style="margin-bottom: 7px">
                             Добавить недостающие атрибуты
                         </button>
-                        <br>
                         <br>
                         <button type="submit" class="btn btn-success">Добавить растение</button>
                     </form>
