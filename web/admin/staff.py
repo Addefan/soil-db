@@ -2,6 +2,7 @@ from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 
 
 class StaffAdmin(DjangoUserAdmin):
+
     ordering = ("-last_login",)
     list_display = ("id", "email", "name", "surname", "last_login", "organization_id")
     list_filter = ("last_login",)
@@ -25,7 +26,7 @@ class StaffAdmin(DjangoUserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("email", "password1", "password2"),
+                "fields": ("email", "password1", "password2", "organization"),
             },
         ),
     )
