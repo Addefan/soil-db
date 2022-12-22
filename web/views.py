@@ -1,5 +1,4 @@
 from django.views.generic import DetailView
-from eav.models import Entity
 
 from web.models import Plant
 

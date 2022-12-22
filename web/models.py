@@ -38,7 +38,7 @@ class Genus(BaseTaxon):
     family = models.ForeignKey(Family, on_delete=models.SET_NULL, null=True)
 
 
-class PlantMixin:
+class PlantModelMixin:
     _translate: dict[str, str] = {
         "latin_name": "Вид(лат.)",
         "name": "Вид",
@@ -82,7 +82,7 @@ class PlantMixin:
         return dct
 
 
-class Plant(models.Model, PlantMixin):
+class Plant(models.Model, PlantModelMixin):
     number = models.IntegerField(unique=True)
     organization = models.ForeignKey(Organization, on_delete=models.SET_NULL, null=True)
     genus = models.ForeignKey(Genus, on_delete=models.SET_NULL, null=True)
