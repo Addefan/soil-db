@@ -1,5 +1,6 @@
 body {
     min-height: 100vh;
+    background-color: #F3F3F3;
 }
 .content-align>td, .content-align>th {
     text-align: left;
@@ -13,4 +14,9 @@ body {
     min-height: 100vh;
     flex-direction: column;
     justify-content: center;
+    margin: 0 25px 25px 25px;
+}
+td:hover, th:hover {
+    background-color: #EEFFE8;
+    font-weight: bolder;
 }
