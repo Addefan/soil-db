@@ -1,0 +1,16 @@
+body {
+    min-height: 100vh;
+}
+.content-align>td, .content-align>th {
+    text-align: left;
+}
+.title {
+    margin: 20px;
+    text-align: center;
+}
+.flex-wrapper {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    justify-content: center;
+}

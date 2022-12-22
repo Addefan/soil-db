@@ -61,9 +61,9 @@ class PlantDetailView(DetailView, PlantMixin):
     def get_context_data(self, **kwargs):
         return {
             **super(PlantDetailView, self).get_context_data(**kwargs),
-            'latin_name': self.latin_name,
-            'name': self.name,
-                }
+            "latin_name": self.latin_name,
+            "name": self.name,
+        }
 
     def get_object(self, queryset=None):
         instance = super(PlantDetailView, self).get_object(queryset)
