@@ -77,8 +77,6 @@ class PlantMixin:
             plant = getattr(plant, taxon)
             for attr in self._suffix:
                 dct[self._taxons[taxon] + self._suffix[attr]] = getattr(plant, attr, "Не указано")
-                print("key:", self._taxons[taxon] + self._suffix[attr])
-                print("value:", getattr(self, attr, "Не указано"))
             if plant is None:
                 break
         return dct
