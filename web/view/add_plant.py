@@ -12,58 +12,32 @@ class PlantCreateFormView(CreateView):
     form_class = PlantForm
     template_name = "web/plant_form.html"
 
-    def _render(self, request, *args, **kwargs):
-        return render(
-            request,
-            "web/plant_form.html",
-            {
-                "plant_form": PlantForm(),
-                "attr_form": AttributeForm(),
-                "attr_form_view": AttributeFormView(),
-            },
-        )
+    def _render(self, request, plant_form=None, attr_form_view=None, is_success=None):
+        return render(request, "web/plant_form.html",
+                      {
+                          "plant_form": PlantForm() or plant_form,
+                          "attr_form": AttributeForm(),
+                          "attr_form_view": AttributeFormView() or attr_form_view,
+                          "is_success": is_success
+                      })
 
     #
     def get(self, request, *args, **kwargs):
         return self._render(request)
 
     def post(self, request, *args, **kwargs):
-        print(request.POST)
-        PLANT = None
+        is_success = False
         form_plant = PlantForm(request.POST)
-        if form_plant.is_valid():
-            print("Ура")
-            print(form_plant.cleaned_data)
-            PLANT = form_plant.save()
-        else:
-            print(form_plant.errors)
-            return render(request, "web/plant_form.html", {"plant_form": PlantForm(),
-                                                           "attr_form": AttributeForm(),
-                                                           "attr_form_view": AttributeFormView(),
-                                                           "plant_form_errors": form_plant,
-                                                           })
-        # print(request.POST)
         form_attr = AttributeFormView(request.POST)
-        print(PLANT)
-        if form_attr.is_valid():
-            print("Ура")
-            print(form_attr.cleaned_data)
+        if form_plant.is_valid():
+            plant = form_plant.save()
             if form_attr.is_valid():
-                plant = PLANT
                 obj = Entity(Plant.objects.first())
-                print(form_attr.cleaned_data)
                 for i in obj.get_all_attributes():
-                    print(i)
                     plant.eav.__setattr__(i.slug, form_attr.cleaned_data[i.name])
                 plant.save()
-                print("НАЙС")
-                return HttpResponse("Ку")
-        else:
-            print("Все плохо")
-            return render(request, "web/plant_form.html", {"plant_form": PlantForm(),
-                                                       "attr_form": AttributeForm(),
-                                                       "attr_form_view": AttributeFormView(),
-                                                       })
+                is_success = True
+        return self._render(request, form_plant, form_attr, is_success)
 
 
 def success_url(request):
