@@ -58,15 +58,23 @@ class UserManager(DjangoUserManager):
         extra_fields.setdefault("is_superuser", False)
         return self._create_user(email, password, **extra_fields)
 
+    def create_superuser(self, email=None, password=None, **extra_fields):
+        extra_fields.setdefault("is_superuser", True)
+        return self._create_user(email, password, **extra_fields)
+
 
 class Staff(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=False)
     name = models.CharField(max_length=127)
     surname = models.CharField(max_length=127)
     email = models.EmailField(unique=True, max_length=320)
 
     USERNAME_FIELD = "email"
+
+    @property
+    def is_staff(self):
+        return self.is_superuser
 
 
 eav.register(Plant)
