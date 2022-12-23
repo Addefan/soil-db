@@ -62,9 +62,9 @@ class UserManager(DjangoUserManager):
 class Staff(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
-    name = models.CharField(max_length=127)
-    surname = models.CharField(max_length=127)
-    email = models.EmailField(unique=True, max_length=320)
+    name = models.CharField(max_length=127, verbose_name="Имя")
+    surname = models.CharField(max_length=127, verbose_name="Фамилия")
+    email = models.EmailField(unique=True, max_length=320, verbose_name="Почта")
 
     USERNAME_FIELD = "email"
 
