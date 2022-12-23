@@ -6,13 +6,18 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    {#    <link rel="stylesheet" href="{% static 'web/style.css' %}">#}
-    <link rel="stylesheet" href="{% static 'web/bootstrap.min.css' %}">
-
-    <title>Document</title>
+    {% block styles %}
+        <link rel="stylesheet" href="{% static 'web/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'web/style.css' %}">
+    {% endblock %}
+    <title>{% block title %}Soil DB{% endblock %}</title>
 </head>
 <body>
-{% block body %}
+{% block body %}{% endblock %}
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="{% static 'web/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'web/script.js' %}"></script>
 {% endblock %}
 </body>
 </html>
