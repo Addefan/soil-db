@@ -1,0 +1,46 @@
+{% extends "web/base.html" %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div class="card my-4">
+                    <div class="card-body">
+                        <h4 class="card-title">Профиль</h4>
+                        <form method="post" class="my-4">
+                            {% csrf_token %}
+                            {% for field in form %}
+                                {% if field.name == "email" %}
+                                    <div class="form-floating mb-3" data-bs-toggle="tooltip"
+                                         data-bs-title="Почту изменить нельзя" tabindex="0">
+                                        {{ field }}
+                                        {{ field.label_tag }}
+                                    </div>
+                                {% else %}
+                                    <div class="form-floating mb-3">
+                                        {{ field }}
+                                        {{ field.label_tag }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                            <button hidden id="submit"></button>
+                            <div class="row">
+                                <button type="button" class="btn btn-success col mx-3">
+                                    Сохранить
+                                </button>
+                                <button type="reset"
+                                        class="btn btn-secondary col me-3">
+                                    Сбросить
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3"></div>
+        </div>
+    </div>
+{% endblock %}
