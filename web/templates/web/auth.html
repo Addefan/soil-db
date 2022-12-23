@@ -9,8 +9,10 @@
             <form action="" method="post">
                 {% csrf_token %}
                 {% for field in form %}
-                    <label for="" class="mt-2">{{ field.label }}</label>
-                    {{ field }}
+                    <div class="form-floating mt-3">
+                        {{ field }}
+                        <label for="" class="">{{ field.label }}</label>
+                    </div>
                 {% endfor %}
                 <div class="text-center">
                     <button class="btn btn-success mt-3">Войти</button>
