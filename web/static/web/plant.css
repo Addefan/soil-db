@@ -16,7 +16,6 @@ body {
     justify-content: center;
     margin: 0 25px 25px 25px;
 }
-td:hover, th:hover {
-    background-color: #EEFFE8;
+tr:hover {
     font-weight: bolder;
 }
