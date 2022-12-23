@@ -1,4 +1,5 @@
 {% extends 'web/base.html' %}
+{% load soil %}
 {% block begin %}Добавление растения{% endblock %}
 {% block body %}
     {% if not is_success %}
@@ -10,7 +11,19 @@
                         {% csrf_token %}
                         {% for field in plant_form %}
                             {% if field.name == 'genus' %}
-
+                                {% filter_link phylum_form phylum %}
+                                {% filter_link class_form class %}
+                                {% filter_link order_form order %}
+                                {% filter_link family_form family %}
+                                <div class="form-floating mb-3">
+                                    {{ field }}
+                                    <datalist id="character">
+                                        {% for obj in genus %}
+                                            <option value={{ obj.id }}>{{ obj.title }}</option>
+                                        {% endfor %}
+                                    </datalist>
+                                    <label for="floatinginput">{{ field.label }}:</label>
+                                </div>
                             {% else %}
                                 <div class="form-floating mb-3">
                                     {{ field }}

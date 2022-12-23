@@ -1,0 +1,11 @@
+{% for field in stage_form %}
+    <div class="form-floating mb-3">
+        {{ field }}
+        <datalist id="character">
+            {% for name in names_to_select %}
+                <option value={{ name }}></option>
+            {% endfor %}
+        </datalist>
+        <label for="floatinginput">{{ field.label }}:</label>
+    </div>
+{% endfor %}

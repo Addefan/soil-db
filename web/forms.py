@@ -30,14 +30,23 @@ class AttributeFormView(forms.Form):
             elif i.datatype == "float":
                 self.fields[i.name] = forms.FloatField()
         for attr, value in self.fields.items():
-            self.fields[attr].widget.attrs.update({"class": "form-control", "id": "floatingInput", "placeholder": "smt"})
+            self.fields[attr].widget.attrs.update(
+                {"class": "form-control", "id": "floatingInput", "placeholder": "smt"}
+            )
 
 
 class PlantForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for attr, value in self.fields.items():
-            self.fields[attr].widget.attrs.update({"class": "form-control", "id": "floatingInput", "placeholder": "smt"})
+            if attr == "genus":
+                self.fields[attr].widget.attrs.update(
+                    {"class": "form-control", "id": "floatingInput", "placeholder": "smt", "list": "character"}
+                )
+            else:
+                self.fields[attr].widget.attrs.update(
+                    {"class": "form-control", "id": "floatingInput", "placeholder": "smt"}
+                )
 
     class Meta:
         model = Plant
@@ -46,7 +55,10 @@ class PlantForm(forms.ModelForm):
             "name": _("Наименование растения"),
             "latin_name": _("Латинское наименование растения"),
             "number": _("Уникальный номер"),
+            "organization": _("Наименование организации"),
+            "genus": _("Род"),
         }
+        widgets = {"genus": forms.TextInput()}
 
     # def save(self, *args, **kwargs):
     #     print(*kwargs)
@@ -69,24 +81,52 @@ class AttributeForm(forms.Form):
 
 
 class FamilyForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for attr, value in self.fields.items():
+            self.fields[attr].widget.attrs.update(
+                {"class": "form-control", "id": "floatingInput", "placeholder": "smt", "list": "character"}
+            )
+
     class Meta:
         model = Family
-        fields = "__all__"
+        fields = ("title", "latin_title")
 
 
 class OrderForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for attr, value in self.fields.items():
+            self.fields[attr].widget.attrs.update(
+                {"class": "form-control", "id": "floatingInput", "placeholder": "smt", "list": "character"}
+            )
+
     class Meta:
         model = Order
-        fields = "__all__"
+        fields = ("title", "latin_title")
 
 
 class ClassForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for attr, value in self.fields.items():
+            self.fields[attr].widget.attrs.update(
+                {"class": "form-control", "id": "floatingInput", "placeholder": "smt", "list": "character"}
+            )
+
     class Meta:
         model = Class
-        fields = "__all__"
+        fields = ("title", "latin_title")
 
 
 class PhylumForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for attr, value in self.fields.items():
+            self.fields[attr].widget.attrs.update(
+                {"class": "form-control", "id": "floatingInput", "placeholder": "smt", "list": "character"}
+            )
+
     class Meta:
         model = Phylum
         fields = "__all__"

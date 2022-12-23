@@ -5,33 +5,56 @@ from django.views.generic import CreateView, UpdateView
 from eav.models import Attribute, Entity
 
 from web.forms import PlantForm, AttributeForm, AttributeFormView, FamilyForm, OrderForm, ClassForm, PhylumForm
-from web.models import Plant
+from web.models import Plant, Phylum, Class, Order, Family
 
 
 class PlantCreateFormView(CreateView):
     form_class = PlantForm
     template_name = "web/plant_form.html"
 
+    def _take_names_attributes(self, set_objects):
+        basket = set()
+        for obj in set_objects:
+            basket.add(obj.title)
+        return basket
+
     def _render(self, request, plant_form=None, attr_form_view=None, is_success=None):
-        return render(request, "web/plant_form.html",
-                      {
-                          "plant_form": PlantForm() or plant_form,
-                          "attr_form": AttributeForm(),
-                          "attr_form_view": AttributeFormView() or attr_form_view,
-                          "family_form": FamilyForm(),
-                          "order_form": OrderForm(),
-                          "class_form": ClassForm(),
-                          "phylum_form": PhylumForm(),
+        genus = set()
+        family = self._take_names_attributes(Family.objects.all())
+        order = self._take_names_attributes(Order.objects.all())
+        klass = self._take_names_attributes(Class.objects.all())
+        phylum = self._take_names_attributes(Phylum.objects.all())
+        all_plants = Plant.objects.all()
+        for plant in all_plants:
+            genus.add(plant.genus)
+        return render(
+            request,
+            "web/plant_form.html",
+            {
+                "plant_form": PlantForm() or plant_form,
+                "attr_form": AttributeForm(),
+                "attr_form_view": AttributeFormView() or attr_form_view,
+                "family_form": FamilyForm(),
+                "order_form": OrderForm(),
+                "class_form": ClassForm(),
+                "phylum_form": PhylumForm(),
+                "is_success": is_success,
+                "genus": genus,
+                "family": family,
+                "order": order,
+                "class": klass,
+                "phylum": phylum,
+            },
+        )
 
-                          "is_success": is_success
-                      })
-
-    #
+    # todo приудмать как сделать так, чтобы при выболее более высокой
+    # стадии на нижних этапах выводились только соответствующией ей низшие стадии
     def get(self, request, *args, **kwargs):
         return self._render(request)
 
     def post(self, request, *args, **kwargs):
         is_success = False
+        print(request.POST)
         form_plant = PlantForm(request.POST)
         form_attr = AttributeFormView(request.POST)
         if form_plant.is_valid():
@@ -42,6 +65,9 @@ class PlantCreateFormView(CreateView):
                     plant.eav.__setattr__(i.slug, form_attr.cleaned_data[i.name])
                 plant.save()
                 is_success = True
+                print("второй")
+        else:
+            print("первый")
         return self._render(request, form_plant, form_attr, is_success)
 
 
