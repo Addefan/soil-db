@@ -1,6 +1,7 @@
 {% extends 'web/base.html' %}
+{% load static %}
 {% block style %}
-    {% include 'web/snippets/style_import.html' with css_path='web/plant.css' %}
+    <link rel="stylesheet" href="{% static 'web/plant.css' %}">
 {% endblock %}
 {% block body %}
     <div class="flex-wrapper">
