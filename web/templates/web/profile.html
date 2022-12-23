@@ -10,7 +10,7 @@
                 <div class="card my-4">
                     <div class="card-body">
                         <h4 class="card-title">Профиль</h4>
-                        <form method="post" class="my-4">
+                        <form method="post" class="mt-4 mb-2">
                             {% csrf_token %}
                             {% for field in form %}
                                 {% if field.name == "email" %}
