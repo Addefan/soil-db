@@ -40,7 +40,7 @@ class Genus(BaseTaxon):
 
 class PlantModelMixin:
     _translate: dict[str, str] = {
-        "latin_name": "Вид(лат.)",
+        "latin_name": "Вид (лат.)",
         "name": "Вид",
         "number": "Идентификатор",
     }
@@ -52,7 +52,7 @@ class PlantModelMixin:
         "phylum": "Тип",
     }
     _suffix: dict[str, str] = {
-        "latin_title": "(лат.)",
+        "latin_title": " (лат.)",
         "title": "",
     }
     _stop_list: set = {"_state", "eav", "id"}
