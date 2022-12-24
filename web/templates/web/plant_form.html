@@ -10,16 +10,17 @@
                     <form action="" method="post">
                         {% csrf_token %}
                         {% for field in plant_form %}
-                            {% if field.name == 'genus' %}
-                                {% filter_link phylum_form phylum %}
-                                {% filter_link class_form class %}
-                                {% filter_link order_form order %}
-                                {% filter_link family_form family %}
+                            {% if field.name == 'latin_name' %}
+                                {% filter_link phylum_form phylum '1' %}
+                                {% filter_link class_form class '2' %}
+                                {% filter_link order_form order '3' %}
+                                {% filter_link family_form family '4' %}
+                                {% filter_link genus_form genus '5' %}
                                 <div class="form-floating mb-3">
                                     {{ field }}
                                     <datalist id="character">
-                                        {% for obj in genus %}
-                                            <option value={{ obj.id }}>{{ obj.title }}</option>
+                                        {% for name in genus %}
+                                            <option value={{ name }}></option>
                                         {% endfor %}
                                     </datalist>
                                     <label for="floatinginput">{{ field.label }}:</label>

@@ -4,8 +4,17 @@ from django.urls import reverse
 from django.views.generic import CreateView, UpdateView
 from eav.models import Attribute, Entity
 
-from web.forms import PlantForm, AttributeForm, AttributeFormView, FamilyForm, OrderForm, ClassForm, PhylumForm
-from web.models import Plant, Phylum, Class, Order, Family
+from web.forms import (
+    PlantForm,
+    AttributeForm,
+    AttributeFormView,
+    FamilyForm,
+    OrderForm,
+    ClassForm,
+    PhylumForm,
+    GenusForm,
+)
+from web.models import Plant, Phylum, Class, Order, Family, Genus
 
 
 class PlantCreateFormView(CreateView):
@@ -24,9 +33,7 @@ class PlantCreateFormView(CreateView):
         order = self._take_names_attributes(Order.objects.all())
         klass = self._take_names_attributes(Class.objects.all())
         phylum = self._take_names_attributes(Phylum.objects.all())
-        all_plants = Plant.objects.all()
-        for plant in all_plants:
-            genus.add(plant.genus)
+        genus = self._take_names_attributes(Genus.objects.all())
         return render(
             request,
             "web/plant_form.html",
@@ -38,6 +45,7 @@ class PlantCreateFormView(CreateView):
                 "order_form": OrderForm(),
                 "class_form": ClassForm(),
                 "phylum_form": PhylumForm(),
+                "genus_form": GenusForm(),
                 "is_success": is_success,
                 "genus": genus,
                 "family": family,
@@ -52,13 +60,50 @@ class PlantCreateFormView(CreateView):
     def get(self, request, *args, **kwargs):
         return self._render(request)
 
+    def _make_obj(self, req, stage, pref):
+        print(req, stage, pref)
+        ans = stage(req).save()
+        return ans
+
     def post(self, request, *args, **kwargs):
         is_success = False
-        print(request.POST)
-        form_plant = PlantForm(request.POST)
-        form_attr = AttributeFormView(request.POST)
+        req = request.POST
+        print(req)
+        if not Phylum.objects.filter(title=req["phylum-title"]):
+            phylum_obj = Phylum(req["phylum-title"], req["phylum-latin_title"]).save()
+        else:
+            phylum_obj = Phylum.objects.filter(title=req["phylum-title"]).first()
+        if not Class.objects.filter(title=req["klass-title"]):
+            class_obj = self._make_obj(req, ClassForm, "klass")
+            class_obj.phylum = phylum_obj
+            class_obj.save()
+        else:
+            class_obj = Class.objects.filter(title=req["klass-title"]).first()
+        if not Order.objects.filter(title=req["order-title"]):
+            order_obj = self._make_obj(req, OrderForm, "order")
+            order_obj.class_name = class_obj
+            order_obj.save()
+        else:
+            order_obj = Order.objects.filter(title=req["order-title"]).first()
+        if not Family.objects.filter(title=req["family-title"]):
+            family_obj = self._make_obj(req, FamilyForm, "family")
+            family_obj.order = order_obj
+            family_obj.save()
+        else:
+            family_obj = Family.objects.filter(title=req["family-title"]).first()
+        if not Genus.objects.filter(title=req["genus-title"]):
+            genus_obj = self._make_obj(req, GenusForm, "genus")
+            print(genus_obj.family)
+            genus_obj.family = family_obj
+            genus_obj.save()
+        else:
+            genus_obj = Genus.objects.filter(title=req["genus-title"]).first()
+
+        form_plant = PlantForm(req)
+        form_attr = AttributeFormView(req)
         if form_plant.is_valid():
             plant = form_plant.save()
+            plant.genus = genus_obj
             if form_attr.is_valid():
                 obj = Entity(Plant.objects.first())
                 for i in obj.get_all_attributes():
