@@ -1,8 +1,4 @@
 from django import forms
-from django.core.exceptions import ValidationError
-from django.shortcuts import get_object_or_404
-from eav.fields import EavDatatypeField
-from eav.forms import BaseDynamicEntityForm
 from eav.models import Attribute, Entity
 from django.utils.translation import gettext_lazy as _
 
@@ -60,17 +56,6 @@ class PlantForm(forms.ModelForm):
             "genus": _("Род"),
         }
 
-        # widgets = {"genus": forms.TextInput()}
-
-    # def save(self, *args, **kwargs):
-    #     print(*kwargs)
-    #     plant = super().save(*args, **kwargs)
-    #     obj = Entity(plant)
-    #     for i in obj.get_all_attributes():
-    #         plant.eav.__setattr__(i.name, self.cleaned_data[i.name])
-    #     plant.save()
-    #     return plant
-
 
 class AttributeForm(forms.Form):
     def __init__(self, *args, **kwargs):
@@ -89,7 +74,12 @@ class GenusForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update(
-                {"class": "form-control", "id": "floatingInput", "placeholder": "smt", "list": "character5"}
+                {
+                    "class": "form-control",
+                    "id": "floatingInput",
+                    "placeholder": "smt",
+                    "list": f"character_{attr}_{self.prefix}",
+                }
             )
 
     class Meta:
@@ -109,7 +99,12 @@ class FamilyForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update(
-                {"class": "form-control", "id": "floatingInput", "placeholder": "smt", "list": "character4"}
+                {
+                    "class": "form-control",
+                    "id": "floatingInput",
+                    "placeholder": "smt",
+                    "list": f"character_{attr}_{self.prefix}",
+                }
             )
 
     class Meta:
@@ -128,7 +123,12 @@ class OrderForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update(
-                {"class": "form-control", "id": "floatingInput", "placeholder": "smt", "list": "character3"}
+                {
+                    "class": "form-control",
+                    "id": "floatingInput",
+                    "placeholder": "smt",
+                    "list": f"character_{attr}_{self.prefix}",
+                }
             )
 
     class Meta:
@@ -147,7 +147,12 @@ class ClassForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update(
-                {"class": "form-control", "id": "floatingInput", "placeholder": "smt", "list": "character2"}
+                {
+                    "class": "form-control",
+                    "id": "floatingInput",
+                    "placeholder": "smt",
+                    "list": f"character_{attr}_{self.prefix}",
+                }
             )
 
     class Meta:
@@ -166,7 +171,12 @@ class PhylumForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update(
-                {"class": "form-control", "id": "floatingInput", "placeholder": "smt", "list": "character1"}
+                {
+                    "class": "form-control",
+                    "id": "floatingInput",
+                    "placeholder": "smt",
+                    "list": f"character_{attr}_{self.prefix}",
+                }
             )
 
     class Meta:

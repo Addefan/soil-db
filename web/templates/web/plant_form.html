@@ -11,19 +11,16 @@
                         {% csrf_token %}
                         {% for field in plant_form %}
                             {% if field.name == 'latin_name' %}
-                                {% filter_link phylum_form phylum '1' %}
-                                {% filter_link class_form class '2' %}
-                                {% filter_link order_form order '3' %}
-                                {% filter_link family_form family '4' %}
-                                {% filter_link genus_form genus '5' %}
+                                {% filter_link phylum_form phylum "phylum" %}
+                                {% filter_link class_form class "klass" %}
+                                {% filter_link order_form order "order" %}
+                                {% filter_link family_form family "family" %}
+                                {% filter_link genus_form genus "genus" %}
                                 <div class="form-floating mb-3">
-                                    {{ field }}
-                                    <datalist id="character">
-                                        {% for name in genus %}
-                                            <option value={{ name }}></option>
-                                        {% endfor %}
-                                    </datalist>
-                                    <label for="floatinginput">{{ field.label }}:</label>
+                                    <div class="form-floating mb-3">
+                                        {{ field }}
+                                        <label for="floatinginput">{{ field.label }}:</label>
+                                    </div>
                                 </div>
                             {% else %}
                                 <div class="form-floating mb-3">
@@ -79,7 +76,7 @@
     <script>
         $('#add_button').on('click', function () {
             $.ajax({
-                url: '{% url 'view_test' %}',
+                url: '{% url 'ajax_response' %}',
                 method: 'post',
                 dataType: 'html',
                 data: {

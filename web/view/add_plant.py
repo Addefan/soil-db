@@ -23,17 +23,18 @@ class PlantCreateFormView(CreateView):
 
     def _take_names_attributes(self, set_objects):
         basket = set()
+        basket_lat = set()
         for obj in set_objects:
             basket.add(obj.title)
-        return basket
+            basket_lat.add(obj.latin_title)
+        return basket, basket_lat
 
     def _render(self, request, plant_form=None, attr_form_view=None, is_success=None):
-        genus = set()
-        family = self._take_names_attributes(Family.objects.all())
-        order = self._take_names_attributes(Order.objects.all())
-        klass = self._take_names_attributes(Class.objects.all())
-        phylum = self._take_names_attributes(Phylum.objects.all())
-        genus = self._take_names_attributes(Genus.objects.all())
+        family, family_lat = self._take_names_attributes(Family.objects.all())
+        order, order_lat = self._take_names_attributes(Order.objects.all())
+        klass, klass_lat = self._take_names_attributes(Class.objects.all())
+        phylum, phylum_lat = self._take_names_attributes(Phylum.objects.all())
+        genus, genus_lat = self._take_names_attributes(Genus.objects.all())
         return render(
             request,
             "web/plant_form.html",
@@ -47,11 +48,11 @@ class PlantCreateFormView(CreateView):
                 "phylum_form": PhylumForm(),
                 "genus_form": GenusForm(),
                 "is_success": is_success,
-                "genus": genus,
-                "family": family,
-                "order": order,
-                "class": klass,
-                "phylum": phylum,
+                "genus": (genus, genus_lat),
+                "family": (family, family_lat),
+                "order": (order, order_lat),
+                "class": (klass, klass_lat),
+                "phylum": (phylum, phylum_lat),
             },
         )
 
@@ -110,17 +111,10 @@ class PlantCreateFormView(CreateView):
                     plant.eav.__setattr__(i.slug, form_attr.cleaned_data[i.name])
                 plant.save()
                 is_success = True
-                print("второй")
-        else:
-            print("первый")
         return self._render(request, form_plant, form_attr, is_success)
 
 
-def success_url(request):
-    return HttpResponse("<h1>Все ок</h1>")
-
-
-def view_test(request):
+def ajax_response(request):
     response_data = {}
     print(request.POST)
     name = request.POST.get("name")
@@ -137,25 +131,6 @@ def view_test(request):
     elif type_attr == "float":
         Attribute.objects.create(name=name, datatype=Attribute.TYPE_FLOAT)
     return JsonResponse(response_data)
-
-
-# def view_test(request):
-#     Attribute.objects.create(name='address', datatype=Attribute.TYPE_TEXT)
-#     plant_1 = Plant.objects.first()
-#     plant_1.eav.address = 'Пушкина'
-#     plant_1.save()
-#     print(plant_1.eav_values.all())
-#     # print(plant_1.eav.age)
-#     print(Entity(plant_1).get_all_attributes())
-#     plant_1 = Plant.objects.first()
-#
-#     for i in Entity(plant_1).get_all_attributes():
-#         print(i.name, plant_1.eav.__getattr__(i.name))
-#
-#     for i in Entity(Plant).get_all_attributes():
-#         print(i.name)
-#
-#     return HttpResponse("<h1>Страница для успешного завершения добавления растения</h1>")
 
 
 class PlantUpdateView(UpdateView):

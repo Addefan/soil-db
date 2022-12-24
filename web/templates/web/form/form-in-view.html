@@ -1,11 +1,20 @@
 {% for field in stage_form %}
     <div class="form-floating mb-3">
         {{ field }}
-        <datalist id="character{{ number }}">
-            {% for name in names_to_select %}
-                <option value={{ name }}></option>
-            {% endfor %}
-        </datalist>
-        <label for="floatinginput">{{ field.label }}:</label>
+        {% if 'лат' not in field.label %}
+            <label for="floatinginput">{{ field.label }}:</label>
+            <datalist id="character_title_{{ prefix }}">
+                {% for name in names_to_select %}
+                    <option value={{ name }}></option>
+                {% endfor %}
+            </datalist>
+        {% else %}
+            <label for="floatinginput">{{ field.label }}:</label>
+            <datalist id="character_latin_title_{{ prefix }}">
+                {% for name_lat in names_to_select_lat %}
+                    <option value={{ name_lat }}></option>
+                {% endfor %}
+            </datalist>
+        {% endif %}
     </div>
 {% endfor %}
