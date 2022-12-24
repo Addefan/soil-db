@@ -18,7 +18,7 @@ class PlantDetailView(DetailView):
         }
 
     def get_object(self, queryset=None):
-        obj = self.get_queryset()[0]
+        obj = super(PlantDetailView, self).get_object(queryset)
         self.latin_name = obj.latin_name
         self.name = obj.name
         return obj.to_dict()
