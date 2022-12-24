@@ -6,7 +6,7 @@ from eav.forms import BaseDynamicEntityForm
 from eav.models import Attribute, Entity
 from django.utils.translation import gettext_lazy as _
 
-from web.models import Plant, Family, Order, Class, Phylum
+from web.models import Plant, Family, Order, Class, Phylum, Genus
 
 TYPES = [
     ("default", "Не выбрано"),
@@ -51,6 +51,7 @@ class PlantForm(forms.ModelForm):
     class Meta:
         model = Plant
         fields = "__all__"
+        exclude = ["genus"]
         labels = {
             "name": _("Наименование растения"),
             "latin_name": _("Латинское наименование растения"),
@@ -58,7 +59,8 @@ class PlantForm(forms.ModelForm):
             "organization": _("Наименование организации"),
             "genus": _("Род"),
         }
-        widgets = {"genus": forms.TextInput()}
+
+        # widgets = {"genus": forms.TextInput()}
 
     # def save(self, *args, **kwargs):
     #     print(*kwargs)
@@ -80,53 +82,97 @@ class AttributeForm(forms.Form):
     type_attr = forms.ChoiceField(widget=forms.Select, choices=TYPES, label="Тип данных")
 
 
-class FamilyForm(forms.ModelForm):
+class GenusForm(forms.ModelForm):
+    prefix = "genus"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update(
-                {"class": "form-control", "id": "floatingInput", "placeholder": "smt", "list": "character"}
+                {"class": "form-control", "id": "floatingInput", "placeholder": "smt", "list": "character5"}
+            )
+
+    class Meta:
+        model = Genus
+        fields = ("title", "latin_title")
+        # fields = '__all__'
+        labels = {
+            "title": _("Род"),
+            "latin_title": _("Род лат"),
+        }
+
+
+class FamilyForm(forms.ModelForm):
+    prefix = "family"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for attr, value in self.fields.items():
+            self.fields[attr].widget.attrs.update(
+                {"class": "form-control", "id": "floatingInput", "placeholder": "smt", "list": "character4"}
             )
 
     class Meta:
         model = Family
         fields = ("title", "latin_title")
+        labels = {
+            "title": _("Семейство"),
+            "latin_title": _("Семейство лат"),
+        }
 
 
 class OrderForm(forms.ModelForm):
+    prefix = "order"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update(
-                {"class": "form-control", "id": "floatingInput", "placeholder": "smt", "list": "character"}
+                {"class": "form-control", "id": "floatingInput", "placeholder": "smt", "list": "character3"}
             )
 
     class Meta:
         model = Order
         fields = ("title", "latin_title")
+        labels = {
+            "title": _("Порядок"),
+            "latin_title": _("Порядок лат"),
+        }
 
 
 class ClassForm(forms.ModelForm):
+    prefix = "klass"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update(
-                {"class": "form-control", "id": "floatingInput", "placeholder": "smt", "list": "character"}
+                {"class": "form-control", "id": "floatingInput", "placeholder": "smt", "list": "character2"}
             )
 
     class Meta:
         model = Class
         fields = ("title", "latin_title")
+        labels = {
+            "title": _("Класс"),
+            "latin_title": _("Класс лат"),
+        }
 
 
 class PhylumForm(forms.ModelForm):
+    prefix = "phylum"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update(
-                {"class": "form-control", "id": "floatingInput", "placeholder": "smt", "list": "character"}
+                {"class": "form-control", "id": "floatingInput", "placeholder": "smt", "list": "character1"}
             )
 
     class Meta:
         model = Phylum
-        fields = "__all__"
+        fields = ("title", "latin_title")
+        labels = {
+            "title": _("Отдел"),
+            "latin_title": _("Отдел лат"),
+        }
