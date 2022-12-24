@@ -2,13 +2,16 @@ body {
     min-height: 100vh;
     background-color: #F3F3F3;
 }
-.content-align>td, .content-align>th {
+
+.content-align > td, .content-align > th {
     text-align: left;
 }
+
 .title {
     margin: 20px;
     text-align: center;
 }
+
 .flex-wrapper {
     display: flex;
     min-height: 100vh;
@@ -16,6 +19,7 @@ body {
     justify-content: center;
     margin: 0 25px 25px 25px;
 }
+
 tr:hover {
     font-weight: bolder;
 }
