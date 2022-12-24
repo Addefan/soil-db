@@ -4,13 +4,11 @@ from web.models import Plant
 
 
 class PlantDetailView(DetailView):
+    model = Plant
     template_name = "web/plant.html"
     context_object_name = "plant"
     slug_field = "number"
     slug_url_kwarg = "number"
-
-    def get_queryset(self):
-        return Plant.objects.filter(number=self.kwargs[self.slug_url_kwarg])
 
     def get_context_data(self, **kwargs):
         return {
