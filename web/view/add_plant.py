@@ -107,8 +107,8 @@ class PlantCreateFormView(CreateView):
             plant.genus = genus_obj
             if form_attr.is_valid():
                 obj = Entity(Plant.objects.first())
-                for i in obj.get_all_attributes():
-                    plant.eav.__setattr__(i.slug, form_attr.cleaned_data[i.name])
+                for attrib in obj.get_all_attributes():
+                    plant.eav.__setattr__(attrib.slug, form_attr.cleaned_data[attrib.name])
                 plant.save()
                 is_success = True
         return self._render(request, form_plant, form_attr, is_success)

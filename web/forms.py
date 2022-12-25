@@ -22,8 +22,8 @@ INPUT_TUPES = {
 class AttributeFormView(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for i in Entity(Plant).get_all_attributes():
-            self.fields[i.name] = INPUT_TUPES[i.datatype]
+        for attr in Entity(Plant).get_all_attributes():
+            self.fields[attr.name] = INPUT_TUPES[attr.datatype]
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update(
                 {"class": "form-control", "id": "floatingInput", "placeholder": "smt"}
