@@ -16,6 +16,13 @@ from web.forms import (
 )
 from web.models import Plant, Phylum, Class, Order, Family, Genus
 
+ATTRIBUTE_TYPE = {
+    "integer": Attribute.TYPE_INT,
+    "string": Attribute.TYPE_TEXT,
+    "data": Attribute.TYPE_DATE,
+    "float": Attribute.TYPE_FLOAT,
+}
+
 
 def _take_names_attributes(set_objects):
     basket = set()

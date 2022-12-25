@@ -34,14 +34,9 @@ class PlantForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for attr, value in self.fields.items():
-            if attr == "genus":
-                self.fields[attr].widget.attrs.update(
-                    {"class": "form-control", "id": "floatingInput", "placeholder": "smt", "list": "character"}
-                )
-            else:
-                self.fields[attr].widget.attrs.update(
-                    {"class": "form-control", "id": "floatingInput", "placeholder": "smt"}
-                )
+            self.fields[attr].widget.attrs.update(
+                {"class": "form-control", "id": "floatingInput", "placeholder": "smt"}
+            )
 
     class Meta:
         model = Plant
