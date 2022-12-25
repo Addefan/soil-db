@@ -7,7 +7,7 @@ from web.forms import AuthForm
 
 
 def main(request):
-    return HttpResponse({'ok?': "ok"})
+    return HttpResponse(f"{request.user.is_authenticated}")
 
 
 class SoilLoginView(LoginView):

@@ -8,6 +8,13 @@
             </div>
             <form action="" method="post">
                 {% csrf_token %}
+                <div class="text-center">
+                    {% if form.errors %}
+                        {% for field in form.non_field_errors %}
+                            <p class="text-danger mb-0">{{ field }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
                 {% for field in form %}
                     <div class="form-floating mt-3">
                         {{ field }}

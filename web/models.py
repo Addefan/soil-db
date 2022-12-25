@@ -71,7 +71,7 @@ class Staff(AbstractBaseUser, PermissionsMixin):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=False)
     name = models.CharField(max_length=127)
     surname = models.CharField(max_length=127)
-    email = models.EmailField(unique=True, max_length=320)
+    email = models.EmailField(unique=True, max_length=320, verbose_name="Почта")
 
     USERNAME_FIELD = "email"
 
