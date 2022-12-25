@@ -17,24 +17,31 @@ from web.forms import (
 from web.models import Plant, Phylum, Class, Order, Family, Genus
 
 
+def _take_names_attributes(set_objects):
+    basket = set()
+    basket_lat = set()
+    for obj in set_objects:
+        basket.add(obj.title)
+        basket_lat.add(obj.latin_title)
+    return basket, basket_lat
+
+
+def _make_obj(req, stage, pref):
+    print(req, stage, pref)
+    ans = stage(req).save()
+    return ans
+
+
 class PlantCreateFormView(CreateView):
     form_class = PlantForm
     template_name = "web/plant_form.html"
 
-    def _take_names_attributes(self, set_objects):
-        basket = set()
-        basket_lat = set()
-        for obj in set_objects:
-            basket.add(obj.title)
-            basket_lat.add(obj.latin_title)
-        return basket, basket_lat
-
     def _render(self, request, plant_form=None, attr_form_view=None, is_success=None):
-        family, family_lat = self._take_names_attributes(Family.objects.all())
-        order, order_lat = self._take_names_attributes(Order.objects.all())
-        klass, klass_lat = self._take_names_attributes(Class.objects.all())
-        phylum, phylum_lat = self._take_names_attributes(Phylum.objects.all())
-        genus, genus_lat = self._take_names_attributes(Genus.objects.all())
+        family, family_lat = _take_names_attributes(Family.objects.all())
+        order, order_lat = _take_names_attributes(Order.objects.all())
+        klass, klass_lat = _take_names_attributes(Class.objects.all())
+        phylum, phylum_lat = _take_names_attributes(Phylum.objects.all())
+        genus, genus_lat = _take_names_attributes(Genus.objects.all())
         return render(
             request,
             "web/plant_form.html",
@@ -61,11 +68,6 @@ class PlantCreateFormView(CreateView):
     def get(self, request, *args, **kwargs):
         return self._render(request)
 
-    def _make_obj(self, req, stage, pref):
-        print(req, stage, pref)
-        ans = stage(req).save()
-        return ans
-
     def post(self, request, *args, **kwargs):
         is_success = False
         req = request.POST
@@ -75,25 +77,25 @@ class PlantCreateFormView(CreateView):
         else:
             phylum_obj = Phylum.objects.filter(title=req["phylum-title"]).first()
         if not Class.objects.filter(title=req["klass-title"]):
-            class_obj = self._make_obj(req, ClassForm, "klass")
+            class_obj = _make_obj(req, ClassForm, "klass")
             class_obj.phylum = phylum_obj
             class_obj.save()
         else:
             class_obj = Class.objects.filter(title=req["klass-title"]).first()
         if not Order.objects.filter(title=req["order-title"]):
-            order_obj = self._make_obj(req, OrderForm, "order")
+            order_obj = _make_obj(req, OrderForm, "order")
             order_obj.class_name = class_obj
             order_obj.save()
         else:
             order_obj = Order.objects.filter(title=req["order-title"]).first()
         if not Family.objects.filter(title=req["family-title"]):
-            family_obj = self._make_obj(req, FamilyForm, "family")
+            family_obj = _make_obj(req, FamilyForm, "family")
             family_obj.order = order_obj
             family_obj.save()
         else:
             family_obj = Family.objects.filter(title=req["family-title"]).first()
         if not Genus.objects.filter(title=req["genus-title"]):
-            genus_obj = self._make_obj(req, GenusForm, "genus")
+            genus_obj = _make_obj(req, GenusForm, "genus")
             print(genus_obj.family)
             genus_obj.family = family_obj
             genus_obj.save()
