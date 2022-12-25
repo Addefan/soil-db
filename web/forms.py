@@ -11,20 +11,19 @@ TYPES = [
     ("string", "Строка"),
     ("date", "Дата"),
 ]
+INPUT_TUPES = {
+    "int": forms.IntegerField(),
+    "text": forms.CharField(),
+    "date": forms.DateField(widget=forms.SelectDateWidget),
+    "float": forms.FloatField(),
+}
 
 
 class AttributeFormView(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for i in Entity(Plant).get_all_attributes():
-            if i.datatype == "int":
-                self.fields[i.name] = forms.IntegerField()
-            elif i.datatype == "text":
-                self.fields[i.name] = forms.CharField()
-            elif i.datatype == "date":
-                self.fields[i.name] = forms.DateField(widget=forms.SelectDateWidget)
-            elif i.datatype == "float":
-                self.fields[i.name] = forms.FloatField()
+            self.fields[i.name] = INPUT_TUPES[i.datatype]
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update(
                 {"class": "form-control", "id": "floatingInput", "placeholder": "smt"}
