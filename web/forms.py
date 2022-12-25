@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.hashers import make_password
 
 from web.models import Staff
 
@@ -12,6 +13,11 @@ class ProfileForm(forms.ModelForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
             visible.field.widget.attrs["placeholder"] = "placeholder"
+
+    def clean(self):
+        cleaned_data = super().clean()
+        cleaned_data["password"] = make_password(cleaned_data["password"])
+        return cleaned_data
 
     class Meta:
         model = Staff
