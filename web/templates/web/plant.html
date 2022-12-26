@@ -1,6 +1,7 @@
 {% extends 'web/base.html' %}
 {% load static %}
-{% block style %}
+{% block styles %}
+    {{ block.super }}
     <link rel="stylesheet" href="{% static 'web/plant.css' %}">
 {% endblock %}
 {% block body %}

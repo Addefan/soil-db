@@ -14,7 +14,7 @@ from web.forms import (
     PhylumForm,
     GenusForm,
 )
-from web.models import Plant, Phylum, Class, Order, Family, Genus
+from web.models import Plant, Phylum, Class, Order, Family, Genus, Staff
 
 ATTRIBUTE_TYPE = {
     "integer": Attribute.TYPE_INT,
