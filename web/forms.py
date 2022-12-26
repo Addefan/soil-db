@@ -16,7 +16,11 @@ class ProfileForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        cleaned_data["password"] = make_password(cleaned_data["password"])
+        raw_password = cleaned_data["password"]
+        if raw_password:
+            cleaned_data["password"] = make_password(raw_password)
+        else:
+            del cleaned_data["password"]
         return cleaned_data
 
     class Meta:
