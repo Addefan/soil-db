@@ -26,19 +26,15 @@ class AttributeFormView(forms.Form):
         for attr in Entity(Plant).get_all_attributes():
             self.fields[attr.name] = INPUT_TYPES[attr.datatype]
         for attr, value in self.fields.items():
-            self.fields[attr].widget.attrs.update(
-                {"class": "form-control", "id": "floatingInput", "placeholder": "smt"}
-            )
+            self.fields[attr].widget.attrs.update({"class": "form-control", "placeholder": "smt"})
 
 
 class PlantForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        self.label_suffix = ""
         super().__init__(*args, **kwargs)
+        self.label_suffix = ""
         for attr, value in self.fields.items():
-            self.fields[attr].widget.attrs.update(
-                {"class": "form-control", "id": "floatingInput", "placeholder": "smt"}
-            )
+            self.fields[attr].widget.attrs.update({"class": "form-control", "placeholder": "smt"})
 
     class Meta:
         model = Plant
@@ -74,7 +70,6 @@ class GenusForm(forms.ModelForm):
             self.fields[attr].widget.attrs.update(
                 {
                     "class": "form-control",
-                    "id": "floatingInput",
                     "placeholder": "smt",
                     "list": f"character_{attr}_{self.prefix}",
                 }
@@ -100,7 +95,6 @@ class FamilyForm(forms.ModelForm):
             self.fields[attr].widget.attrs.update(
                 {
                     "class": "form-control",
-                    "id": "floatingInput",
                     "placeholder": "smt",
                     "list": f"character_{attr}_{self.prefix}",
                 }
@@ -125,7 +119,6 @@ class OrderForm(forms.ModelForm):
             self.fields[attr].widget.attrs.update(
                 {
                     "class": "form-control",
-                    "id": "floatingInput",
                     "placeholder": "smt",
                     "list": f"character_{attr}_{self.prefix}",
                 }
@@ -150,7 +143,6 @@ class ClassForm(forms.ModelForm):
             self.fields[attr].widget.attrs.update(
                 {
                     "class": "form-control",
-                    "id": "floatingInput",
                     "placeholder": "smt",
                     "list": f"character_{attr}_{self.prefix}",
                 }
@@ -175,7 +167,6 @@ class PhylumForm(forms.ModelForm):
             self.fields[attr].widget.attrs.update(
                 {
                     "class": "form-control",
-                    "id": "floatingInput",
                     "placeholder": "smt",
                     "list": f"character_{attr}_{self.prefix}",
                 }
