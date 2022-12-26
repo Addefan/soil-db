@@ -19,20 +19,23 @@
                                 <div class="form-floating mb-3">
                                     <div class="form-floating mb-3">
                                         {{ field }}
-                                        <label for="floatinginput">{{ field.label }}:</label>
+                                        {{ field.label_tag }}
+{#                                        <label for="floatinginput">{{ field.label }}:</label>#}
                                     </div>
                                 </div>
                             {% else %}
                                 <div class="form-floating mb-3">
                                     {{ field }}
-                                    <label for="floatinginput">{{ field.label }}:</label>
+                                    {{ field.label_tag }}
+{#                                    <label for="floatinginput">{{ field.label }}:</label>#}
                                 </div>
                             {% endif %}
                         {% endfor %}
                         {% for field in attr_form_view %}
                             <div class="form-floating mb-3">
                                 {{ field }}
-                                <label for="floatinginput">{{ field.label }}:</label>
+                                {{ field.label_tag }}
+{#                                <label for="floatinginput">{{ field.label }}:</label>#}
                             </div>
                         {% endfor %}
                         <button type="button" class="btn btn-success" data-bs-toggle="modal"

@@ -22,6 +22,7 @@ INPUT_TYPES = {
 class AttributeFormView(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.label_suffix = ""
         for attr in Entity(Plant).get_all_attributes():
             self.fields[attr.name] = INPUT_TYPES[attr.datatype]
         for attr, value in self.fields.items():
@@ -32,6 +33,7 @@ class AttributeFormView(forms.Form):
 
 class PlantForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
+        self.label_suffix = ""
         super().__init__(*args, **kwargs)
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update(
@@ -54,6 +56,7 @@ class PlantForm(forms.ModelForm):
 class AttributeForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.label_suffix = ""
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update({"class": "form-control"})
 
@@ -66,6 +69,7 @@ class GenusForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.label_suffix = ""
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update(
                 {
@@ -91,6 +95,7 @@ class FamilyForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.label_suffix = ""
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update(
                 {
@@ -106,7 +111,7 @@ class FamilyForm(forms.ModelForm):
         fields = ("title", "latin_title")
         labels = {
             "title": _("Семейство"),
-            "latin_title": _("Семейство лат"),
+            "latin_title": _("Семейство (лат.)"),
         }
 
 
@@ -115,6 +120,7 @@ class OrderForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.label_suffix = ""
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update(
                 {
@@ -130,7 +136,7 @@ class OrderForm(forms.ModelForm):
         fields = ("title", "latin_title")
         labels = {
             "title": _("Порядок"),
-            "latin_title": _("Порядок лат"),
+            "latin_title": _("Порядок (лат.)"),
         }
 
 
@@ -139,6 +145,7 @@ class ClassForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.label_suffix = ""
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update(
                 {
@@ -154,7 +161,7 @@ class ClassForm(forms.ModelForm):
         fields = ("title", "latin_title")
         labels = {
             "title": _("Класс"),
-            "latin_title": _("Класс лат"),
+            "latin_title": _("Класс (лат.)"),
         }
 
 
@@ -163,6 +170,7 @@ class PhylumForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.label_suffix = ""
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update(
                 {
@@ -178,5 +186,5 @@ class PhylumForm(forms.ModelForm):
         fields = ("title", "latin_title")
         labels = {
             "title": _("Отдел"),
-            "latin_title": _("Отдел лат"),
+            "latin_title": _("Отдел (лат.)"),
         }
