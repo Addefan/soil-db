@@ -1,0 +1,26 @@
+{% extends 'web/base.html' %}
+{% load static %}
+{% block style %}
+    <link rel="stylesheet" href="{% static 'web/plant.css' %}">
+{% endblock %}
+{% block body %}
+    <div class="flex-wrapper">
+        <h1 class="title">Страница растения {{ name }} ({{ latin_name }})</h1>
+        <table class="table table-bordered table-success">
+        <thead class="thead-dark">
+            <tr class="content-align">
+                <th scope="col">Характеристика</th>
+                <th scope="col">Значение</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key, value in plant.items %}
+                <tr class="content-align">
+                    <td>{{ key }}</td>
+                    <td>{{ value }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+{% endblock %}

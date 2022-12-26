@@ -2,7 +2,7 @@ from django import forms
 from eav.models import Attribute, Entity
 from django.utils.translation import gettext_lazy as _
 
-from web.models import Plant, Family, Order, Class, Phylum, Genus
+from web.models import Plant, Family, Order, Class, Phylum, Genus, Staff
 
 TYPES = [
     ("default", "Не выбрано"),
@@ -179,3 +179,21 @@ class PhylumForm(forms.ModelForm):
             "title": _("Отдел"),
             "latin_title": _("Отдел (лат.)"),
         }
+
+
+class ProfileForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.label_suffix = ""
+        self.fields["email"].widget.attrs["disabled"] = ""
+        self.fields["password"].required = False
+        for visible in self.visible_fields():
+            visible.field.widget.attrs["class"] = "form-control"
+            visible.field.widget.attrs["placeholder"] = "placeholder"
+
+    class Meta:
+        model = Staff
+        widgets = {"email": forms.EmailInput(), "password": forms.PasswordInput()}
+        labels = {"password": "Новый пароль"}
+        fields = ("surname", "name", "email", "password")
+        readonly_fields = ("email",)
