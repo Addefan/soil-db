@@ -131,14 +131,7 @@ def ajax_response(request):
     print(name, type_attr)
     response_data["name"] = name
     response_data["type_attr"] = type_attr
-    if type_attr == "integer":
-        Attribute.objects.create(name=name, datatype=Attribute.TYPE_INT)
-    elif type_attr == "string":
-        Attribute.objects.create(name=name, datatype=Attribute.TYPE_TEXT)
-    elif type_attr == "date":
-        Attribute.objects.create(name=name, datatype=Attribute.TYPE_DATE)
-    elif type_attr == "float":
-        Attribute.objects.create(name=name, datatype=Attribute.TYPE_FLOAT)
+    Attribute.objects.create(name=name, datatype=ATTRIBUTE_TYPE[type_attr])
     return JsonResponse(response_data)
 
 
