@@ -128,6 +128,10 @@ class UserManager(DjangoUserManager):
         extra_fields.setdefault("is_superuser", False)
         return self._create_user(email, password, **extra_fields)
 
+    def create_superuser(self, email=None, password=None, **extra_fields):
+        extra_fields.setdefault("is_superuser", True)
+        return self._create_user(email, password, **extra_fields)
+
 
 class Staff(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
@@ -137,6 +141,10 @@ class Staff(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, max_length=320, verbose_name="Почта")
 
     USERNAME_FIELD = "email"
+
+    @property
+    def is_staff(self):
+        return self.is_superuser
 
 
 eav.register(Plant)
