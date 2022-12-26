@@ -3,44 +3,25 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import UserManager as DjangoUserManager, PermissionsMixin
 from django.db import models
 
+from web.enums import TaxonLevel
+
 
 class Organization(models.Model):
     name = models.CharField(max_length=127)
     address = models.CharField(max_length=255)
 
 
-class BaseTaxon(models.Model):
+class Taxon(models.Model):
+    parent = models.ForeignKey("self", on_delete=models.CASCADE)
+    level = models.CharField(choices=TaxonLevel.choices, max_length=7)
     title = models.CharField(max_length=127, unique=True)
     latin_title = models.CharField(max_length=127, unique=True)
-
-    class Meta:
-        abstract = True
-
-
-class Phylum(BaseTaxon):
-    pass
-
-
-class Class(BaseTaxon):
-    phylum = models.ForeignKey(Phylum, on_delete=models.SET_NULL, null=True)
-
-
-class Order(BaseTaxon):
-    class_name = models.ForeignKey(Class, on_delete=models.SET_NULL, null=True)
-
-
-class Family(BaseTaxon):
-    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
-
-
-class Genus(BaseTaxon):
-    family = models.ForeignKey(Family, on_delete=models.SET_NULL, null=True)
 
 
 class Plant(models.Model):
     number = models.IntegerField(unique=True)
     organization = models.ForeignKey(Organization, on_delete=models.SET_NULL, null=True)
-    genus = models.ForeignKey(Genus, on_delete=models.SET_NULL, null=True)
+    genus = models.ForeignKey(Taxon, on_delete=models.SET_NULL, null=True)
     latin_name = models.CharField(max_length=127)
     name = models.CharField(max_length=127)
 
