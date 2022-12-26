@@ -1,4 +1,5 @@
 from django.contrib.auth import login
+from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import UpdateView
 
@@ -18,4 +19,7 @@ class ProfileFormView(UpdateView):
     def form_valid(self, form):
         response = super().form_valid(form)
         login(self.request, self.request.user)
-        return response
+        # Checking if the request wasn't sent via jQuery's Ajax
+        if not self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return response
+        return JsonResponse({"success": True})
