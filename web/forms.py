@@ -8,7 +8,7 @@ class ProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.label_suffix = ""
-        self.fields["email"].widget.attrs["disabled"] = ""
+        self.fields["email"].widget.attrs["readonly"] = ""
         self.fields["password"].required = False
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"

@@ -9,9 +9,3 @@ $(document).ready(function () {
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 });
-
-// Removing disable attribute from inputs when form was sent,
-// because data in disabled inputs doesn't send to Django
-$('#profile_form').submit(function () {
-    $("#profile_form :disabled").removeAttr("disabled");
-});

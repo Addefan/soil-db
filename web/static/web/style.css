@@ -10,3 +10,7 @@ body {
 .form-control + label {
     opacity: .65;
 }
+
+#profile_form #id_email {
+    background-color: #e9ecef;
+}
