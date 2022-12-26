@@ -7,11 +7,11 @@ from web.models import Plant, Family, Order, Class, Phylum, Genus
 TYPES = [
     ("default", "Не выбрано"),
     ("integer", "Целое число"),
-    ("float", "Десятичное число"),
+    ("float", "Число с плавающей точкой"),
     ("string", "Строка"),
     ("date", "Дата"),
 ]
-INPUT_TUPES = {
+INPUT_TYPES = {
     "int": forms.IntegerField(),
     "text": forms.CharField(),
     "date": forms.DateField(widget=forms.SelectDateWidget),
@@ -23,7 +23,7 @@ class AttributeFormView(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for attr in Entity(Plant).get_all_attributes():
-            self.fields[attr.name] = INPUT_TUPES[attr.datatype]
+            self.fields[attr.name] = INPUT_TYPES[attr.datatype]
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update(
                 {"class": "form-control", "id": "floatingInput", "placeholder": "smt"}
@@ -47,7 +47,7 @@ class PlantForm(forms.ModelForm):
             "latin_name": _("Латинское наименование растения"),
             "number": _("Уникальный номер"),
             "organization": _("Наименование организации"),
-            "genus": _("Род"),
+            "genus": _("Род (лат.)"),
         }
 
 
@@ -82,7 +82,7 @@ class GenusForm(forms.ModelForm):
         # fields = '__all__'
         labels = {
             "title": _("Род"),
-            "latin_title": _("Род лат"),
+            "latin_title": _("Род (лат.)"),
         }
 
 
