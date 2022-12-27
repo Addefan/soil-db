@@ -63,7 +63,7 @@ class PlantModelMixin:
         "genus": "Род",
         "family": "Семейство",
         "order": "Порядок",
-        "class_name": "Класс",
+        "class": "Класс",
         "phylum": "Тип",
     }
     _suffix: dict[str, str] = {
@@ -71,6 +71,17 @@ class PlantModelMixin:
         "title": "",
     }
     _stop_list: set = {"_state", "eav", "id"}
+    _query: str = """
+        with recursive taxon_tree as
+        (
+        select id, parent_id, "level", latin_title, title from web_taxon where id = %(taxon_id)s
+        union
+        select wt.id, wt.parent_id, wt."level", wt.latin_title, wt.title
+        from web_taxon wt inner join taxon_tree tt
+        on wt.id = tt.parent_id
+        )
+        select * from taxon_tree;
+        """
 
     def _get_organization_name(self):
         if hasattr(self.organization, "name"):
@@ -87,13 +98,17 @@ class PlantModelMixin:
 
     def _get_plant_classification(self):
         dct: dict = {}
-        plant = self
-        for taxon in self._taxons:
-            plant = getattr(plant, taxon)
-            for attr in self._suffix:
-                dct[self._taxons[taxon] + self._suffix[attr]] = getattr(plant, attr, "Не указано")
-            if plant is None:
-                break
+        plant_classification_tree = Taxon.objects.raw(self._query, {"taxon_id": self.genus_id})
+        for taxon in plant_classification_tree:
+            if taxon.level != "kingdom":
+                for suffix in self._suffix:
+                    dct[self._taxons[taxon.level] + self._suffix[suffix]] = getattr(taxon, suffix, None)
+        # for taxon in self._taxons:
+        #     plant = getattr(plant, taxon)
+        #     for attr in self._suffix:
+        #         dct[self._taxons[taxon] + self._suffix[attr]] = getattr(plant, attr, "Не указано")
+        #     if plant is None:
+        #         break
         return dct
 
 
