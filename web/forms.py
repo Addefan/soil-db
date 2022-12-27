@@ -20,6 +20,7 @@ INPUT_TYPES = {
     "float": forms.FloatField(),
 }
 
+
 class AuthForm(forms.Form):
     def __init__(self, request=None, *args, **kwargs):
         self.request = request

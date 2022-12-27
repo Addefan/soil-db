@@ -16,7 +16,7 @@ class Organization(models.Model):
 
 
 class Taxon(models.Model):
-    parent = models.ForeignKey("self", on_delete=models.CASCADE)
+    parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True)
     level = models.CharField(choices=TaxonLevel.choices, max_length=7)
     title = models.CharField(max_length=127, unique=True)
     latin_title = models.CharField(max_length=127, unique=True)
@@ -51,6 +51,7 @@ class Genus(BaseTaxon):
 
     def __str__(self):
         return self.title
+
 
 class PlantModelMixin:
     _translate: dict[str, str] = {
