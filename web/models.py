@@ -16,7 +16,7 @@ class Organization(models.Model):
 
 
 class Taxon(models.Model):
-    parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True)
+    parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
     level = models.CharField(choices=TaxonLevel.choices, max_length=7)
     title = models.CharField(max_length=127, unique=True)
     latin_title = models.CharField(max_length=127, unique=True)
