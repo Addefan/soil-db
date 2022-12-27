@@ -16,41 +16,11 @@ class Organization(models.Model):
 
 
 class Taxon(models.Model):
-    parent = models.ForeignKey("self", on_delete=models.CASCADE)
+    parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
     level = models.CharField(choices=TaxonLevel.choices, max_length=7)
     title = models.CharField(max_length=127, unique=True)
     latin_title = models.CharField(max_length=127, unique=True)
 
-
-class BaseTaxon(models.Model):
-    title = models.CharField(max_length=127, unique=True)
-    latin_title = models.CharField(max_length=127, unique=True)
-
-    class Meta:
-        abstract = True
-
-
-class Phylum(BaseTaxon):
-    pass
-
-
-class Class(BaseTaxon):
-    phylum = models.ForeignKey(Phylum, on_delete=models.SET_NULL, null=True)
-
-
-class Order(BaseTaxon):
-    class_name = models.ForeignKey(Class, on_delete=models.SET_NULL, null=True)
-
-
-class Family(BaseTaxon):
-    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
-
-
-class Genus(BaseTaxon):
-    family = models.ForeignKey(Family, on_delete=models.SET_NULL, null=True)
-
-    def __str__(self):
-        return self.title
 
 class PlantModelMixin:
     _translate: dict[str, str] = {
