@@ -61,7 +61,7 @@ class TaxonForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.label_suffix = ""
         for attr, value in self.fields.items():
-            self.fields[attr].widget.attrs.update({"class": "form-control", "placeholder": "smt"})
+            self.fields[attr].widget.attrs.update({"class": "form-control", "placeholder": "smt", "list": f"{attr}"})
 
     phylum_title = forms.CharField(label="Отдел")
     phylum_latin_title = forms.CharField(label="Отдел (лат.)")

@@ -10,13 +10,21 @@ from web.forms import (
     AttributeFormView,
     TaxonForm,
 )
-from web.models import Plant, Staff
+from web.models import Plant, Staff, Taxon
 
 ATTRIBUTE_TYPE = {
     "integer": Attribute.TYPE_INT,
     "string": Attribute.TYPE_TEXT,
     "data": Attribute.TYPE_DATE,
     "float": Attribute.TYPE_FLOAT,
+}
+
+TAXON_NAME = {
+    "phylum": Taxon.objects.filter(level="Phylum"),
+    "class": Taxon.objects.filter(level="Class"),
+    "order": Taxon.objects.filter(level="Order"),
+    "family": Taxon.objects.filter(level="Family"),
+    "genus": Taxon.objects.filter(level="Genus"),
 }
 
 
@@ -26,11 +34,13 @@ class PlantCreateFormView(CreateView):
     context_object_name = "plant_form"
 
     def get_context_data(self, **kwargs):
+
         return {
             **super().get_context_data(**kwargs),
             "form_classification": TaxonForm(),
             "attr_form_view": AttributeFormView(),
             "attr_form": AttributeForm(),
+            "taxon_name": TAXON_NAME,
         }
 
     def get_initial(self):
