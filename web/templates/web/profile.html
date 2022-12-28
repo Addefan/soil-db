@@ -13,9 +13,14 @@
                         <form method="post" class="mt-4 mb-2" id="profile_form">
                             {% csrf_token %}
                             {% for field in form %}
-                                <div class="form-floating mb-3">
-                                    {{ field }}
-                                    {{ field.label_tag }}
+                                <div class="input-group has-validation">
+                                    <div class="form-floating mb-3 {% if field.errors %}is-invalid{% endif %}">
+                                        {{ field }}
+                                        {{ field.label_tag }}
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        {{ field.errors }}
+                                    </div>
                                 </div>
                             {% endfor %}
                             <div class="row">
