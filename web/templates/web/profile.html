@@ -50,7 +50,7 @@
                 dataType: "json",
                 data: $("#profile_form").serialize(),
                 success: function () {
-                    console.log("success")
+                    save_current_input_values();
                     {#bootstrap.Toast($("#success_toast")).show();#}
                 },
                 error: function (data) {
@@ -70,6 +70,20 @@
                 errors_tag.addClass("errorlist");
                 for (let error of errors[field_name]) {
                     errors_tag.append($(`<li>${error}</li>`));
+                }
+            }
+        }
+
+        function save_current_input_values() {
+            for (let field of $(".input-group")) {
+                if ($(field).hasClass("password")) {
+                    $(field).children().children("input").val("");
+                }
+                else if ($(field).hasClass("email")) {
+                }
+                else {
+                    let input = $(field).children().children("input");
+                    input.attr("value", input.val());
                 }
             }
         }
