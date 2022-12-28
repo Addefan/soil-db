@@ -1,20 +1,74 @@
 {% for field in stage_form %}
     <div class="form-floating mb-3">
         {{ field }}
-        {% if 'лат' not in field.label %}
-            {{ field.label_tag }}
-{#            <label for="floatinginput">{{ field.label }}:</label>#}
-            <datalist id="character_title_{{ prefix }}">
-                {% for name in names_to_select %}
+        {{ field.label_tag }}
+        {% if field.name == 'phylum_title' %}
+            <datalist id="{{ field.name }}">
+                {% for name in phylum_title %}
                     <option value='{{ name }}'></option>
                 {% endfor %}
             </datalist>
-        {% else %}
-            {{ field.label_tag }}
-{#            <label for="floatinginput">{{ field.label }}:</label>#}
-            <datalist id="character_latin_title_{{ prefix }}">
-                {% for name_lat in names_to_select_lat %}
-                    <option value='{{ name_lat }}'></option>
+        {% endif %}
+            {% if field.name == 'phylum_latin_title' %}
+            <datalist id="{{ field.name }}">
+                {% for name in phylum_latin_title %}
+                    <option value='{{ name }}'></option>
+                {% endfor %}
+            </datalist>
+        {% endif %}
+            {% if field.name == 'class_title' %}
+            <datalist id="{{ field.name }}">
+                {% for name in class_title %}
+                    <option value='{{ name }}'></option>
+                {% endfor %}
+            </datalist>
+        {% endif %}
+            {% if field.name == 'class_latin_title' %}
+            <datalist id="{{ field.name }}">
+                {% for name in class_latin_title %}
+                    <option value='{{ name }}'></option>
+                {% endfor %}
+            </datalist>
+        {% endif %}
+            {% if field.name == 'order_title' %}
+            <datalist id="{{ field.name }}">
+                {% for name in order_title %}
+                    <option value='{{ name }}'></option>
+                {% endfor %}
+            </datalist>
+        {% endif %}
+            {% if field.name == 'order_latin_title' %}
+            <datalist id="{{ field.name }}">
+                {% for name in order_latin_title %}
+                    <option value='{{ name }}'></option>
+                {% endfor %}
+            </datalist>
+        {% endif %}
+            {% if field.name == 'family_title' %}
+            <datalist id="{{ field.name }}">
+                {% for name in family_title %}
+                    <option value='{{ name }}'></option>
+                {% endfor %}
+            </datalist>
+        {% endif %}
+            {% if field.name == 'family_latin_title' %}
+            <datalist id="{{ field.name }}">
+                {% for name in family_latin_title %}
+                    <option value='{{ name }}'></option>
+                {% endfor %}
+            </datalist>
+        {% endif %}
+                {% if field.name == 'genus_title' %}
+            <datalist id="{{ field.name }}">
+                {% for name in genus_title %}
+                    <option value='{{ name }}'></option>
+                {% endfor %}
+            </datalist>
+        {% endif %}
+                {% if field.name == 'genus_latin_title' %}
+            <datalist id="{{ field.name }}">
+                {% for name in genus_latin_title %}
+                    <option value='{{ name }}'></option>
                 {% endfor %}
             </datalist>
         {% endif %}
