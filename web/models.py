@@ -101,14 +101,8 @@ class PlantModelMixin:
         plant_classification_tree = Taxon.objects.raw(self._query, {"taxon_id": self.genus_id})
         for taxon in plant_classification_tree:
             if taxon.level != "kingdom":
-                for suffix in self._suffix:
-                    dct[self._taxons[taxon.level] + self._suffix[suffix]] = getattr(taxon, suffix, None)
-        # for taxon in self._taxons:
-        #     plant = getattr(plant, taxon)
-        #     for attr in self._suffix:
-        #         dct[self._taxons[taxon] + self._suffix[attr]] = getattr(plant, attr, "Не указано")
-        #     if plant is None:
-        #         break
+                for title in self._suffix:
+                    dct[self._taxons[taxon.level] + self._suffix[title]] = getattr(taxon, title, None)
         return dct
 
 
