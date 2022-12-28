@@ -2,6 +2,7 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from eav.models import Attribute, Entity
@@ -20,6 +21,43 @@ INPUT_TYPES = {
     "date": forms.DateField(widget=forms.SelectDateWidget),
     "float": forms.FloatField(),
 }
+
+
+def make_array_from_dict(dct):
+    array = []
+    variable = []
+    for k, v in dct.items():
+        if len(variable) == 2:
+            array.append(variable.copy())
+            variable.clear()
+            variable.append((k, v))
+        else:
+            variable.append((k, v))
+    if len(variable) == 2:
+        array.append(variable.copy())
+    return array
+
+
+def make_chain(classification):
+    arr = make_array_from_dict(classification)
+    print(classification["genus_title"])
+    parent = Taxon.objects.filter(level__icontains="kingdom").first()
+    print(arr)
+    for level in arr:
+        level_name = level[0][0].split("_")[0]
+        title = level[0][1]
+        latin_title = level[1][1]
+        obj = (
+            Taxon.objects.filter(level__icontains=f"{level_name}")
+            .filter(Q(title=title) & Q(latin_title=latin_title))
+            .first()
+        )
+        if not obj:
+            parent = Taxon(parent=parent, level=level_name, title=title, latin_title=latin_title)
+            parent.save()
+        else:
+            parent = obj
+    return parent
 
 
 class PlantForm(forms.ModelForm):
@@ -46,7 +84,10 @@ class PlantForm(forms.ModelForm):
         attrs = self.initial["attr_form_view"].cleaned_data
         classification = self.initial["form_classification"].cleaned_data
         if attrs and classification:
-            plant.genus = Taxon.objects.filter(latin_title=classification["genus_latin_title"], level="Genus").first()
+            genus = Taxon.objects.filter(latin_title=classification["genus_latin_title"], level="Genus").first()
+            if not genus:
+                genus = make_chain(classification)
+            plant.genus = genus
             obj = Entity(plant)
             for attribute in obj.get_all_attributes():
                 plant.eav.__setattr__(attribute.slug, attrs[attribute.name])
