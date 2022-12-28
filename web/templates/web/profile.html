@@ -10,11 +10,11 @@
                 <div class="card my-4">
                     <div class="card-body">
                         <h4 class="card-title">Профиль</h4>
-                        <form method="post" class="mt-4 mb-2" id="profile_form">
+                        <form method="post" class="mb-2" id="profile_form">
                             {% csrf_token %}
                             {% for field in form %}
-                                <div class="input-group has-validation">
-                                    <div class="form-floating mb-3 {% if field.errors %}is-invalid{% endif %}">
+                                <div class="input-group has-validation {{ field.name }}">
+                                    <div class="form-floating mt-3 {% if field.errors %}is-invalid{% endif %}">
                                         {{ field }}
                                         {{ field.label_tag }}
                                     </div>
@@ -23,7 +23,7 @@
                                     </div>
                                 </div>
                             {% endfor %}
-                            <div class="row">
+                            <div class="row mt-3">
                                 <button type="button" id="save" class="btn btn-success col mx-3">
                                     Сохранить
                                 </button>
@@ -53,11 +53,22 @@
                     console.log("success")
                     {#bootstrap.Toast($("#success_toast")).show();#}
                 },
-                error: function () {
-                    console.log("error")
-                    {#bootstrap.Toast($("#failure_toast")).show();#}
+                error: function (data) {
+                    let errors = data.responseJSON;
+                    for (let field_name in errors) {
+                        let field = $(`#id_${field_name}`);
+                        field.parent().addClass("is-invalid");
+                        field.addClass("is-invalid");
+                        let errors_tag = $(`.${field_name}`).children(".invalid-feedback");
+                        errors_tag.append($("<ul>"));
+                        errors_tag = errors_tag.children("ul");
+                        errors_tag.addClass("errorlist");
+                        for (let error of errors[field_name]) {
+                            errors_tag.append($(`<li>${error}</li>`));
+                        }
+                    }
                 }
-            })
-        })
+            });
+        });
     </script>
 {% endblock %}
