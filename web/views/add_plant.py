@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.urls import reverse
 from django.views.generic import CreateView, UpdateView
-from eav.models import Attribute
+from eav.models import Attribute, Entity
 
 from web.forms import (
     PlantForm,
@@ -37,6 +37,17 @@ def ajax_response(request):
     return JsonResponse(response_data)
 
 
+def get_all_taxons(genus_id):
+    taxons = {}
+    obj = Taxon.objects.filter(id=genus_id).first()
+    while obj.parent:
+        taxons[f"{obj.level}_title"] = obj.title
+        taxons[f"{obj.level}_latin_title"] = obj.latin_title
+        obj = Taxon.objects.filter(id=obj.parent.id).first()
+
+    return taxons
+
+
 class PlantMixin:
     template_name = "web/plant_form.html"
     context_object_name = "plant_form"
@@ -65,3 +76,27 @@ class PlantMixin:
 
 class PlantCreateView(PlantMixin, CreateView):
     form_class = PlantForm
+
+
+class PlantUpdateView(PlantMixin, UpdateView):
+    slug_field = "id"
+    slug_url_kwarg = "id"
+    form_class = PlantForm
+
+    def get_queryset(self):
+        return Plant.objects.all()
+
+    def get_context_data(self, **kwargs):
+        classification_values = get_all_taxons(self.object.genus.id)
+        form_classification = TaxonForm(classification_values)
+
+        eav_fields_values = Entity(self.object).get_values_dict()
+        attr_form_view = AttributeFormView(eav_fields_values)
+
+        return {
+            **super().get_context_data(**kwargs),
+            "form_classification": form_classification,
+            "attr_form_view": attr_form_view,
+            "attr_form": AttributeForm(),
+            "taxon_name": TAXON_NAME,
+        }
