@@ -23,3 +23,9 @@ class ProfileFormView(UpdateView):
         if not self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
             return response
         return JsonResponse({"success": True})
+
+    def form_invalid(self, form):
+        # Checking if the request wasn't sent via jQuery's Ajax
+        if not self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return super().form_invalid(form)
+        return JsonResponse(form.errors, status=400)
