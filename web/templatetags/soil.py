@@ -2,8 +2,6 @@ import os.path
 
 from django import template
 
-from soil.settings import BASE_DIR
-
 register = template.Library()
 
 

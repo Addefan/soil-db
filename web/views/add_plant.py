@@ -1,8 +1,7 @@
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
 from django.urls import reverse
 from django.views.generic import CreateView, UpdateView
-from eav.models import Attribute, Entity
+from eav.models import Attribute
 
 from web.forms import (
     PlantForm,
@@ -10,7 +9,7 @@ from web.forms import (
     AttributeFormView,
     TaxonForm,
 )
-from web.models import Plant, Staff, Taxon
+from web.models import Taxon
 
 ATTRIBUTE_TYPE = {
     "integer": Attribute.TYPE_INT,
@@ -67,7 +66,3 @@ def ajax_response(request):
     response_data["type_attr"] = type_attr
     Attribute.objects.create(name=name, datatype=ATTRIBUTE_TYPE[type_attr])
     return JsonResponse(response_data)
-
-
-class PlantUpdateView(UpdateView):
-    pass

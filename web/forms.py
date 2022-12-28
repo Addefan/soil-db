@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
-from eav.models import Attribute, Entity
+from eav.models import Entity
 from web.models import Plant, Staff, Taxon
 
 TYPES = [
