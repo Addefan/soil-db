@@ -9,7 +9,7 @@ from web.forms import (
     AttributeFormView,
     TaxonForm,
 )
-from web.models import Taxon
+from web.models import Taxon, Plant
 
 ATTRIBUTE_TYPE = {
     "integer": Attribute.TYPE_INT,
@@ -27,13 +27,21 @@ TAXON_NAME = {
 }
 
 
-class PlantCreateFormView(CreateView):
-    form_class = PlantForm
+def ajax_response(request):
+    response_data = {}
+    name = request.POST.get("name_attr")
+    type_attr = request.POST.get("type_attr")
+    response_data["name_attr"] = name
+    response_data["type_attr"] = type_attr
+    Attribute.objects.create(name=name, datatype=ATTRIBUTE_TYPE[type_attr])
+    return JsonResponse(response_data)
+
+
+class PlantMixin:
     template_name = "web/plant_form.html"
     context_object_name = "plant_form"
 
     def get_context_data(self, **kwargs):
-
         return {
             **super().get_context_data(**kwargs),
             "form_classification": TaxonForm(),
@@ -43,7 +51,6 @@ class PlantCreateFormView(CreateView):
         }
 
     def get_initial(self):
-        print(self.request.POST)
         attr_form_view = AttributeFormView(self.request.POST)
         taxon_form = TaxonForm(self.request.POST)
         if attr_form_view.is_valid():
@@ -56,13 +63,5 @@ class PlantCreateFormView(CreateView):
         return reverse("plant", args=(self.object.id,))
 
 
-def ajax_response(request):
-    response_data = {}
-    print(request.POST)
-    name = request.POST.get("name_attr")
-    type_attr = request.POST.get("type_attr")
-    print(name, type_attr)
-    response_data["name_attr"] = name
-    response_data["type_attr"] = type_attr
-    Attribute.objects.create(name=name, datatype=ATTRIBUTE_TYPE[type_attr])
-    return JsonResponse(response_data)
+class PlantCreateView(PlantMixin, CreateView):
+    form_class = PlantForm
