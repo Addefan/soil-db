@@ -38,6 +38,17 @@
             <div class="col-3"></div>
         </div>
     </div>
+
+    <div class="toast bottom-0 end-0 m-3 position-absolute" role="alert" aria-live="assertive" aria-atomic="true" id="success_toast">
+        <div class="toast-header">
+            <strong class="me-auto text-success">Успешно!</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Данные вашего профиля были успешно изменены
+        </div>
+    </div>
 {% endblock %}
 
 {% block scripts %}
@@ -51,7 +62,8 @@
                 data: $("#profile_form").serialize(),
                 success: function () {
                     save_current_input_values();
-                    {#bootstrap.Toast($("#success_toast")).show();#}
+                    let success_toast = new bootstrap.Toast($("#success_toast"));
+                    success_toast.show();
                 },
                 error: function (data) {
                     displaying_errors(data.responseJSON);
@@ -78,10 +90,8 @@
             for (let field of $(".input-group")) {
                 if ($(field).hasClass("password")) {
                     $(field).children().children("input").val("");
-                }
-                else if ($(field).hasClass("email")) {
-                }
-                else {
+                } else if ($(field).hasClass("email")) {
+                } else {
                     let input = $(field).children().children("input");
                     input.attr("value", input.val());
                 }

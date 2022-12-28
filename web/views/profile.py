@@ -1,4 +1,4 @@
-from django.contrib.auth import login, update_session_auth_hash
+from django.contrib.auth import update_session_auth_hash
 from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import UpdateView
