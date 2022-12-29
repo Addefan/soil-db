@@ -80,17 +80,6 @@ class PlantModelMixin:
         "title": "",
     }
     _stop_list: set = {"_state", "eav", "id"}
-    _query: str = """
-        with recursive taxon_tree as
-        (
-        select id, parent_id, "level", latin_title, title from web_taxon where id = %(taxon_id)s
-        union
-        select wt.id, wt.parent_id, wt."level", wt.latin_title, wt.title
-        from web_taxon wt inner join taxon_tree tt
-        on wt.id = tt.parent_id
-        )
-        select * from taxon_tree;
-        """
 
     def _get_organization_name(self):
         if hasattr(self.organization, "name"):
@@ -107,11 +96,13 @@ class PlantModelMixin:
 
     def _get_plant_classification(self):
         dct: dict = {}
-        plant_classification_tree = Taxon.objects.raw(self._query, {"taxon_id": self.genus_id})
+        plant_taxon: Taxon = Taxon.objects.get(id=self.genus_id)
+        plant_classification_tree = plant_taxon.get_ancestors(include_self=True, ascending=True)
         for taxon in plant_classification_tree:
-            if taxon.level != "kingdom":
-                for title in self._suffix:
-                    dct[self._taxons[taxon.level] + self._suffix[title]] = getattr(taxon, title, None)
+            if taxon.level == "kingdom":
+                continue
+            for title in self._suffix:
+                dct[self._taxons[taxon.level] + self._suffix[title]] = getattr(taxon, title, None)
         return dct
 
 
