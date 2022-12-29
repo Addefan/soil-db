@@ -37,4 +37,29 @@
             </tbody>
         </table>
     </div>
+
+
+    <div class="modal fade" id="modal_delete" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Удаление растения: {{ plant.Вид }}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <span>Вы действительно хотите удалить <strong>{{ plant.Вид }}</strong>?</span>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" action="{% url "plants_delete" plant.Идентификатор %}">
+                        {% csrf_token %}
+                        <button class="btn btn-success">Подтвердить</button>
+                    </form>
+                    <button type="button" class="btn btn-secondary"
+                            data-bs-dismiss="modal">Отмена
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
