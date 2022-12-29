@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "web",
     "eav",
     "django_jsonfield_backport",
+    "mptt",
 ]
 
 MIDDLEWARE = [

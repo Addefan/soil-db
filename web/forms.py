@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from eav.models import Attribute, Entity
-from web.models import Plant, Staff, Taxon
+from web.models import Plant, Family, Order, Class, Phylum, Genus, Staff
 
 TYPES = [
     ("default", "Не выбрано"),
