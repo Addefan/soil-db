@@ -3,6 +3,8 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import UserManager as DjangoUserManager, PermissionsMixin
 from django.db import models
 from eav.models import Entity
+from mptt.fields import TreeForeignKey
+from mptt.models import MPTTModel
 
 from web.enums import TaxonLevel
 
@@ -15,11 +17,18 @@ class Organization(models.Model):
         return self.name
 
 
-class Taxon(models.Model):
-    parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
+class Taxon(MPTTModel):
+    parent = TreeForeignKey("self", on_delete=models.CASCADE, null=True, blank=True, related_name="children")
     level = models.CharField(choices=TaxonLevel.choices, max_length=7)
     title = models.CharField(max_length=127, unique=True)
     latin_title = models.CharField(max_length=127, unique=True)
+
+    class MPTTMeta:
+        level_attr = "mptt_level"
+        order_insertion_by = ["title"]
+
+    def __str__(self):
+        return self.title
 
 
 class PlantModelMixin:
