@@ -37,13 +37,12 @@ def ajax_response(request):
     return JsonResponse(response_data)
 
 
-def get_all_taxons(genus_id):
+def get_all_taxons(genus):
+    """A function returning dictionary with data based on hierarchy of given genus"""
     taxons = {}
-    obj = Taxon.objects.filter(id=genus_id).first()
-    while obj.parent:
-        taxons[f"{obj.level}_title"] = obj.title
-        taxons[f"{obj.level}_latin_title"] = obj.latin_title
-        obj = Taxon.objects.filter(id=obj.parent.id).first()
+    for taxon in genus.get_ancestors(include_self=True):
+        taxons[f"{taxon.level}_title"] = taxon.latin_title
+        taxons[f"{taxon.level}_latin_title"] = taxon.title
 
     return taxons
 
@@ -87,7 +86,7 @@ class PlantUpdateView(PlantMixin, UpdateView):
         return Plant.objects.all()
 
     def get_context_data(self, **kwargs):
-        classification_values = get_all_taxons(self.object.genus.id)
+        classification_values = get_all_taxons(self.object.genus)
         form_classification = TaxonForm(classification_values)
 
         eav_fields_values = Entity(self.object).get_values_dict()
