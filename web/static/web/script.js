@@ -8,6 +8,15 @@ $(document).ready(function () {
     // Activation all tooltips (code from Bootstrap documentation)
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
+    // Initialization and showing message toasts
+    let toasts = [];
+    for (let toast of $(".toast")) {
+        toasts.push(new bootstrap.Toast(toast));
+    }
+    for (let toast of toasts) {
+        toast.show();
+    }
 });
 
 // Removing disable attribute from inputs when form was sent,
