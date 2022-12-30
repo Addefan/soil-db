@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.http import Http404
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -18,4 +19,5 @@ class PlantDeleteView(DeleteView):
     def form_valid(self, form):
         if self.request.user.organization != self.object.organization:
             return redirect("plants")
+        messages.success(self.request, f"Растение <strong>{self.object.name}</strong> успешно удалено")
         return super().form_valid(form)
