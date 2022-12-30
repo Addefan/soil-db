@@ -13,12 +13,14 @@
             <div class="col-11">
                 <h1 class="title">Страница растения {{ name }} ({{ latin_name }})</h1>
             </div>
-            <div class="col-1 d-flex justify-content-center align-items-center">
-                <button class="title h1 mx-1 plant-icon float-end" data-bs-target="#modal_delete"
-                        data-bs-toggle="modal" type="button" title="Удалить растение">
-                    <iconify-icon icon="mdi:garbage-can"></iconify-icon>
-                </button>
-            </div>
+            {% if plant.Организация == request.user.organization %}
+                <div class="col-1 d-flex justify-content-center align-items-center">
+                    <button class="title h1 mx-1 plant-icon" data-bs-toggle="modal"
+                            data-bs-target="#modal_delete" type="button" title="Удалить растение">
+                        <iconify-icon icon="mdi:garbage-can"></iconify-icon>
+                    </button>
+                </div>
+            {% endif %}
         </div>
         <table class="table table-bordered table-success">
             <thead class="thead-dark">
