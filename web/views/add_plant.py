@@ -1,8 +1,7 @@
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse, HttpResponse
 from django.urls import reverse
 from django.views.generic import CreateView, UpdateView
-from eav.models import Attribute, Entity
+from eav.models import Attribute
 
 from web.forms import (
     PlantForm,
@@ -10,7 +9,7 @@ from web.forms import (
     AttributeFormView,
     TaxonForm,
 )
-from web.models import Plant, Staff, Taxon
+from web.models import Taxon
 
 ATTRIBUTE_TYPE = {
     "integer": Attribute.TYPE_INT,
@@ -20,11 +19,11 @@ ATTRIBUTE_TYPE = {
 }
 
 TAXON_NAME = {
-    "phylum": Taxon.objects.filter(level="Phylum"),
-    "class": Taxon.objects.filter(level="Class"),
-    "order": Taxon.objects.filter(level="Order"),
-    "family": Taxon.objects.filter(level="Family"),
-    "genus": Taxon.objects.filter(level="Genus"),
+    "phylum": Taxon.objects.filter(level__icontains="Phylum"),
+    "class": Taxon.objects.filter(level__icontains="Class"),
+    "order": Taxon.objects.filter(level__icontains="Order"),
+    "family": Taxon.objects.filter(level__icontains="Family"),
+    "genus": Taxon.objects.filter(level__icontains="Genus"),
 }
 
 
