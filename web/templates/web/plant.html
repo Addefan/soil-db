@@ -53,7 +53,7 @@
                     <span>Вы действительно хотите удалить <strong>{{ plant.Вид }}</strong>?</span>
                 </div>
                 <div class="modal-footer">
-                    <form method="POST" action="{% url "plants_delete" plant.Идентификатор %}">
+                    <form method="POST" action="{% url 'plants_delete' plant.Идентификатор %}">
                         {% csrf_token %}
                         <button class="btn btn-success">Подтвердить</button>
                     </form>
