@@ -96,4 +96,5 @@ class PlantUpdateView(PlantMixin, UpdateView):
             "attr_form_view": attr_form_view,
             "attr_form": AttributeForm(),
             "taxon_name": TAXON_NAME,
+            "number": self.kwargs[self.slug_url_kwarg],
         }

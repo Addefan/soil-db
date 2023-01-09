@@ -1,12 +1,20 @@
 {% extends 'web/base.html' %}
 {% load soil %}
-{% block title %}Добавление растения{% endblock %}
+{% block title %}
+    {% if number %}
+        Редактирование растения
+    {% else %}
+        Добавление растения
+    {% endif %}
+{% endblock %}
 {% block body %}
     {% if not is_success %}
         <div class="container d-flex justify-content-center align-items-center">
             <div class="card" style="width: 65%">
                 <div class="card-body">
-                    <h5 class="card-title">Новое растение</h5>
+                    <h5 class="card-title">{% if number %}Редактирование{% else %}
+                                                Новое растение{% endif %}
+                    </h5>
                     <form action="" method="post">
                         {% csrf_token %}
                         {% for field in form %}
@@ -36,7 +44,9 @@
                             Добавить недостающие атрибуты
                         </button>
                         <br>
-                        <button type="submit" class="btn btn-success">Добавить растение</button>
+                        <button type="submit" class="btn btn-success">{% if number %}Сохранить{% else %}
+                                                                        Добавить{% endif %}
+                        </button>
                     </form>
                     <br>
                 </div>
