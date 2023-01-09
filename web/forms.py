@@ -23,39 +23,43 @@ INPUT_TYPES = {
 }
 
 
-def make_array_from_dict(dct):
-    array = []
-    variable = []
-    for k, v in dct.items():
-        if len(variable) == 2:
-            array.append(variable.copy())
-            variable.clear()
-            variable.append((k, v))
+LEVEL = {
+    0: "phylum",
+    1: "class",
+    2: "order",
+    3: "family",
+    4: "genus",
+}
+
+
+def modernization_dict(classification):
+    counter, level_numb = 1, 0
+    dct = {}
+    for field, name in classification.items():
+        if LEVEL[level_numb] not in dct and counter < 2:
+            dct[LEVEL[level_numb]] = [name]
+            counter += 1
         else:
-            variable.append((k, v))
-    if len(variable) == 2:
-        array.append(variable.copy())
-    return array
+            dct[LEVEL[level_numb]].append(name)
+            counter = 1
+            level_numb += 1
+    return dct
 
 
 def make_chain(classification):
-    arr = make_array_from_dict(classification)
-    print(classification["genus_title"])
-    parent = Taxon.objects.filter(level__icontains="kingdom").first()
-    print(arr)
-    for level in arr:
-        level_name = level[0][0].split("_")[0]
-        title = level[0][1]
-        latin_title = level[1][1]
-        obj = (
-            Taxon.objects.filter(level__icontains=f"{level_name}")
-            .filter(Q(title=title) & Q(latin_title=latin_title))
-            .first()
-        )
+    dct = modernization_dict(classification)
+    parent = Taxon.objects.filter(level="kingdom").first()
+    print(parent)
+    for level, names in dct.items():
+        print(level, *names)
+        obj = Taxon.objects.filter(Q(level=f"{level}") & Q(title=names[0]) & Q(latin_title=names[1])).first()
+        print(obj)
         if not obj:
-            parent = Taxon(parent=parent, level=level_name, title=title, latin_title=latin_title)
+            parent = Taxon(parent=parent, level=level, title=names[0], latin_title=names[1])
             parent.save()
         else:
+            obj.parent = parent
+            obj.save()
             parent = obj
     return parent
 

@@ -7,5 +7,5 @@ urlpatterns = [
     path("plants/add/", PlantCreateView.as_view(), name="plants_add"),
     path("/ajax_response", ajax_response, name="ajax_response"),
     path("plants/<int:number>", PlantDetailView.as_view(), name="plant"),
-    path("plants/<int:id>/update", PlantUpdateView.as_view(), name="plant_update"),
+    path("plants/<int:number>/update", PlantUpdateView.as_view(), name="plant_update"),
 ]

@@ -48,6 +48,8 @@ def get_all_taxons(genus):
 
 
 class PlantMixin:
+    slug_field = "number"
+    slug_url_kwarg = "number"
     template_name = "web/plant_form.html"
     context_object_name = "plant_form"
 
@@ -70,7 +72,7 @@ class PlantMixin:
         return {"attr_form_view": attr_form_view, "form_classification": taxon_form}
 
     def get_success_url(self):
-        return reverse("plant", args=(self.object.id,))
+        return reverse("plant", args=(self.object.number,))
 
 
 class PlantCreateView(PlantMixin, CreateView):
@@ -78,12 +80,8 @@ class PlantCreateView(PlantMixin, CreateView):
 
 
 class PlantUpdateView(PlantMixin, UpdateView):
-    slug_field = "id"
-    slug_url_kwarg = "id"
     form_class = PlantForm
-
-    def get_queryset(self):
-        return Plant.objects.all()
+    model = Plant
 
     def get_context_data(self, **kwargs):
         classification_values = get_all_taxons(self.object.genus)
