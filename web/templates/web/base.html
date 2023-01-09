@@ -13,7 +13,33 @@
     <title>{% block title %}Soil DB{% endblock %}</title>
 </head>
 <body>
-{% block body %}{% endblock %}
+<div class="wrapper">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light custom-color">
+          <div class="container-fluid">
+            <a class="navbar-brand" href="#"><img src="{% static "web/images/soil-db-icon-2.png" %}" alt="" class="icon"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarText">
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url "login" %}">Авторизация</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url "plants_add" %}">Добавить растение</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+    </header>
+    <div class="container">
+        {% block body %}{% endblock %}
+    </div>
+    <footer>
+    </footer>
+</div>
 {% block scripts %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="{% static 'web/bootstrap.bundle.min.js' %}"></script>
