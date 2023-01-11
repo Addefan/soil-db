@@ -104,22 +104,18 @@ class PlantForm(forms.ModelForm):
 
 
 class TaxonForm(forms.Form):
+    suffixes = {"title": "", "latin_title": " (лат.)"}
+    taxons = {"phylum": "Отдел", "class": "Класс", "order": "Порядок", "family": "Семейство", "genus": "Род"}
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.label_suffix = ""
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update({"class": "form-control", "placeholder": "smt", "list": f"{attr}"})
 
-    phylum_title = forms.CharField(label="Отдел")
-    phylum_latin_title = forms.CharField(label="Отдел (лат.)")
-    class_title = forms.CharField(label="Класс")
-    class_latin_title = forms.CharField(label="Класс (лат.)")
-    order_title = forms.CharField(label="Порядок")
-    order_latin_title = forms.CharField(label="Порядок (лат.)")
-    family_title = forms.CharField(label="Семейство")
-    family_latin_title = forms.CharField(label="Семейство (лат.)")
-    genus_title = forms.CharField(label="Род")
-    genus_latin_title = forms.CharField(label="Род (лат.)")
+    for taxon in taxons:
+        for key, value in suffixes.items():
+            locals()[taxon + "_" + key] = forms.CharField(label=taxons[taxon] + value)
 
 
 class AttributeFormView(forms.Form):
