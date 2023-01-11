@@ -80,12 +80,11 @@
     <script src="http://code.jquery.com/jquery-3.2.1.js"></script>
     <script>
         $('#add_button').on('click', function () {
-            var dataReq = $('#attr_form').serialize();
             $.ajax({
                 url: '{% url 'ajax_response' %}',
                 method: 'post',
                 dataType: 'html',
-                data: dataReq,
+                data: $('#attr_form').serialize(),
                 success: function (smt) {
                     window.location.reload()
                 },
