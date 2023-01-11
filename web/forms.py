@@ -76,6 +76,11 @@ class PlantForm(forms.ModelForm):
             "organization": _("Наименование организации"),
             "genus": _("Род (лат.)"),
         }
+        error_messages = {
+            "number": {
+                "unique": _("Проверьте, пожалуйста, уникальность введенного вами номера"),
+            },
+        }
 
     def save(self, *args, **kwargs):
         plant = super().save(*args, **kwargs)

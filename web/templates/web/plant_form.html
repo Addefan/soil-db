@@ -3,11 +3,20 @@
 {% block title %}Добавление растения{% endblock %}
 {% block body %}
     {% if not is_success %}
+
         <div class="container d-flex justify-content-center align-items-center">
             <div class="card" style="width: 65%">
                 <div class="card-body">
                     <h5 class="card-title">Новое растение</h5>
-                    <form action="" method="post">
+                    {% if form.errors %}
+                        <b>Возникли ошибки при заполнении формы. Пожалуйста, исправьте их:</b>
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <p style="color: red">{{ error }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endif %}
+                    <form action="" method="post" style="margin-top: 5px">
                         {% csrf_token %}
                         {% for field in form %}
                             {% if field.name == 'latin_name' %}

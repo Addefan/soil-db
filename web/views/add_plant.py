@@ -1,4 +1,4 @@
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.urls import reverse
 from django.views.generic import CreateView, UpdateView
 from eav.models import Attribute
@@ -33,11 +33,12 @@ class PlantCreateFormView(CreateView):
     context_object_name = "plant_form"
 
     def get_context_data(self, **kwargs):
-
         return {
             **super().get_context_data(**kwargs),
-            "form_classification": TaxonForm(),
-            "attr_form_view": AttributeFormView(),
+            "form_classification": kwargs["form_classification"]
+            if "form_classification" in kwargs.keys()
+            else TaxonForm(),
+            "attr_form_view": kwargs["attr_form_view"] if "attr_form_view" in kwargs.keys() else AttributeFormView(),
             "attr_form": AttributeForm(),
             "taxon_name": TAXON_NAME,
         }
@@ -51,6 +52,15 @@ class PlantCreateFormView(CreateView):
         if taxon_form.is_valid():
             print(taxon_form.cleaned_data)
         return {"attr_form_view": attr_form_view, "form_classification": taxon_form}
+
+    def form_invalid(self, form):
+        return self.render_to_response(
+            self.get_context_data(
+                form=form,
+                form_classification=TaxonForm(self.request.POST),
+                attr_form_view=AttributeFormView(self.request.POST),
+            )
+        )
 
     def get_success_url(self):
         return reverse("plant", args=(self.object.id,))
