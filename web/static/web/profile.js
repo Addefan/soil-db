@@ -6,6 +6,7 @@ $("#save").click(function () {
         data: $("#profile_form").serialize(),
         success: function () {
             save_current_input_values();
+            $(".is-invalid").removeClass("is-invalid");
             let success_toast = new bootstrap.Toast($("#success_toast"));
             success_toast.show();
         },
