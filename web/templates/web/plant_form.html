@@ -20,7 +20,7 @@
                         {% csrf_token %}
                         {% for field in form %}
                             {% if field.name == 'latin_name' %}
-                                {% filter_link form_classification taxon_name %}
+                                {% suggestions form_classification taxon_name %}
                                 <div class="form-floating mb-3">
                                     <div class="form-floating mb-3">
                                         {{ field }}

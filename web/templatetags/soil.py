@@ -15,7 +15,7 @@ def queryset_names(names_to_select, var):
 
 
 @register.inclusion_tag(os.path.join("web", "form", "form-in-view.html"))
-def filter_link(stage_form, names_to_select):
+def suggestions(stage_form, names_to_select):
     return {
         "stage_form": stage_form,
         "phylum_title": queryset_names(names_to_select["phylum"], "title"),
