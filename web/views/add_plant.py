@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.views.generic import CreateView, UpdateView
 from eav.models import Attribute
 
+from web.enums import TaxonLevel
 from web.forms import (
     PlantForm,
     AttributeForm,
@@ -19,11 +20,11 @@ ATTRIBUTE_TYPE = {
 }
 
 TAXON_NAME = {
-    "phylum": Taxon.objects.filter(level__icontains="Phylum"),
-    "class": Taxon.objects.filter(level__icontains="Class"),
-    "order": Taxon.objects.filter(level__icontains="Order"),
-    "family": Taxon.objects.filter(level__icontains="Family"),
-    "genus": Taxon.objects.filter(level__icontains="Genus"),
+    "phylum": Taxon.objects.filter(level=TaxonLevel.phylum),
+    "class": Taxon.objects.filter(level=TaxonLevel.klass),
+    "order": Taxon.objects.filter(level=TaxonLevel.order),
+    "family": Taxon.objects.filter(level=TaxonLevel.family),
+    "genus": Taxon.objects.filter(level=TaxonLevel.genus),
 }
 
 
