@@ -54,7 +54,6 @@ class PlantMixin:
     slug_url_kwarg = "number"
     template_name = "web/plant_form.html"
     context_object_name = "plant_form"
-    login_url = "/login"
 
     def get_context_data(self, **kwargs):
         return {
