@@ -15,7 +15,6 @@ class ProfileFormView(LoginRequiredMixin, UpdateView):
     form_class = ProfileForm
     model = Staff
     success_url = reverse_lazy("profile")
-    login_url = reverse_lazy("login")
 
     def get_object(self, queryset=None):
         return self.request.user
