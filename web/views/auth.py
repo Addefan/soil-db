@@ -15,4 +15,4 @@ class SoilLoginView(LoginView):
     template_name = "web/auth.html"
 
     def get_success_url(self):
-        return reverse("main")
+        return reverse("plants")

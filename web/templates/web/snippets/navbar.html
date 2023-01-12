@@ -1,12 +1,18 @@
 {% if request.user.is_authenticated %}
-  <li class="nav-item">
-      <a class="nav-link" href="#">Личный кабинет</a>
-  </li>
-  <li class="nav-item">
-      <a class="nav-link" href="{% url "plants_add" %}">Добавить растение</a>
-  </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url "plants" %}">Главная страница</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url "profile" %}">Личный кабинет</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url "plants_add" %}">Добавить растение</a>
+    </li>
 {% else %}
-  <li class="nav-item">
-    <a class="nav-link" href="{% url "login" %}">Авторизация</a>
-  </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url "plants" %}">Главная страница</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url "login" %}">Авторизация</a>
+    </li>
 {% endif %}
