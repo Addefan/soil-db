@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.urls import reverse
 from django.views.generic import CreateView, UpdateView
@@ -87,11 +88,11 @@ class PlantMixin:
         return reverse("plant", args=(self.object.number,))
 
 
-class PlantCreateView(PlantMixin, CreateView):
+class PlantCreateView(PlantMixin, LoginRequiredMixin, CreateView):
     form_class = PlantForm
 
 
-class PlantUpdateView(PlantMixin, UpdateView):
+class PlantUpdateView(PlantMixin, LoginRequiredMixin, UpdateView):
     form_class = PlantForm
     model = Plant
 
