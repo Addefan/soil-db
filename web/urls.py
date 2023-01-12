@@ -12,7 +12,7 @@ from web.views import (
 )
 
 urlpatterns = [
-    path("", main, name="main"),  # TODO: сейчас заглушка
+    path("plants/", main, name="plants"),  # TODO: сейчас заглушка
     path("profile/", ProfileFormView.as_view(), name="profile"),
     path("login/", SoilLoginView.as_view(), name="login"),
     path("plants/add/", PlantCreateView.as_view(), name="plants_add"),

@@ -61,7 +61,7 @@ class PlantModelMixin:
     def _get_eav_fields(self):
         dct: dict = {}
         for attr in Entity(self).get_all_attributes():
-            value = getattr(self.eav, attr.name, None)
+            value = getattr(self.eav, attr.slug, None)
             if value is not None:
                 dct[attr.name] = value
         return dct
