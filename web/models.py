@@ -83,7 +83,7 @@ class PlantModelMixin:
 
     def _get_organization_name(self):
         if hasattr(self.organization, "name"):
-            return self.organization.name
+            return self.organization
         return "Не указано"
 
     def _get_eav_fields(self):

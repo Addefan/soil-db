@@ -11,14 +11,21 @@
         <link rel="stylesheet" href="{% static 'web/bootstrap.min.css' %}">
         <link rel="stylesheet" href="{% static 'web/style.css' %}">
     {% endblock %}
+
     <title>{% block title %}Soil DB{% endblock %}</title>
 </head>
 <body>
 {% block body %}{% endblock %}
+
+{% block messages %}
+    {% include "messages.html" %}
+{% endblock %}
+
 {% block scripts %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="{% static 'web/bootstrap.bundle.min.js' %}"></script>
-    <script src="{% static 'web/script.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.1/dist/iconify-icon.min.js"></script>
+    <script src="{% static 'web/script.js' %}?"></script>
 {% endblock %}
 </body>
 </html>
