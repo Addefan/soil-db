@@ -23,6 +23,8 @@ INPUT_TYPES = {
     "date": forms.DateField(widget=forms.SelectDateWidget),
     "float": forms.FloatField(),
 }
+
+
 LEVEL = {
     0: "phylum",
     1: "class",
@@ -48,13 +50,18 @@ def modernization_dict(classification):
 
 def make_chain(classification):
     dct = modernization_dict(classification)
-    parent = Taxon.objects.filter(level__icontains="kingdom").first()
+    parent = Taxon.objects.filter(level="kingdom").first()
+    print(parent)
     for level, names in dct.items():
-        obj = Taxon.objects.filter(Q(level__icontains=f"{level}") & Q(title=names[0]) & Q(latin_title=names[1])).first()
+        print(level, *names)
+        obj = Taxon.objects.filter(Q(level=f"{level}") & Q(title=names[0]) & Q(latin_title=names[1])).first()
+        print(obj)
         if not obj:
             parent = Taxon(parent=parent, level=level, title=names[0], latin_title=names[1])
             parent.save()
         else:
+            obj.parent = parent
+            obj.save()
             parent = obj
     return parent
 
@@ -87,11 +94,8 @@ class PlantForm(forms.ModelForm):
         plant = super().save(*args, **kwargs)
         attrs = self.initial["attr_form_view"].cleaned_data
         classification = self.initial["form_classification"].cleaned_data
-        print(classification)
         if attrs and classification:
-            genus = Taxon.objects.filter(
-                title=classification["genus_title"], latin_title=classification["genus_latin_title"], level="Genus"
-            ).first()
+            genus = Taxon.objects.filter(latin_title=classification["genus_latin_title"], level="Genus").first()
             if not genus:
                 genus = make_chain(classification)
             plant.genus = genus

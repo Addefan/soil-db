@@ -20,12 +20,15 @@ class Organization(models.Model):
 class Taxon(MPTTModel):
     parent = TreeForeignKey("self", on_delete=models.CASCADE, null=True, blank=True, related_name="children")
     level = models.CharField(choices=TaxonLevel.choices, max_length=7)
-    title = models.CharField(max_length=127, unique=True)
-    latin_title = models.CharField(max_length=127, unique=True)
+    title = models.CharField(max_length=127)
+    latin_title = models.CharField(max_length=127)
 
     class MPTTMeta:
         level_attr = "mptt_level"
         order_insertion_by = ["title"]
+
+    class Meta:
+        unique_together = ("level", "title", "latin_title")
 
     def __str__(self):
         return self.title
@@ -58,7 +61,7 @@ class PlantModelMixin:
     def _get_eav_fields(self):
         dct: dict = {}
         for attr in Entity(self).get_all_attributes():
-            value = getattr(self.eav, attr.name, None)
+            value = getattr(self.eav, attr.slug, None)
             if value is not None:
                 dct[attr.name] = value
         return dct
