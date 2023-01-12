@@ -72,7 +72,7 @@ class PlantModelMixin:
         "genus": "Род",
         "family": "Семейство",
         "order": "Порядок",
-        "class_name": "Класс",
+        "class": "Класс",
         "phylum": "Тип",
     }
     _suffix: dict[str, str] = {
@@ -96,13 +96,13 @@ class PlantModelMixin:
 
     def _get_plant_classification(self):
         dct: dict = {}
-        plant = self
-        for taxon in self._taxons:
-            plant = getattr(plant, taxon)
-            for attr in self._suffix:
-                dct[self._taxons[taxon] + self._suffix[attr]] = getattr(plant, attr, "Не указано")
-            if plant is None:
-                break
+        plant_taxon: Taxon = Taxon.objects.get(id=self.genus_id)
+        plant_classification_tree = plant_taxon.get_ancestors(include_self=True, ascending=True)
+        for taxon in plant_classification_tree:
+            if taxon.level == "kingdom":
+                continue
+            for title in self._suffix:
+                dct[self._taxons[taxon.level] + self._suffix[title]] = getattr(taxon, title, None)
         return dct
 
 
