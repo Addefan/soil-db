@@ -15,11 +15,19 @@
                     <h5 class="card-title">{% if number %}Редактирование{% else %}
                                                 Новое растение{% endif %}
                     </h5>
-                    <form action="" method="post">
+                    {% if form.errors %}
+                        <b>Возникли ошибки при заполнении формы. Пожалуйста, исправьте их:</b>
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <p style="color: red">{{ error }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endif %}
+                    <form action="" method="post" style="margin-top: 5px">
                         {% csrf_token %}
                         {% for field in form %}
                             {% if field.name == 'latin_name' %}
-                                {% filter_link form_classification taxon_name %}
+                                {% suggestions form_classification taxon_name %}
                                 <div class="form-floating mb-3">
                                     <div class="form-floating mb-3">
                                         {{ field }}
@@ -81,12 +89,11 @@
     <script src="http://code.jquery.com/jquery-3.2.1.js"></script>
     <script>
         $('#add_button').on('click', function () {
-            var dataReq = $('#attr_form').serialize();
             $.ajax({
                 url: '{% url 'ajax_response' %}',
                 method: 'post',
                 dataType: 'html',
-                data: dataReq,
+                data: $('#attr_form').serialize(),
                 success: function (smt) {
                     window.location.reload()
                 },

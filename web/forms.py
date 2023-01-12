@@ -1,11 +1,13 @@
 from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from eav.models import Entity
+
 from web.models import Plant, Staff, Taxon
 
 TYPES = [
@@ -82,6 +84,11 @@ class PlantForm(forms.ModelForm):
             "organization": _("Наименование организации"),
             "genus": _("Род (лат.)"),
         }
+        error_messages = {
+            "number": {
+                "unique": _("Проверьте, пожалуйста, уникальность введенного вами номера"),
+            },
+        }
 
     def save(self, *args, **kwargs):
         plant = super().save(*args, **kwargs)
@@ -102,22 +109,18 @@ class PlantForm(forms.ModelForm):
 
 
 class TaxonForm(forms.Form):
+    suffixes = {"title": "", "latin_title": " (лат.)"}
+    taxons = {"phylum": "Отдел", "class": "Класс", "order": "Порядок", "family": "Семейство", "genus": "Род"}
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.label_suffix = ""
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update({"class": "form-control", "placeholder": "smt", "list": f"{attr}"})
 
-    phylum_title = forms.CharField(label="Отдел")
-    phylum_latin_title = forms.CharField(label="Отдел (лат.)")
-    class_title = forms.CharField(label="Класс")
-    class_latin_title = forms.CharField(label="Класс (лат.)")
-    order_title = forms.CharField(label="Порядок")
-    order_latin_title = forms.CharField(label="Порядок (лат.)")
-    family_title = forms.CharField(label="Семейство")
-    family_latin_title = forms.CharField(label="Семейство (лат.)")
-    genus_title = forms.CharField(label="Род")
-    genus_latin_title = forms.CharField(label="Род (лат.)")
+    for taxon in taxons:
+        for key, value in suffixes.items():
+            locals()[taxon + "_" + key] = forms.CharField(label=taxons[taxon] + value)
 
 
 class AttributeFormView(forms.Form):
@@ -197,11 +200,20 @@ class ProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.label_suffix = ""
-        self.fields["email"].widget.attrs["disabled"] = ""
+        self.fields["email"].widget.attrs["readonly"] = ""
         self.fields["password"].required = False
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
             visible.field.widget.attrs["placeholder"] = "placeholder"
+
+    def clean(self):
+        cleaned_data = super().clean()
+        raw_password = cleaned_data["password"]
+        if raw_password:
+            cleaned_data["password"] = make_password(raw_password)
+        else:
+            del cleaned_data["password"]
+        return cleaned_data
 
     class Meta:
         model = Staff

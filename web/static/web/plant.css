@@ -1,19 +1,13 @@
-body {
-    min-height: 100vh;
-}
-
 .content-align > td, .content-align > th {
     text-align: left;
 }
 
 .title {
     margin: 20px;
-    text-align: center;
 }
 
 .flex-wrapper {
     display: flex;
-    min-height: 100vh;
     flex-direction: column;
     justify-content: center;
     margin: 0 25px 25px 25px;
@@ -21,4 +15,13 @@ body {
 
 tr:hover {
     font-weight: bolder;
+}
+
+.plant-icon {
+    border: none;
+    background: none;
+}
+
+.plant-icon:hover {
+    color: #28a745;
 }
