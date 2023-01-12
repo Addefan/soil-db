@@ -9,12 +9,14 @@ from web.views import (
     LoginView,
     main,
     PlantUpdateView,
+    LogoutView,
 )
 
 urlpatterns = [
     path("plants/", main, name="plants"),  # TODO: сейчас заглушка
     path("profile/", ProfileFormView.as_view(), name="profile"),
     path("login/", LoginView.as_view(), name="login"),
+    path("logout/", LogoutView.as_view(), name="logout"),
     path("plants/add/", PlantCreateView.as_view(), name="plants_add"),
     path("plants/<int:number>", PlantDetailView.as_view(), name="plant"),
     path("plants/<int:number>/update", PlantUpdateView.as_view(), name="plant_update"),

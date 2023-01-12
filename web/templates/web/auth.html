@@ -6,32 +6,39 @@
             <div class="text-center">
                 <h3>Авторизация</h3>
             </div>
-            <form action="" method="post">
-                {% csrf_token %}
+            {% if not user.is_authenticated %}
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <div class="text-center">
+                        {% if form.errors %}
+                            {% for field in form.non_field_errors %}
+                                <p class="text-danger mb-0">{{ field }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    {% for field in form %}
+                        {% if field.name != 'remember_me' %}
+                            <div class="form-floating mt-3">
+                                {{ field }}
+                                {{ field.label_tag }}
+                            </div>
+                        {% else %}
+                            <div class="checkbox mt-3">
+                                {{ field }}
+                                {{ field.label_tag }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    <div class="text-center">
+                        <button class="btn btn-success mt-3">Войти</button>
+                    </div>
+                </form>
+            {% else %}
                 <div class="text-center">
-                    {% if form.errors %}
-                        {% for field in form.non_field_errors %}
-                            <p class="text-danger mb-0">{{ field }}</p>
-                        {% endfor %}
-                    {% endif %}
+                    <p class="m-3">Вы уже авторизованы</p>
+                    <a class="btn btn-danger" href="{% url 'logout' %}">Выйти</a>
                 </div>
-                {% for field in form %}
-                    {% if field.name != 'remember_me' %}
-                        <div class="form-floating mt-3">
-                            {{ field }}
-                            {{ field.label_tag }}
-                        </div>
-                    {% else %}
-                        <div class="checkbox mt-3">
-                            {{ field }}
-                            {{ field.label_tag }}
-                        </div>
-                    {% endif %}
-                {% endfor %}
-                <div class="text-center">
-                    <button class="btn btn-success mt-3">Войти</button>
-                </div>
-            </form>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
