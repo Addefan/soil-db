@@ -6,16 +6,18 @@ from web.views import (
     PlantDetailView,
     PlantCreateView,
     ajax_response,
-    SoilLoginView,
     PlantsListView,
+    LoginView,
     PlantUpdateView,
+    LogoutView,
 )
 
 urlpatterns = [
     path("", PlantsListView.as_view(), name="plants"),
     path("plants/", PlantsListView.as_view(), name="plants"),
     path("profile/", ProfileFormView.as_view(), name="profile"),
-    path("login/", SoilLoginView.as_view(), name="login"),
+    path("login/", LoginView.as_view(), name="login"),
+    path("logout/", LogoutView.as_view(), name="logout"),
     path("plants/add/", PlantCreateView.as_view(), name="plants_add"),
     path("plants/<int:number>", PlantDetailView.as_view(), name="plant"),
     path("plants/<int:number>/update", PlantUpdateView.as_view(), name="plant_update"),
