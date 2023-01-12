@@ -3,9 +3,12 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
+from django.db.models import Q
+from django.http import Http404
 from django.utils.translation import gettext_lazy as _
-from eav.models import Attribute, Entity
-from web.models import Plant, Family, Order, Class, Phylum, Genus, Staff
+from eav.models import Entity
+
+from web.models import Plant, Staff, Taxon
 
 TYPES = [
     ("default", "Не выбрано"),
@@ -20,6 +23,121 @@ INPUT_TYPES = {
     "date": forms.DateField(widget=forms.SelectDateWidget),
     "float": forms.FloatField(),
 }
+LEVEL = {
+    0: "phylum",
+    1: "class",
+    2: "order",
+    3: "family",
+    4: "genus",
+}
+
+
+def modernization_dict(classification):
+    counter, level_numb = 1, 0
+    dct = {}
+    for field, name in classification.items():
+        if LEVEL[level_numb] not in dct and counter < 2:
+            dct[LEVEL[level_numb]] = [name]
+            counter += 1
+        else:
+            dct[LEVEL[level_numb]].append(name)
+            counter = 1
+            level_numb += 1
+    return dct
+
+
+def make_chain(classification):
+    dct = modernization_dict(classification)
+    parent = Taxon.objects.filter(level__icontains="kingdom").first()
+    for level, names in dct.items():
+        obj = Taxon.objects.filter(Q(level__icontains=f"{level}") & Q(title=names[0]) & Q(latin_title=names[1])).first()
+        if not obj:
+            parent = Taxon(parent=parent, level=level, title=names[0], latin_title=names[1])
+            parent.save()
+        else:
+            parent = obj
+    return parent
+
+
+class PlantForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.label_suffix = ""
+        for attr, value in self.fields.items():
+            self.fields[attr].widget.attrs.update({"class": "form-control", "placeholder": "smt"})
+
+    class Meta:
+        model = Plant
+        fields = "__all__"
+        exclude = ["genus"]
+        labels = {
+            "name": _("Наименование растения"),
+            "latin_name": _("Латинское наименование растения"),
+            "number": _("Уникальный номер"),
+            "organization": _("Наименование организации"),
+            "genus": _("Род (лат.)"),
+        }
+        error_messages = {
+            "number": {
+                "unique": _("Проверьте, пожалуйста, уникальность введенного вами номера"),
+            },
+        }
+
+    def save(self, *args, **kwargs):
+        plant = super().save(*args, **kwargs)
+        attrs = self.initial["attr_form_view"].cleaned_data
+        classification = self.initial["form_classification"].cleaned_data
+        print(classification)
+        if attrs and classification:
+            genus = Taxon.objects.filter(
+                title=classification["genus_title"], latin_title=classification["genus_latin_title"], level="Genus"
+            ).first()
+            if not genus:
+                genus = make_chain(classification)
+            plant.genus = genus
+            obj = Entity(plant)
+            for attribute in obj.get_all_attributes():
+                plant.eav.__setattr__(attribute.slug, attrs[attribute.name])
+            plant.save()
+            return plant
+        else:
+            raise Http404
+
+
+class TaxonForm(forms.Form):
+    suffixes = {"title": "", "latin_title": " (лат.)"}
+    taxons = {"phylum": "Отдел", "class": "Класс", "order": "Порядок", "family": "Семейство", "genus": "Род"}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.label_suffix = ""
+        for attr, value in self.fields.items():
+            self.fields[attr].widget.attrs.update({"class": "form-control", "placeholder": "smt", "list": f"{attr}"})
+
+    for taxon in taxons:
+        for key, value in suffixes.items():
+            locals()[taxon + "_" + key] = forms.CharField(label=taxons[taxon] + value)
+
+
+class AttributeFormView(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.label_suffix = ""
+        for attr in Entity(Plant).get_all_attributes():
+            self.fields[attr.name] = INPUT_TYPES[attr.datatype]
+        for attr, value in self.fields.items():
+            self.fields[attr].widget.attrs.update({"class": "form-control", "placeholder": "smt"})
+
+
+class AttributeForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.label_suffix = ""
+        for attr, value in self.fields.items():
+            self.fields[attr].widget.attrs.update({"class": "form-control"})
+
+    name_attr = forms.CharField(label="Название")
+    type_attr = forms.ChoiceField(widget=forms.Select, choices=TYPES, label="Тип данных")
 
 
 class AuthForm(forms.Form):
@@ -72,168 +190,6 @@ class AuthForm(forms.Form):
             code="invalid_login",
             params={"email": self.cleaned_data["email"]},
         )
-
-
-class AttributeFormView(forms.Form):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.label_suffix = ""
-        for attr in Entity(Plant).get_all_attributes():
-            self.fields[attr.name] = INPUT_TYPES[attr.datatype]
-        for attr, value in self.fields.items():
-            self.fields[attr].widget.attrs.update({"class": "form-control", "placeholder": "smt"})
-
-
-class PlantForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.label_suffix = ""
-        for attr, value in self.fields.items():
-            self.fields[attr].widget.attrs.update({"class": "form-control", "placeholder": "smt"})
-
-    class Meta:
-        model = Plant
-        fields = "__all__"
-        exclude = ["genus"]
-        labels = {
-            "name": _("Наименование растения"),
-            "latin_name": _("Латинское наименование растения"),
-            "number": _("Уникальный номер"),
-            "organization": _("Наименование организации"),
-            "genus": _("Род (лат.)"),
-        }
-
-
-class AttributeForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.label_suffix = ""
-        for attr, value in self.fields.items():
-            self.fields[attr].widget.attrs.update({"class": "form-control"})
-
-    name_attr = forms.CharField(label="Название")
-    type_attr = forms.ChoiceField(widget=forms.Select, choices=TYPES, label="Тип данных")
-
-
-class GenusForm(forms.ModelForm):
-    prefix = "genus"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.label_suffix = ""
-        for attr, value in self.fields.items():
-            self.fields[attr].widget.attrs.update(
-                {
-                    "class": "form-control",
-                    "placeholder": "smt",
-                    "list": f"character_{attr}_{self.prefix}",
-                }
-            )
-
-    class Meta:
-        model = Genus
-        fields = ("title", "latin_title")
-        # fields = '__all__'
-        labels = {
-            "title": _("Род"),
-            "latin_title": _("Род (лат.)"),
-        }
-
-
-class FamilyForm(forms.ModelForm):
-    prefix = "family"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.label_suffix = ""
-        for attr, value in self.fields.items():
-            self.fields[attr].widget.attrs.update(
-                {
-                    "class": "form-control",
-                    "placeholder": "smt",
-                    "list": f"character_{attr}_{self.prefix}",
-                }
-            )
-
-    class Meta:
-        model = Family
-        fields = ("title", "latin_title")
-        labels = {
-            "title": _("Семейство"),
-            "latin_title": _("Семейство (лат.)"),
-        }
-
-
-class OrderForm(forms.ModelForm):
-    prefix = "order"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.label_suffix = ""
-        for attr, value in self.fields.items():
-            self.fields[attr].widget.attrs.update(
-                {
-                    "class": "form-control",
-                    "placeholder": "smt",
-                    "list": f"character_{attr}_{self.prefix}",
-                }
-            )
-
-    class Meta:
-        model = Order
-        fields = ("title", "latin_title")
-        labels = {
-            "title": _("Порядок"),
-            "latin_title": _("Порядок (лат.)"),
-        }
-
-
-class ClassForm(forms.ModelForm):
-    prefix = "klass"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.label_suffix = ""
-        for attr, value in self.fields.items():
-            self.fields[attr].widget.attrs.update(
-                {
-                    "class": "form-control",
-                    "placeholder": "smt",
-                    "list": f"character_{attr}_{self.prefix}",
-                }
-            )
-
-    class Meta:
-        model = Class
-        fields = ("title", "latin_title")
-        labels = {
-            "title": _("Класс"),
-            "latin_title": _("Класс (лат.)"),
-        }
-
-
-class PhylumForm(forms.ModelForm):
-    prefix = "phylum"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.label_suffix = ""
-        for attr, value in self.fields.items():
-            self.fields[attr].widget.attrs.update(
-                {
-                    "class": "form-control",
-                    "placeholder": "smt",
-                    "list": f"character_{attr}_{self.prefix}",
-                }
-            )
-
-    class Meta:
-        model = Phylum
-        fields = ("title", "latin_title")
-        labels = {
-            "title": _("Отдел"),
-            "latin_title": _("Отдел (лат.)"),
-        }
 
 
 class ProfileForm(forms.ModelForm):
