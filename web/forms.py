@@ -18,10 +18,10 @@ TYPES = [
     ("date", "Дата"),
 ]
 INPUT_TYPES = {
-    "int": forms.IntegerField(),
-    "text": forms.CharField(),
-    "date": forms.DateField(widget=forms.SelectDateWidget),
-    "float": forms.FloatField(),
+    "int": forms.IntegerField,
+    "text": forms.CharField,
+    "float": forms.FloatField,
+    "date": forms.DateField,
 }
 
 
@@ -101,7 +101,7 @@ class PlantForm(forms.ModelForm):
             plant.genus = genus
             obj = Entity(plant)
             for attribute in obj.get_all_attributes():
-                plant.eav.__setattr__(attribute.slug, attrs[attribute.name])
+                plant.eav.__setattr__(attribute.slug, attrs[attribute.slug])
             plant.save()
             return plant
         else:
@@ -128,7 +128,11 @@ class AttributeFormView(forms.Form):
         super().__init__(*args, **kwargs)
         self.label_suffix = ""
         for attr in Entity(Plant).get_all_attributes():
-            self.fields[attr.name] = INPUT_TYPES[attr.datatype]
+            if attr.datatype == "date":
+                self.fields[attr.slug] = INPUT_TYPES[attr.datatype](widget=forms.SelectDateWidget)
+            else:
+                self.fields[attr.slug] = INPUT_TYPES[attr.datatype]()
+            self.fields[attr.slug].label = attr.name
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update({"class": "form-control", "placeholder": "smt"})
 

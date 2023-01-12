@@ -16,7 +16,7 @@ from web.models import Taxon, Plant
 ATTRIBUTE_TYPE = {
     "integer": Attribute.TYPE_INT,
     "string": Attribute.TYPE_TEXT,
-    "data": Attribute.TYPE_DATE,
+    "date": Attribute.TYPE_DATE,
     "float": Attribute.TYPE_FLOAT,
 }
 
