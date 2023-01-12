@@ -1,6 +1,7 @@
 from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from eav.models import Attribute, Entity
@@ -239,11 +240,20 @@ class ProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.label_suffix = ""
-        self.fields["email"].widget.attrs["disabled"] = ""
+        self.fields["email"].widget.attrs["readonly"] = ""
         self.fields["password"].required = False
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
             visible.field.widget.attrs["placeholder"] = "placeholder"
+
+    def clean(self):
+        cleaned_data = super().clean()
+        raw_password = cleaned_data["password"]
+        if raw_password:
+            cleaned_data["password"] = make_password(raw_password)
+        else:
+            del cleaned_data["password"]
+        return cleaned_data
 
     class Meta:
         model = Staff
