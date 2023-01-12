@@ -1,5 +1,6 @@
 from django.contrib.auth.views import LoginView as DjangoLoginView, LogoutView as DjangoLogoutView
 from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.urls import reverse
 
 from web.forms import AuthForm
@@ -14,7 +15,7 @@ class LoginView(DjangoLoginView):
     template_name = "web/auth.html"
 
     def get_success_url(self):
-        return reverse("plants")
+        return self.request.GET.get("next") or reverse("plants")
 
 
 class LogoutView(DjangoLogoutView):
