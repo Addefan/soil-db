@@ -3,6 +3,8 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import UserManager as DjangoUserManager, PermissionsMixin
 from django.db import models
 from eav.models import Entity
+from mptt.fields import TreeForeignKey
+from mptt.models import MPTTModel
 
 from web.enums import TaxonLevel
 
@@ -15,11 +17,18 @@ class Organization(models.Model):
         return self.name
 
 
-class Taxon(models.Model):
-    parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
+class Taxon(MPTTModel):
+    parent = TreeForeignKey("self", on_delete=models.CASCADE, null=True, blank=True, related_name="children")
     level = models.CharField(choices=TaxonLevel.choices, max_length=7)
     title = models.CharField(max_length=127, unique=True)
     latin_title = models.CharField(max_length=127, unique=True)
+
+    class MPTTMeta:
+        level_attr = "mptt_level"
+        order_insertion_by = ["title"]
+
+    def __str__(self):
+        return self.title
 
 
 class BaseTaxon(models.Model):
@@ -63,7 +72,7 @@ class PlantModelMixin:
         "genus": "Род",
         "family": "Семейство",
         "order": "Порядок",
-        "class_name": "Класс",
+        "class": "Класс",
         "phylum": "Тип",
     }
     _suffix: dict[str, str] = {
@@ -87,13 +96,13 @@ class PlantModelMixin:
 
     def _get_plant_classification(self):
         dct: dict = {}
-        plant = self
-        for taxon in self._taxons:
-            plant = getattr(plant, taxon)
-            for attr in self._suffix:
-                dct[self._taxons[taxon] + self._suffix[attr]] = getattr(plant, attr, "Не указано")
-            if plant is None:
-                break
+        plant_taxon: Taxon = Taxon.objects.get(id=self.genus_id)
+        plant_classification_tree = plant_taxon.get_ancestors(include_self=True, ascending=True)
+        for taxon in plant_classification_tree:
+            if taxon.level == "kingdom":
+                continue
+            for title in self._suffix:
+                dct[self._taxons[taxon.level] + self._suffix[title]] = getattr(taxon, title, None)
         return dct
 
 
