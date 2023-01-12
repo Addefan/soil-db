@@ -1,6 +1,5 @@
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView as DjangoLoginView
 from django.http import HttpResponse
-from django.shortcuts import render
 from django.urls import reverse
 
 from web.forms import AuthForm
@@ -10,7 +9,7 @@ def main(request):
     return HttpResponse(f"{request.user.is_authenticated}")
 
 
-class SoilLoginView(LoginView):
+class LoginView(DjangoLoginView):
     form_class = AuthForm
     template_name = "web/auth.html"
 

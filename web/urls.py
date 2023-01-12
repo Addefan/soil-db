@@ -6,7 +6,7 @@ from web.views import (
     PlantDetailView,
     PlantCreateView,
     ajax_response,
-    SoilLoginView,
+    LoginView,
     main,
     PlantUpdateView,
 )
@@ -14,7 +14,7 @@ from web.views import (
 urlpatterns = [
     path("plants/", main, name="plants"),  # TODO: сейчас заглушка
     path("profile/", ProfileFormView.as_view(), name="profile"),
-    path("login/", SoilLoginView.as_view(), name="login"),
+    path("login/", LoginView.as_view(), name="login"),
     path("plants/add/", PlantCreateView.as_view(), name="plants_add"),
     path("plants/<int:number>", PlantDetailView.as_view(), name="plant"),
     path("plants/<int:number>/update", PlantUpdateView.as_view(), name="plant_update"),
