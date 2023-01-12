@@ -10,11 +10,15 @@
 {% block body %}
     <div class="flex-wrapper">
         <div class="row">
-            <div class="col-11">
+            <div class="col-10">
                 <h1 class="title">Страница растения {{ name }} ({{ latin_name }})</h1>
             </div>
             {% if plant.Организация == request.user.organization %}
-                <div class="col-1 d-flex justify-content-center align-items-center">
+                <div class="col-2 d-flex justify-content-center align-items-center">
+                    <button type="button" class="btn btn-success"
+                            onclick="document.location='{% url 'plant_update' plant.Идентификатор %}'">Редактировать
+                        растение
+                    </button>
                     <button class="title h1 mx-1 plant-icon" data-bs-toggle="modal"
                             data-bs-target="#modal_delete" type="button" title="Удалить растение">
                         <iconify-icon icon="mdi:garbage-can"></iconify-icon>

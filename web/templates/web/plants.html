@@ -1,0 +1,38 @@
+{% extends "web/base.html" %}
+{% load static %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block styles %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'web/plant.css' %}">
+{% endblock %}
+
+{% block body %}
+    <div class="flex-wrapper">
+        <div class="row">
+        </div>
+        <table class="table table-bordered table-success">
+            <thead class="thead-dark">
+            <tr class="content-align">
+                <th scope="col">Уникальный номер</th>
+                <th scope="col">Наименование растения</th>
+                <th scope="col">Латинское наименование растения</th>
+                <th scope="col">Род</th>
+                <th scope="col">Наименование организации</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for plant in plants %}
+                <tr class="content-align">
+                    <td><a href="{% url "plant" plant.number %}" style="color: #000">{{ plant.number }}</a></td>
+                    <td>{{ plant.name }}</td>
+                    <td>{{ plant.latin_name }}</td>
+                    <td>{{ plant.genus }}</td>
+                    <td>{{ plant.organization }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
