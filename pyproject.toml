@@ -14,8 +14,9 @@ packages = [{include = "soil_db"}]
 [tool.poetry.dependencies]
 python = "^3.9"
 django = "<4.1"
-psycopg2 = "^2.9.5"
 django-eav2 = "^1.2.3"
+django-mptt = "^0.14.0"
+psycopg2-binary = "^2.9.5"
 
 
 [tool.poetry.group.dev.dependencies]
