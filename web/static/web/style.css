@@ -45,6 +45,10 @@ footer {
     opacity: .65;
 }
 
+#profile_form #id_email {
+    background-color: #e9ecef;
+}
+
 .errorlist {
     list-style: none;
     margin: 0;

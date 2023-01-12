@@ -4,7 +4,6 @@
 
 .title {
     margin: 20px;
-    text-align: center;
 }
 
 .flex-wrapper {
@@ -16,4 +15,13 @@
 
 tr:hover {
     font-weight: bolder;
+}
+
+.plant-icon {
+    border: none;
+    background: none;
+}
+
+.plant-icon:hover {
+    color: #28a745;
 }

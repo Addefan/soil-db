@@ -31,37 +31,6 @@ class Taxon(MPTTModel):
         return self.title
 
 
-class BaseTaxon(models.Model):
-    title = models.CharField(max_length=127, unique=True)
-    latin_title = models.CharField(max_length=127, unique=True)
-
-    class Meta:
-        abstract = True
-
-
-class Phylum(BaseTaxon):
-    pass
-
-
-class Class(BaseTaxon):
-    phylum = models.ForeignKey(Phylum, on_delete=models.SET_NULL, null=True)
-
-
-class Order(BaseTaxon):
-    class_name = models.ForeignKey(Class, on_delete=models.SET_NULL, null=True)
-
-
-class Family(BaseTaxon):
-    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
-
-
-class Genus(BaseTaxon):
-    family = models.ForeignKey(Family, on_delete=models.SET_NULL, null=True)
-
-    def __str__(self):
-        return self.title
-
-
 class PlantModelMixin:
     _translate: dict[str, str] = {
         "latin_name": "Вид (лат.)",
@@ -72,7 +41,7 @@ class PlantModelMixin:
         "genus": "Род",
         "family": "Семейство",
         "order": "Порядок",
-        "class_name": "Класс",
+        "class": "Класс",
         "phylum": "Тип",
     }
     _suffix: dict[str, str] = {
@@ -83,7 +52,7 @@ class PlantModelMixin:
 
     def _get_organization_name(self):
         if hasattr(self.organization, "name"):
-            return self.organization.name
+            return self.organization
         return "Не указано"
 
     def _get_eav_fields(self):
@@ -96,13 +65,13 @@ class PlantModelMixin:
 
     def _get_plant_classification(self):
         dct: dict = {}
-        plant = self
-        for taxon in self._taxons:
-            plant = getattr(plant, taxon)
-            for attr in self._suffix:
-                dct[self._taxons[taxon] + self._suffix[attr]] = getattr(plant, attr, "Не указано")
-            if plant is None:
-                break
+        plant_taxon: Taxon = Taxon.objects.get(id=self.genus_id)
+        plant_classification_tree = plant_taxon.get_ancestors(include_self=True, ascending=True)
+        for taxon in plant_classification_tree:
+            if taxon.level == "kingdom":
+                continue
+            for title in self._suffix:
+                dct[self._taxons[taxon.level] + self._suffix[title]] = getattr(taxon, title, None)
         return dct
 
 

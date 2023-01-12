@@ -3,31 +3,34 @@
 {% block title %}Добавление растения{% endblock %}
 {% block body %}
     {% if not is_success %}
+
         <div class="container d-flex justify-content-center align-items-center">
             <div class="card" style="width: 65%">
                 <div class="card-body">
                     <h5 class="card-title">Новое растение</h5>
-                    <form action="" method="post">
+                    {% if form.errors %}
+                        <b>Возникли ошибки при заполнении формы. Пожалуйста, исправьте их:</b>
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <p style="color: red">{{ error }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endif %}
+                    <form action="" method="post" style="margin-top: 5px">
                         {% csrf_token %}
-                        {% for field in plant_form %}
+                        {% for field in form %}
                             {% if field.name == 'latin_name' %}
-                                {% filter_link phylum_form phylum "phylum" %}
-                                {% filter_link class_form class "klass" %}
-                                {% filter_link order_form order "order" %}
-                                {% filter_link family_form family "family" %}
-                                {% filter_link genus_form genus "genus" %}
+                                {% suggestions form_classification taxon_name %}
                                 <div class="form-floating mb-3">
                                     <div class="form-floating mb-3">
                                         {{ field }}
                                         {{ field.label_tag }}
-{#                                        <label for="floatinginput">{{ field.label }}:</label>#}
                                     </div>
                                 </div>
                             {% else %}
                                 <div class="form-floating mb-3">
                                     {{ field }}
                                     {{ field.label_tag }}
-{#                                    <label for="floatinginput">{{ field.label }}:</label>#}
                                 </div>
                             {% endif %}
                         {% endfor %}
@@ -35,7 +38,6 @@
                             <div class="form-floating mb-3">
                                 {{ field }}
                                 {{ field.label_tag }}
-{#                                <label for="floatinginput">{{ field.label }}:</label>#}
                             </div>
                         {% endfor %}
                         <button type="button" class="btn btn-success" data-bs-toggle="modal"
@@ -60,7 +62,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
                     </div>
                     <div class="modal-body">
-                        <form action="" method="post">
+                        <form action="" method="post" id="attr_form">
                             {% csrf_token %}
                             {{ attr_form.as_p }}
                         </form>
@@ -82,11 +84,7 @@
                 url: '{% url 'ajax_response' %}',
                 method: 'post',
                 dataType: 'html',
-                data: {
-                    'name': $('#id_name_attr').val(),
-                    'type_attr': $('#id_type_attr').val(),
-                    'csrfmiddlewaretoken': '{{ csrf_token }}'
-                },
+                data: $('#attr_form').serialize(),
                 success: function (smt) {
                     window.location.reload()
                 },
