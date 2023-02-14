@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
-from eav.models import Entity
+from eav.models import Entity, Attribute
 
 from web.models import Plant, Staff, Taxon
 
@@ -225,3 +225,16 @@ class ProfileForm(forms.ModelForm):
         labels = {"password": "Новый пароль"}
         fields = ("surname", "name", "email", "password")
         readonly_fields = ("email",)
+
+
+def plant_columns_choices():
+    translate = Plant._translate | Plant._taxons | {"organization": "Организация"}
+    choices = [(field.name, translate[field.name]) for field in Plant._meta.fields if translate.get(field.name)]
+    choices.extend([(eav_field.name, eav_field.name) for eav_field in Attribute.objects.all()])
+    return choices
+
+
+class PlantColumnsForm(forms.Form):
+    columns = forms.MultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple(attrs={"checked": True}), choices=plant_columns_choices()
+    )
