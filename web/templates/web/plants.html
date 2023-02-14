@@ -9,6 +9,8 @@
 {% endblock %}
 
 {% block body %}
+    {% include "web/snippets/popup-xlsx-form.html" %}
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalXlsx">Импортировать в xlsx</button>
     <div class="flex-wrapper">
         <div class="row">
         </div>
