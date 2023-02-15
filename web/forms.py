@@ -230,19 +230,19 @@ class ProfileForm(forms.ModelForm):
 
 def plant_columns_default_choices():
     translate = Plant._translate | Plant._taxons | {"organization": "Организация"}
-    return {(field.name, translate[field.name]) for field in Plant._meta.fields if translate.get(field.name)}
+    return [(field.name, translate[field.name]) for field in Plant._meta.fields if translate.get(field.name)]
 
 
 def plant_columns_custom_choices():
-    return {(eav_field.name, eav_field.name) for eav_field in Attribute.objects.all()}
+    return [(eav_field.name, eav_field.name) for eav_field in Attribute.objects.all()]
 
 
 def plant_columns_choices():
-    return plant_columns_default_choices() | plant_columns_custom_choices()
+    return plant_columns_default_choices() + TaxonLevel.choices + plant_columns_custom_choices()
 
 
 class PlantColumnsForm(forms.Form):
     columns = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple(attrs={"checked": True}),
-        choices=plant_columns_choices() | set(TaxonLevel.choices),
+        choices=plant_columns_choices(),
     )
