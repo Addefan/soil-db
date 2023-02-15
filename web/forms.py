@@ -237,8 +237,16 @@ def plant_columns_custom_choices():
     return [(eav_field.name, eav_field.name) for eav_field in Attribute.objects.all()]
 
 
+def plant_columns_taxon_choices():
+    taxon_choices = []
+    for choice in TaxonLevel.choices:
+        for prefix, suffix in zip(("", "latin_"), ("", " (лат.)")):
+            taxon_choices.append((prefix + choice[0], choice[1] + suffix))
+    return taxon_choices
+
+
 def plant_columns_choices():
-    return plant_columns_default_choices() + TaxonLevel.choices + plant_columns_custom_choices()
+    return plant_columns_default_choices() + plant_columns_taxon_choices() + plant_columns_custom_choices()
 
 
 class PlantColumnsForm(forms.Form):

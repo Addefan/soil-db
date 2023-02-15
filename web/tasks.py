@@ -20,7 +20,8 @@ def prepare_data(columns: list[str], qs: QuerySet = Plant.objects.all()):
             taxon_columns_pseudo_queryset[leaf] = {}
             while obj and obj.parent_id:
                 for prefix in ("", "latin_"):
-                    taxon_columns_pseudo_queryset[leaf][prefix + obj.level] = getattr(obj, prefix + "title")
+                    if prefix + obj.level in columns:
+                        taxon_columns_pseudo_queryset[leaf][prefix + obj.level] = getattr(obj, prefix + "title")
                 obj = taxon_columns_queryset.get(obj.parent_id)
     print(taxon_columns_queryset)
     print(taxon_columns_pseudo_queryset)
