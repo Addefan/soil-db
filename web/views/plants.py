@@ -5,6 +5,7 @@ from django.views.generic import ListView, FormView
 
 from web.forms import PlantColumnsForm
 from web.models import Plant
+from web.tasks import prepare_data
 
 
 class PlantsListView(ListView, FormView):
@@ -19,5 +20,6 @@ class PlantColumnsView(View):
         form = PlantColumnsForm(request.POST)
         if form.is_valid():
             # TODO handle POST request
-            ...
+            data = dict(request.POST)
+            prepare_data(data.get("columns"))
         return

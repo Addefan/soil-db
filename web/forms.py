@@ -8,6 +8,7 @@ from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from eav.models import Entity, Attribute
 
+from web.enums import TaxonLevel
 from web.models import Plant, Staff, Taxon
 
 TYPES = [
@@ -227,14 +228,21 @@ class ProfileForm(forms.ModelForm):
         readonly_fields = ("email",)
 
 
-def plant_columns_choices():
+def plant_columns_default_choices():
     translate = Plant._translate | Plant._taxons | {"organization": "Организация"}
-    choices = [(field.name, translate[field.name]) for field in Plant._meta.fields if translate.get(field.name)]
-    choices.extend([(eav_field.name, eav_field.name) for eav_field in Attribute.objects.all()])
-    return choices
+    return {(field.name, translate[field.name]) for field in Plant._meta.fields if translate.get(field.name)}
+
+
+def plant_columns_custom_choices():
+    return {(eav_field.name, eav_field.name) for eav_field in Attribute.objects.all()}
+
+
+def plant_columns_choices():
+    return plant_columns_default_choices() | plant_columns_custom_choices()
 
 
 class PlantColumnsForm(forms.Form):
     columns = forms.MultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple(attrs={"checked": True}), choices=plant_columns_choices()
+        widget=forms.CheckboxSelectMultiple(attrs={"checked": True}),
+        choices=plant_columns_choices() | set(TaxonLevel.choices),
     )
