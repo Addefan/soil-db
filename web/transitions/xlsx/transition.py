@@ -6,9 +6,8 @@ import xlsxwriter
 
 from datetime import datetime
 from xlsxwriter import Workbook
+from django.conf import settings
 from django.db.models import QuerySet
-
-from soil.settings import BASE_DIR
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "soil.settings")
 django.setup()
@@ -17,7 +16,7 @@ from web.models import Plant
 
 
 def create_media_xlsx_directory() -> None:
-    os.makedirs(f"{BASE_DIR}/media/xlsx", exist_ok=True)
+    os.makedirs(f"{settings.BASE_DIR}/media/xlsx", exist_ok=True)
 
 
 def make_cell_format(wb: Workbook, bold=False, font_color="black", bg_color="white", num_format=None):
