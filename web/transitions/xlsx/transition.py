@@ -49,17 +49,20 @@ def queryset_to_xlsx(qs: QuerySet) -> str:
     for x, header in enumerate(headers):
         sheet.write_string(0, x, header, cell_format=header_format)
 
+    type_mapping = {
+        str: sheet.write_string,
+        int: sheet.write_number,
+        float: sheet.write_number,
+        bool: sheet.write_boolean,
+        datetime: sheet.write_datetime,
+    }
+
     # writing objects
     for x, obj in enumerate(objects, start=1):
         for y, column in enumerate(headers):
-            if type(obj[column]) == str:
-                sheet.write_string(x, y, obj[column], cell_format=simple_format)
-            elif type(obj[column]) == int or type(obj[column]) == float:
-                sheet.write_number(x, y, obj[column], cell_format=simple_format)
-            elif type(obj[column]) == bool:
-                sheet.write_boolean(x, y, obj[column], cell_format=simple_format)
-            elif type(obj[column]) == datetime:
-                sheet.write_datetime(x, y, obj[column], cell_format=date_format)
+            obj_type = type(obj[column])
+            if obj_type in type_mapping:
+                type_mapping[obj_type](x, y, obj[column], simple_format if obj_type != datetime else date_format)
             else:
                 raise TypeError(f"Uncultivited type: {type(obj[column])}")
 
