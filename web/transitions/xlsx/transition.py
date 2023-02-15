@@ -1,11 +1,10 @@
 import os
-from datetime import datetime
-
 import django
 import xlsxwriter
 
-from django.db.models import QuerySet
+from datetime import datetime
 from xlsxwriter import Workbook
+from django.db.models import QuerySet
 
 from soil.settings import BASE_DIR
 
