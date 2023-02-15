@@ -105,6 +105,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = "web.Staff"
 
+LOGIN_URL = "/login"
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -126,4 +128,8 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_URL = "/login"
+# Media
+
+MEDIA_ROOT = "media"
+
+MEDIA_URL = "/media/"
