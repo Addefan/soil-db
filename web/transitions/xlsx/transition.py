@@ -27,13 +27,15 @@ def make_cell_format(wb: Workbook, bold=False, font_color="black", bg_color="whi
     return cell_format
 
 
-def queryset_to_xlsx(qs: QuerySet):
+def queryset_to_xlsx(qs: QuerySet) -> str:
+    """
+    A function to make QuerySet transition into .xlsx file
+    """
     create_media_xlsx_directory()
 
     now = datetime.now()
-    workbook = xlsxwriter.Workbook(
-        f"{BASE_DIR}/media/xlsx/{now.strftime('%M_%H_%d_%m_%Y')}.xlsx", {"remove_timezone": True}
-    )
+    path = f"{BASE_DIR}/media/xlsx/{now.strftime('%M_%H_%d_%m_%Y')}.xlsx"
+    workbook = xlsxwriter.Workbook(path, {"remove_timezone": True})
     sheet = workbook.add_worksheet("result")
 
     simple_format = make_cell_format(wb=workbook)
@@ -63,6 +65,8 @@ def queryset_to_xlsx(qs: QuerySet):
 
     sheet.autofit()
     workbook.close()
+
+    return path
 
 
 if __name__ == "__main__":
