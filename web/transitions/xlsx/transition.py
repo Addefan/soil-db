@@ -1,4 +1,6 @@
 import os
+import uuid
+
 import django
 import xlsxwriter
 
@@ -15,8 +17,7 @@ from web.models import Plant
 
 
 def create_media_xlsx_directory() -> None:
-    if not os.path.exists(f"{BASE_DIR}/media/xlsx"):
-        os.mkdir(f"{BASE_DIR}/media/xlsx")
+    os.makedirs(f"{BASE_DIR}/media/xlsx", exist_ok=True)
 
 
 def make_cell_format(wb: Workbook, bold=False, font_color="black", bg_color="white", num_format=None):
@@ -32,8 +33,8 @@ def queryset_to_xlsx(qs: QuerySet) -> str:
     """
     create_media_xlsx_directory()
 
-    now = datetime.now()
-    path = f"{BASE_DIR}/media/xlsx/{now.strftime('%M_%H_%d_%m_%Y')}.xlsx"
+    file_uuid = uuid.uuid4()
+    path = f"{BASE_DIR}/media/xlsx/{file_uuid}.xlsx"
     workbook = xlsxwriter.Workbook(path, {"remove_timezone": True})
     sheet = workbook.add_worksheet("result")
 
