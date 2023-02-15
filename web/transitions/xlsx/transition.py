@@ -7,10 +7,17 @@ import xlsxwriter
 from django.db.models import QuerySet
 from xlsxwriter import Workbook
 
+from soil.settings import BASE_DIR
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "soil.settings")
 django.setup()
 
 from web.models import Plant
+
+
+def create_media_xlsx_directory() -> None:
+    if not os.path.exists(f"{BASE_DIR}/media/xlsx"):
+        os.mkdir(f"{BASE_DIR}/media/xlsx")
 
 
 def make_cell_format(wb: Workbook, bold=False, font_color="black", bg_color="white", num_format=None):
@@ -21,7 +28,12 @@ def make_cell_format(wb: Workbook, bold=False, font_color="black", bg_color="whi
 
 
 def queryset_to_xlsx(qs: QuerySet):
-    workbook = xlsxwriter.Workbook("example.xlsx", {"remove_timezone": True})
+    create_media_xlsx_directory()
+
+    now = datetime.now()
+    workbook = xlsxwriter.Workbook(
+        f"{BASE_DIR}/media/xlsx/{now.strftime('%M_%H_%d_%m_%Y')}.xlsx", {"remove_timezone": True}
+    )
     sheet = workbook.add_worksheet("result")
 
     simple_format = make_cell_format(wb=workbook)
