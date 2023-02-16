@@ -15,6 +15,8 @@ class QuerySetToXlsxHandler:
 
     @staticmethod
     def controller(attr_name: str) -> Callable:
+        """caches method's returned values - methods won't calculate smth twice"""
+
         def decorator(func: Callable) -> Callable:
             def wrapper(self, *args, **kwargs) -> Sized:
                 if hasattr(self, attr_name):
@@ -66,12 +68,13 @@ class QuerySetToXlsxHandler:
 
     def get_all_columns(self):
         prepared_pseudo_queryset = self.prepare_default_columns()
+        # combine plant's default and taxon columns
         for obj in prepared_pseudo_queryset:
-            print("obj:", obj)
             genus = obj.pop("Род")
             obj |= self.prepare_taxon_columns()[genus]
         custom_columns_pseudo_queryset = self.prepare_custom_columns()
         # Two pointers method
+        # combine plant's default and custom columns
         i, j = 0, 0
         while i < len(prepared_pseudo_queryset) and j < len(custom_columns_pseudo_queryset):
             if prepared_pseudo_queryset[i]["id"] == custom_columns_pseudo_queryset[j]["id"]:

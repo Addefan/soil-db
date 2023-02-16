@@ -17,6 +17,9 @@ class PlantsListView(ListView, FormView):
 
 
 class XlsxColumnsView(RedirectView):
+    """use RedirectView to define only 'get' request method
+    - remaining methods except 'post' have the same response"""
+
     def get(self, request, *args, **kwargs):
         raise Http404
 
