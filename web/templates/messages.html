@@ -1,24 +1,22 @@
-<div class="toast-container position-fixed bottom-0 end-0 p-3">
+{% if messages %}
     {% for message in messages %}
-        <div class="toast mb-2" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
+        <div class="alert alert-light d-flex align-items-center w-25 position-absolute bottom-0 end-0 m-3" role="alert">
+            <div class="alert-heading w-75 text-center">
                 <strong class="me-auto
                     {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-                         text-success">Успешно!
+                         text-success">{{ message|safe }}
                     {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-                         text-danger">Ошибка!
+                         text-danger">{{ message|safe }}
                     {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
-                         text-warning">Предупреждение!
+                         text-warning">{{ message|safe }}
                     {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
-                         text-info">Уведомление!
+                         text-info">{{ message|safe }}
                     {% endif %}
                 </strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast"
-                        aria-label="Close"></button>
             </div>
-            <div class="toast-body">
-                {{ message|safe }}
+            <div class="text-center w-25">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         </div>
     {% endfor %}
-</div>
+{% endif %}
