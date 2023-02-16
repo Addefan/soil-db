@@ -245,6 +245,8 @@ def plant_columns_taxon_choices():
     taxon_choices = []
     for choice in TaxonLevel.choices:
         for prefix, suffix in zip(("", "latin_"), ("", " (лат.)")):
+            if choice[0] == "kingdom":
+                continue
             taxon_choices.append((prefix + choice[0], choice[1] + suffix))
     return taxon_choices
 

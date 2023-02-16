@@ -10,6 +10,7 @@ from web.forms import plant_columns_default_choices, plant_columns_choices_dict
 
 def prepare_data(columns: list[str], qs: QuerySet = Plant.objects.prefetch_related("organization").all()):
     translation = plant_columns_choices_dict()
+    print(translation)
     default_columns = {choice[0] for choice in plant_columns_default_choices()} & set(columns)
     default_columns_pseudo_queryset = [
         {translation[key]: val for key, val in instance.items()}
@@ -21,7 +22,7 @@ def prepare_data(columns: list[str], qs: QuerySet = Plant.objects.prefetch_relat
         if obj.level == "genus":
             leaf = obj.id
             taxon_columns_pseudo_queryset[leaf] = {}
-            while obj and obj.parent_id:
+            while obj:
                 for prefix in ("", "latin_"):
                     if prefix + obj.level in columns:
                         taxon_columns_pseudo_queryset[leaf][translation[prefix + obj.level]] = getattr(
@@ -40,7 +41,21 @@ def prepare_data(columns: list[str], qs: QuerySet = Plant.objects.prefetch_relat
         .order_by("id")
         if model.attribute.name in columns
     ]
-    print(default_columns_pseudo_queryset, custom_columns_pseudo_queryset)
+    prepared_pseudo_queryset = default_columns_pseudo_queryset
+    i, j = 0, 0
+    while i < len(prepared_pseudo_queryset) and j < len(custom_columns_pseudo_queryset):
+        if prepared_pseudo_queryset[i]["id"] == custom_columns_pseudo_queryset[j]["id"]:
+            prepared_pseudo_queryset[i] |= custom_columns_pseudo_queryset[j]
+            j += 1
+        elif prepared_pseudo_queryset[i]["id"] < custom_columns_pseudo_queryset[j]["id"]:
+            fill_dict = {}
+            for key in custom_columns_pseudo_queryset[j]:
+                # O(1) - custom_columns_pseudo_queryset object has fixed length("id" and custom field)
+                if key != "id":
+                    fill_dict[key] = None
+            prepared_pseudo_queryset[i] |= fill_dict
+            i += 1
+    print(prepared_pseudo_queryset, custom_columns_pseudo_queryset)
 
 
 @app.task
