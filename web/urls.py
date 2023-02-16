@@ -10,7 +10,7 @@ from web.views import (
     LoginView,
     PlantUpdateView,
     LogoutView,
-    PlantColumnsView,
+    XlsxColumnsView,
 )
 
 urlpatterns = [
@@ -24,5 +24,5 @@ urlpatterns = [
     path("plants/<int:number>/update", PlantUpdateView.as_view(), name="plant_update"),
     path("plants/<int:number>/delete", PlantDeleteView.as_view(), name="plants_delete"),
     path("ajax_response/", ajax_response, name="ajax_response"),
-    path("plant_columns/", PlantColumnsView.as_view(), name="plant_columns"),
+    path("plant_columns/", XlsxColumnsView.as_view(), name="plant_columns"),
 ]

@@ -4,12 +4,12 @@ from django.db.models import QuerySet, Q
 from eav.models import Value
 
 from web.choices import xlsx_columns_choices_dict, xlsx_columns_default_choices
-from web.models import Taxon
+from web.models import Taxon, Plant
 
 
 class QuerySetToXlsxHandler:
-    def __init__(self, columns: set[str], qs: QuerySet):
-        self.columns = columns
+    def __init__(self, columns: list[str], qs: QuerySet):
+        self.columns = set(columns)
         self.qs = qs
         self.translation = xlsx_columns_choices_dict()
 
@@ -84,3 +84,8 @@ class QuerySetToXlsxHandler:
                 key: None for key in {self.translation[column] for column in self.columns}.difference(instance.keys())
             }
         return prepared_pseudo_queryset
+
+
+def prepare_queryset(columns: list[str], qs):
+    handler = QuerySetToXlsxHandler(columns, qs)
+    return handler.get_all_columns()

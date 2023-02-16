@@ -6,7 +6,7 @@ from django.views.generic import ListView, FormView, RedirectView
 
 from web.forms import XlsxColumnsForm
 from web.models import Plant
-from web.tasks import prepare_data
+from web.tasks import export_to_excel
 
 
 class PlantsListView(ListView, FormView):
@@ -16,14 +16,13 @@ class PlantsListView(ListView, FormView):
     form_class = XlsxColumnsForm
 
 
-class PlantColumnsView(RedirectView):
+class XlsxColumnsView(RedirectView):
     def get(self, request, *args, **kwargs):
         raise Http404
 
     def post(self, request, *args, **kwargs):
         form = XlsxColumnsForm(request.POST)
         if form.is_valid():
-            # TODO handle POST request
             data = dict(request.POST)
-            prepare_data(data.get("columns"))
-        return
+            export_to_excel.delay(data.get("columns"))
+        return redirect("plants")
