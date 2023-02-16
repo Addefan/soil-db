@@ -25,3 +25,8 @@ tr:hover {
 .plant-icon:hover {
     color: #28a745;
 }
+
+.modal-overflow {
+    height: 300px;
+    overflow-y: scroll;
+}
