@@ -230,7 +230,11 @@ class ProfileForm(forms.ModelForm):
 
 def plant_columns_default_choices():
     translate = Plant._translate | Plant._taxons | {"organization": "Организация"}
-    return [(field.name, translate[field.name]) for field in Plant._meta.fields if translate.get(field.name)]
+    return [
+        (field.name + "__name" if field.name == "organization" else field.name, translate[field.name])
+        for field in Plant._meta.fields
+        if translate.get(field.name)
+    ]
 
 
 def plant_columns_custom_choices():
@@ -245,8 +249,12 @@ def plant_columns_taxon_choices():
     return taxon_choices
 
 
-def plant_columns_choices():
+def plant_columns_choices() -> list[tuple[str, str]]:
     return plant_columns_default_choices() + plant_columns_taxon_choices() + plant_columns_custom_choices()
+
+
+def plant_columns_choices_dict() -> dict:
+    return {key: val for key, val in plant_columns_choices()} | {"id": "id"}
 
 
 class PlantColumnsForm(forms.Form):

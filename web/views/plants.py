@@ -1,7 +1,8 @@
+from django.http import Http404
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views import View
-from django.views.generic import ListView, FormView
+from django.views.generic import ListView, FormView, RedirectView
 
 from web.forms import PlantColumnsForm
 from web.models import Plant
@@ -15,7 +16,10 @@ class PlantsListView(ListView, FormView):
     form_class = PlantColumnsForm
 
 
-class PlantColumnsView(View):
+class PlantColumnsView(RedirectView):
+    def get(self, request, *args, **kwargs):
+        raise Http404
+
     def post(self, request, *args, **kwargs):
         form = PlantColumnsForm(request.POST)
         if form.is_valid():
