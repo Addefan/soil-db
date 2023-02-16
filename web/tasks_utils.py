@@ -27,7 +27,9 @@ class QuerySetToXlsxHandler:
 
     @controller("xlsx_default_columns")
     def prepare_default_columns(self):
-        default_columns = {choice[0] for choice in xlsx_columns_default_choices()} & self.columns
+        default_columns = [
+            choice[0] for choice in xlsx_columns_default_choices() if choice[0] in self.columns or choice[0] == "genus"
+        ]
         self.xlsx_default_columns = [
             {self.translation[key]: val for key, val in instance.items()}
             for instance in self.qs.values("id", *default_columns).order_by("id")
@@ -65,6 +67,7 @@ class QuerySetToXlsxHandler:
     def get_all_columns(self):
         prepared_pseudo_queryset = self.prepare_default_columns()
         for obj in prepared_pseudo_queryset:
+            print("obj:", obj)
             genus = obj.pop("Род")
             obj |= self.prepare_taxon_columns()[genus]
         custom_columns_pseudo_queryset = self.prepare_custom_columns()
