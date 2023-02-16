@@ -1,0 +1,39 @@
+from eav.models import Attribute
+
+from web.enums import TaxonLevel
+from web.models import Plant
+
+
+def xlsx_columns_default_choices() -> list[tuple[str, str]]:
+    translate = Plant._translate | Plant._taxons | {"organization": "Организация"}
+    return [
+        (field.name + "__name" if field.name == "organization" else field.name, translate[field.name])
+        for field in Plant._meta.fields
+        if translate.get(field.name)
+    ]
+
+
+def xlsx_columns_custom_choices() -> list[tuple[str, str]]:
+    return [(eav_field.name, eav_field.name) for eav_field in Attribute.objects.all()]
+
+
+def xlsx_columns_taxon_choices() -> list[tuple[str, str]]:
+    taxon_choices = []
+    for choice in TaxonLevel.choices:
+        for prefix, suffix in zip(("", "latin_"), ("", " (лат.)")):
+            if choice[0] == "kingdom":
+                continue
+            taxon_choices.append((prefix + choice[0], choice[1] + suffix))
+    return taxon_choices
+
+
+def xlsx_columns_choices() -> list[tuple[str, str]]:
+    return (
+        [choice for choice in xlsx_columns_default_choices() if choice[0] != "genus"]
+        + xlsx_columns_taxon_choices()
+        + xlsx_columns_custom_choices()
+    )
+
+
+def xlsx_columns_choices_dict() -> dict:
+    return {key: val for key, val in xlsx_columns_choices()} | {"id": "id"}

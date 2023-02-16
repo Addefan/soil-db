@@ -1,0 +1,86 @@
+from typing import Callable, Sized
+
+from django.db.models import QuerySet, Q
+from eav.models import Value
+
+from web.choices import xlsx_columns_choices_dict, xlsx_columns_default_choices
+from web.models import Taxon
+
+
+class QuerySetToXlsxHandler:
+    def __init__(self, columns: set[str], qs: QuerySet):
+        self.columns = columns
+        self.qs = qs
+        self.translation = xlsx_columns_choices_dict()
+
+    @staticmethod
+    def controller(attr_name: str) -> Callable:
+        def decorator(func: Callable) -> Callable:
+            def wrapper(self, *args, **kwargs) -> Sized:
+                if hasattr(self, attr_name):
+                    return getattr(self, attr_name)
+                return func(self, *args, **kwargs)
+
+            return wrapper
+
+        return decorator
+
+    @controller("xlsx_default_columns")
+    def prepare_default_columns(self):
+        default_columns = {choice[0] for choice in xlsx_columns_default_choices()} & self.columns
+        self.xlsx_default_columns = [
+            {self.translation[key]: val for key, val in instance.items()}
+            for instance in self.qs.values("id", *default_columns).order_by("id")
+        ]
+        return self.xlsx_default_columns
+
+    @controller("xlsx_taxon_columns")
+    def prepare_taxon_columns(self):
+        taxon_columns_queryset = {instance.id: instance for instance in Taxon.objects.all()}
+        self.xlsx_taxon_columns = {}
+        for obj in taxon_columns_queryset.values():
+            if obj.level == "genus":
+                leaf = obj.id
+                self.xlsx_taxon_columns[leaf] = {}
+                while obj:
+                    for prefix in ("", "latin_"):
+                        if prefix + obj.level in self.columns:
+                            self.xlsx_taxon_columns[leaf][self.translation[prefix + obj.level]] = getattr(
+                                obj, prefix + "title"
+                            )
+                    obj = taxon_columns_queryset.get(obj.parent_id)
+        return self.xlsx_taxon_columns
+
+    @controller("xlsx_custom_columns")
+    def prepare_custom_columns(self):
+        self.xlsx_custom_columns = [
+            {self.translation[model.attribute.name]: model.value, "id": model.entity_id}
+            for model in Value.objects.prefetch_related("attribute")
+            .filter(Q(entity_id__in=[instance["id"] for instance in self.prepare_default_columns()]))
+            .order_by("id")
+            if model.attribute.name in self.columns
+        ]
+        return self.xlsx_custom_columns
+
+    def get_all_columns(self):
+        prepared_pseudo_queryset = self.prepare_default_columns()
+        for obj in prepared_pseudo_queryset:
+            genus = obj.pop("Род")
+            obj |= self.prepare_taxon_columns()[genus]
+        custom_columns_pseudo_queryset = self.prepare_custom_columns()
+        # Two pointers method
+        i, j = 0, 0
+        while i < len(prepared_pseudo_queryset) and j < len(custom_columns_pseudo_queryset):
+            if prepared_pseudo_queryset[i]["id"] == custom_columns_pseudo_queryset[j]["id"]:
+                prepared_pseudo_queryset[i] |= custom_columns_pseudo_queryset[j]
+                j += 1
+            else:
+                i += 1
+        # All pseudo queryset dicts must have the same structure
+        # so the missing fields must be present in each dict
+        for instance in prepared_pseudo_queryset:
+            instance.pop("id")
+            instance |= {
+                key: None for key in {self.translation[column] for column in self.columns}.difference(instance.keys())
+            }
+        return prepared_pseudo_queryset
