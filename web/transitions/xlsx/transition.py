@@ -1,18 +1,15 @@
 import os
 import uuid
+from datetime import datetime
 
 import django
 import xlsxwriter
-
-from datetime import datetime
-from xlsxwriter import Workbook
 from django.conf import settings
 from django.db.models import QuerySet
+from xlsxwriter import Workbook
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "soil.settings")
 django.setup()
-
-from web.models import Plant
 
 
 def create_media_xlsx_directory() -> None:
@@ -33,7 +30,7 @@ def queryset_to_xlsx(qs: QuerySet) -> str:
     create_media_xlsx_directory()
 
     file_uuid = uuid.uuid4()
-    path = f"{BASE_DIR}/media/xlsx/{file_uuid}.xlsx"
+    path = f"{settings.BASE_DIR}/media/xlsx/{file_uuid}.xlsx"
     workbook = xlsxwriter.Workbook(path, {"remove_timezone": True})
     sheet = workbook.add_worksheet("result")
 
@@ -69,7 +66,3 @@ def queryset_to_xlsx(qs: QuerySet) -> str:
     workbook.close()
 
     return path
-
-
-if __name__ == "__main__":
-    queryset_to_xlsx(Plant.objects.all())
