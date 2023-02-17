@@ -4,17 +4,17 @@ from django.db.models import QuerySet, Q
 from eav.models import Value
 
 from web.choices import xlsx_columns_choices_dict, xlsx_columns_default_choices
-from web.models import Taxon, Plant
+from web.models import Taxon
 
 
-class QuerySetToXlsxHandler:
+class QuerySetToListConverter:
     def __init__(self, columns: list[str], qs: QuerySet):
         self.columns = set(columns)
         self.qs = qs
         self.translation = xlsx_columns_choices_dict()
 
     @staticmethod
-    def controller(attr_name: str) -> Callable:
+    def cache(attr_name: str) -> Callable:
         """caches method's returned values - methods won't calculate smth twice"""
 
         def decorator(func: Callable) -> Callable:
@@ -27,8 +27,9 @@ class QuerySetToXlsxHandler:
 
         return decorator
 
-    @controller("xlsx_default_columns")
-    def prepare_default_columns(self):
+    @property
+    @cache("xlsx_default_columns")
+    def default_columns(self):
         default_columns = [
             choice[0] for choice in xlsx_columns_default_choices() if choice[0] in self.columns or choice[0] == "genus"
         ]
@@ -38,8 +39,9 @@ class QuerySetToXlsxHandler:
         ]
         return self.xlsx_default_columns
 
-    @controller("xlsx_taxon_columns")
-    def prepare_taxon_columns(self):
+    @property
+    @cache("xlsx_taxon_columns")
+    def taxon_columns(self):
         taxon_columns_queryset = {instance.id: instance for instance in Taxon.objects.all()}
         self.xlsx_taxon_columns = {}
         for obj in taxon_columns_queryset.values():
@@ -55,24 +57,25 @@ class QuerySetToXlsxHandler:
                     obj = taxon_columns_queryset.get(obj.parent_id)
         return self.xlsx_taxon_columns
 
-    @controller("xlsx_custom_columns")
-    def prepare_custom_columns(self):
+    @property
+    @cache("xlsx_custom_columns")
+    def custom_columns(self):
         self.xlsx_custom_columns = [
             {self.translation[model.attribute.name]: model.value, "id": model.entity_id}
             for model in Value.objects.prefetch_related("attribute")
-            .filter(Q(entity_id__in=[instance["id"] for instance in self.prepare_default_columns()]))
+            .filter(Q(entity_id__in=[instance["id"] for instance in self.default_columns]))
             .order_by("id")
             if model.attribute.name in self.columns
         ]
         return self.xlsx_custom_columns
 
     def get_all_columns(self):
-        prepared_pseudo_queryset = self.prepare_default_columns()
+        prepared_pseudo_queryset = self.default_columns
         # combine plant's default and taxon columns
         for obj in prepared_pseudo_queryset:
             genus = obj.pop("Род")
-            obj |= self.prepare_taxon_columns()[genus]
-        custom_columns_pseudo_queryset = self.prepare_custom_columns()
+            obj |= self.taxon_columns[genus]
+        custom_columns_pseudo_queryset = self.custom_columns
         # Two pointers method
         # combine plant's default and custom columns
         i, j = 0, 0
@@ -92,6 +95,6 @@ class QuerySetToXlsxHandler:
         return prepared_pseudo_queryset
 
 
-def prepare_queryset(columns: list[str], qs):
-    handler = QuerySetToXlsxHandler(columns, qs)
+def prepare_queryset(columns: list[str], qs) -> list[dict]:
+    handler = QuerySetToListConverter(columns, qs)
     return handler.get_all_columns()
