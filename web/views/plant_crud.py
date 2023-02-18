@@ -78,7 +78,8 @@ class PlantMixin:
     def form_invalid(self, form):
         return self.render_to_response(
             self.get_context_data(
-                form=form,
+                plant_form_part_1=list(form)[:2],
+                plant_form_part_2=list(form)[2:],
                 form_classification=TaxonForm(self.request.POST),
                 attr_form_view=AttributeFormView(self.request.POST),
             )
