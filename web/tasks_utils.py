@@ -19,9 +19,9 @@ class QuerySetToListConverter:
 
         def decorator(func: Callable) -> Callable:
             def wrapper(self, *args, **kwargs) -> Sized:
-                if hasattr(self, attr_name):
-                    return getattr(self, attr_name)
-                return func(self, *args, **kwargs)
+                if not hasattr(self, attr_name):
+                    setattr(self, attr_name, func(self, *args, **kwargs))
+                return getattr(self, attr_name)
 
             return wrapper
 
@@ -33,11 +33,10 @@ class QuerySetToListConverter:
         default_columns = [
             choice[0] for choice in xlsx_columns_default_choices() if choice[0] in self.columns or choice[0] == "genus"
         ]
-        self.xlsx_default_columns = [
+        return [
             {self.translation[key]: val for key, val in instance.items()}
             for instance in self.qs.values("id", *default_columns).order_by("id")
         ]
-        return self.xlsx_default_columns
 
     @property
     @cache("xlsx_taxon_columns")
@@ -60,14 +59,13 @@ class QuerySetToListConverter:
     @property
     @cache("xlsx_custom_columns")
     def custom_columns(self):
-        self.xlsx_custom_columns = [
+        return [
             {self.translation[model.attribute.name]: model.value, "id": model.entity_id}
             for model in Value.objects.prefetch_related("attribute")
             .filter(Q(entity_id__in=[instance["id"] for instance in self.default_columns]))
             .order_by("id")
             if model.attribute.name in self.columns
         ]
-        return self.xlsx_custom_columns
 
     def get_all_columns(self):
         prepared_pseudo_queryset = self.default_columns
