@@ -1,7 +1,6 @@
 from django.core.mail import EmailMessage
 
 from soil.celery import app
-from web.models import Plant
 from web.tasks_utils import prepare_queryset
 from web.transitions import queryset_to_xlsx
 

@@ -1,12 +1,14 @@
 import os
 import uuid
 from datetime import datetime
+from types import NoneType
 
 import django
 import xlsxwriter
 from django.conf import settings
-from django.db.models import QuerySet
 from xlsxwriter import Workbook
+
+from web.models import Plant
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "soil.settings")
 django.setup()
@@ -51,6 +53,7 @@ def queryset_to_xlsx(qs: list[dict]) -> str:
         float: sheet.write_number,
         bool: sheet.write_boolean,
         datetime: sheet.write_datetime,
+        NoneType: sheet.write_blank,
     }
 
     # writing objects
@@ -64,5 +67,8 @@ def queryset_to_xlsx(qs: list[dict]) -> str:
 
     sheet.autofit()
     workbook.close()
-
     return path
+
+
+if __name__ == "__main__":
+    queryset_to_xlsx(Plant.objects.all())
