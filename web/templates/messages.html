@@ -1,22 +1,21 @@
-{% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-light d-flex align-items-center w-25 position-absolute bottom-0 end-0 m-3" role="alert">
-            <div class="alert-heading w-75 text-center">
-                <strong class="me-auto
-                    {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-                         text-success">{{ message|safe }}
-                    {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-                         text-danger">{{ message|safe }}
-                    {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
-                         text-warning">{{ message|safe }}
-                    {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
-                         text-info">{{ message|safe }}
-                    {% endif %}
-                </strong>
-            </div>
-            <div class="text-center w-25">
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
+{% for message in messages %}
+    <div class="alert alert-light d-flex align-items-center w-25 position-absolute bottom-0 end-0 m-3" role="alert">
+        <div class="alert-heading w-75 text-center">
+            <strong class="me-auto
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                     text-success">
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                     text-danger">
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                     text-warning">
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+                     text-info">
+                {% endif %}
+                {{ message|safe }}
+            </strong>
         </div>
-    {% endfor %}
-{% endif %}
+        <div class="text-center w-25">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+{% endfor %}
