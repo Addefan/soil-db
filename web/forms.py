@@ -6,8 +6,10 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
-from eav.models import Entity
+from eav.models import Entity, Attribute
 
+from web.choices import xlsx_columns_choices
+from web.enums import TaxonLevel
 from web.models import Plant, Staff, Taxon
 
 TYPES = [
@@ -225,3 +227,10 @@ class ProfileForm(forms.ModelForm):
         labels = {"password": "Новый пароль"}
         fields = ("surname", "name", "email", "password")
         readonly_fields = ("email",)
+
+
+class XlsxColumnsForm(forms.Form):
+    columns = forms.MultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple(attrs={"checked": True}),
+        choices=xlsx_columns_choices(),
+    )

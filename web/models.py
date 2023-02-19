@@ -82,8 +82,8 @@ class Plant(models.Model, PlantModelMixin):
     number = models.IntegerField(unique=True)
     organization = models.ForeignKey(Organization, on_delete=models.SET_NULL, null=True)
     genus = models.ForeignKey(Taxon, on_delete=models.SET_NULL, null=True)
-    latin_name = models.CharField(max_length=127)
     name = models.CharField(max_length=127)
+    latin_name = models.CharField(max_length=127)
 
     def to_dict(self):
         obj: dict = {
