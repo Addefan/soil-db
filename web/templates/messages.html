@@ -1,6 +1,6 @@
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
     {% for message in messages %}
-        <div class="toast mb-2" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast mb-2" data-autohide="false" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header">
                 <strong class="me-auto
                     {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
@@ -18,7 +18,10 @@
             </div>
             <div class="toast-body">
                 {{ message|safe }}
-            </div>
+            </strong>
         </div>
-    {% endfor %}
-</div>
+        <div class="text-center w-25">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+{% endfor %}
