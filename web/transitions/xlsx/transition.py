@@ -23,7 +23,7 @@ def make_cell_format(wb: Workbook, bold=False, font_color="black", bg_color="whi
     return cell_format
 
 
-def queryset_to_xlsx(qs: QuerySet) -> str:
+def queryset_to_xlsx(qs: list[dict]) -> str:
     """
     A function to make QuerySet transition into .xlsx file
     """
@@ -38,10 +38,10 @@ def queryset_to_xlsx(qs: QuerySet) -> str:
     date_format = make_cell_format(wb=workbook, num_format="dd/mm/yy hh:mm")
     header_format = make_cell_format(wb=workbook, bold=True, bg_color="#c8ed72")
 
-    objects = qs.values()
+    objects = qs
 
     # writing headers
-    headers = objects.first().keys()
+    headers = objects[0].keys()
     for x, header in enumerate(headers):
         sheet.write_string(0, x, header, cell_format=header_format)
 

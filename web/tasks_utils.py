@@ -28,7 +28,7 @@ class QuerySetToListConverter:
         return decorator
 
     @property
-    @cache("xlsx_default_columns")
+    @cache.__get__("xlsx_default_columns")
     def default_columns(self):
         default_columns = [
             choice[0] for choice in xlsx_columns_default_choices() if choice[0] in self.columns or choice[0] == "genus"
@@ -39,7 +39,7 @@ class QuerySetToListConverter:
         ]
 
     @property
-    @cache("xlsx_taxon_columns")
+    @cache.__get__("xlsx_taxon_columns")
     def taxon_columns(self):
         taxon_columns_queryset = {instance.id: instance for instance in Taxon.objects.all()}
         self.xlsx_taxon_columns = {}
@@ -57,7 +57,7 @@ class QuerySetToListConverter:
         return self.xlsx_taxon_columns
 
     @property
-    @cache("xlsx_custom_columns")
+    @cache.__get__("xlsx_custom_columns")
     def custom_columns(self):
         return [
             {self.translation[model.attribute.name]: model.value, "id": model.entity_id}
@@ -94,5 +94,6 @@ class QuerySetToListConverter:
 
 
 def prepare_queryset(columns: list[str], qs) -> list[dict]:
+    """qs - queryset with filters"""
     handler = QuerySetToListConverter(columns, qs)
     return handler.get_all_columns()

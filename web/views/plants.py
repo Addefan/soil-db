@@ -1,10 +1,8 @@
+from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import redirect
-from django.urls import reverse
-from django.views import View
 from django.views.generic import ListView, FormView, RedirectView
-from django.db.models import Q
-
+from django.conf import settings
 from web.forms import XlsxColumnsForm
 from web.models import Plant
 from web.tasks import export_to_excel
@@ -17,7 +15,7 @@ class PlantsListView(ListView, FormView):
     form_class = XlsxColumnsForm
 
     def get_queryset(self):
-        search = self.request.GET.get('search')
+        search = self.request.GET.get("search")
         if search:
             return Plant.objects.filter(Q(name__icontains=search) | Q(latin_name__icontains=search))
         return super().get_queryset()
@@ -34,6 +32,10 @@ class XlsxColumnsView(RedirectView):
         form = XlsxColumnsForm(request.POST)
         if form.is_valid():
             data = dict(request.POST)
-            export_to_excel.delay(data.get("columns"))
+            export_to_excel.delay(
+                from_here=settings.DEFAULT_FROM_EMAIL,
+                to_there=request.user.email,
+                columns=data.get("columns"),
+                qs=Plant.objects.all(),
+            )
         return redirect("plants")
-
