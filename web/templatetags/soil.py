@@ -15,7 +15,7 @@ def queryset_names(names_to_select, var):
 @register.inclusion_tag(os.path.join("web", "form", "form-in-view.html"))
 def suggestions(stage_form, names_to_select):
     return {
-        "stage_form": stage_form,
+        "form": stage_form,
         "taxonomy": {
             "phylum_title": queryset_names(names_to_select["phylum"], "title"),
             "phylum_latin_title": queryset_names(names_to_select["phylum"], "latin_title"),
@@ -26,7 +26,8 @@ def suggestions(stage_form, names_to_select):
             "family_title": queryset_names(names_to_select["family"], "title"),
             "family_latin_title": queryset_names(names_to_select["family"], "latin_title"),
             "genus_title": queryset_names(names_to_select["genus"], "title"),
-            "genus_latin_title": queryset_names(names_to_select["genus"], "latin_title")},
+            "genus_latin_title": queryset_names(names_to_select["genus"], "latin_title"),
+        },
     }
 
 
@@ -38,7 +39,7 @@ def separate_slice(form, separating_index):
 
 @register.filter(name="getattr")
 def get_attr(obj, attr_name):
-    """ Try to get an attribute from an object.
+    """Try to get an attribute from an object.
 
     Example: {% if block|getattr:"editable" %}
     """

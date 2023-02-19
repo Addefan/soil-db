@@ -7,6 +7,9 @@
                     {% if field.errors %}is-invalid{% endif %}">
             {{ field }}
             {{ field.label_tag }}
+            {% if field.field.widget.attrs.list %}
+                {% block suggestions %}{% endblock %}
+            {% endif %}
         </div>
         <div class="invalid-feedback">
             {{ field.errors }}

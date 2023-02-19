@@ -1,12 +1,9 @@
+{% extends 'web/form/form_with_errors.html' %}
 {% load soil %}
-{% for field in stage_form %}
-    <div class="form-floating mt-3">
-        {{ field }}
-        {{ field.label_tag }}
-        <datalist id="{{ field.name }}">
-            {% for name in taxonomy|getattr:field.name %}
-                <option value='{{ name }}'></option>
-            {% endfor %}
-        </datalist>
-    </div>
-{% endfor %}
+{% block suggestions %}
+    <datalist id="{{ field.name }}">
+        {% for name in taxonomy|getattr:field.name %}
+            <option value='{{ name }}'></option>
+        {% endfor %}
+    </datalist>
+{% endblock %}
