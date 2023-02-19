@@ -1,16 +1,22 @@
-{% for message in messages %}
-    <div class="alert alert-light d-flex align-items-center w-25 position-absolute bottom-0 end-0 m-3" role="alert">
-        <div class="alert-heading w-75 text-center">
-            <strong class="me-auto
-                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-                     text-success">
-                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-                     text-danger">
-                {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
-                     text-warning">
-                {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
-                     text-info">
-                {% endif %}
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    {% for message in messages %}
+        <div class="toast mb-2" data-autohide="false" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto
+                    {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                         text-success">Успешно!
+                    {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                         text-danger">Ошибка!
+                    {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                         text-warning">Предупреждение!
+                    {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+                         text-info">Уведомление!
+                    {% endif %}
+                </strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
                 {{ message|safe }}
             </strong>
         </div>
