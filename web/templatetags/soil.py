@@ -27,3 +27,9 @@ def suggestions(stage_form, names_to_select):
         "genus_title": queryset_names(names_to_select["genus"], "title"),
         "genus_latin_title": queryset_names(names_to_select["genus"], "latin_title"),
     }
+
+
+@register.simple_tag(name="separate_form")
+def separate_slice(form, separating_index):
+    form, separating_index = list(form), int(separating_index)
+    return form[:separating_index], form[separating_index:]
