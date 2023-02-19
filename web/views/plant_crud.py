@@ -69,17 +69,12 @@ class PlantMixin:
     def get_initial(self):
         attr_form_view = AttributeFormView(self.request.POST)
         taxon_form = TaxonForm(self.request.POST)
-        if attr_form_view.is_valid():
-            print(attr_form_view.cleaned_data)
-        if taxon_form.is_valid():
-            print(taxon_form.cleaned_data)
         return {"attr_form_view": attr_form_view, "form_classification": taxon_form}
 
     def form_invalid(self, form):
         return self.render_to_response(
             self.get_context_data(
-                plant_form_part_1=list(form)[:2],
-                plant_form_part_2=list(form)[2:],
+                form=form,
                 form_classification=TaxonForm(self.request.POST),
                 attr_form_view=AttributeFormView(self.request.POST),
             )
