@@ -5,3 +5,7 @@ $('button[data-usage="xlsx-submit"]').on("click", (event) => {
     let xlsxForm = document.forms.xlsx_form;
     xlsxForm.submit();
 })
+
+$(document).ready(function() {
+    $(".toast").toast('show');
+});

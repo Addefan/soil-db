@@ -68,3 +68,8 @@ footer {
 a {
     color: #000;
 }
+
+.search-icon {
+    vertical-align: -0.2em;
+    font-size: 1.3em;
+}
