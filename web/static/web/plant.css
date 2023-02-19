@@ -31,6 +31,6 @@ tr:hover {
     overflow-y: scroll;
 }
 
-.navbar__button {
+.export_to_xlsx__button {
     margin: 10px 0 10px 25px;
 }
