@@ -9,7 +9,7 @@
     <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
     {% block styles %}
         <link rel="stylesheet" href="{% static 'web/bootstrap.min.css' %}">
-        <link rel="stylesheet" href="{% static 'web/style.css' %}">
+        <link rel="stylesheet" href="{% static 'web/style.css' %}?">
     {% endblock %}
 
     <title>{% block title %}Soil DB{% endblock %}</title>
@@ -17,24 +17,12 @@
 <body>
 <div class="wrapper">
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light custom-color">
-          <div class="container-fluid">
-            <a class="navbar-brand" title='К растениям' href="{% url 'plants' %}"><img src="{% static "favicon.ico" %}" alt="" class="icon"></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarText">
-              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                  {% include "web/snippets/navbar.html" %}
-              </ul>
-            </div>
-          </div>
-        </nav>
+        {% include "web/snippets/navbar.html" %}
     </header>
     <div class="container">
         {% block body %}{% endblock %}
         {% block messages %}
-          {% include "messages.html" %}
+            {% include "messages.html" %}
         {% endblock %}
     </div>
     <footer class="d-flex align-items-center justify-content-center">
