@@ -1,18 +1,17 @@
 import os
 import uuid
+from datetime import datetime
+from types import NoneType
 
 import django
 import xlsxwriter
-
-from datetime import datetime
-from xlsxwriter import Workbook
 from django.conf import settings
-from django.db.models import QuerySet
+from xlsxwriter import Workbook
+
+from web.models import Plant
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "soil.settings")
 django.setup()
-
-from web.models import Plant
 
 
 def create_media_xlsx_directory() -> None:
@@ -26,14 +25,14 @@ def make_cell_format(wb: Workbook, bold=False, font_color="black", bg_color="whi
     return cell_format
 
 
-def queryset_to_xlsx(qs: QuerySet) -> str:
+def queryset_to_xlsx(qs: list[dict]) -> str:
     """
     A function to make QuerySet transition into .xlsx file
     """
     create_media_xlsx_directory()
 
     file_uuid = uuid.uuid4()
-    path = f"{BASE_DIR}/media/xlsx/{file_uuid}.xlsx"
+    path = f"{settings.BASE_DIR}/media/xlsx/{file_uuid}.xlsx"
     workbook = xlsxwriter.Workbook(path, {"remove_timezone": True})
     sheet = workbook.add_worksheet("result")
 
@@ -41,10 +40,10 @@ def queryset_to_xlsx(qs: QuerySet) -> str:
     date_format = make_cell_format(wb=workbook, num_format="dd/mm/yy hh:mm")
     header_format = make_cell_format(wb=workbook, bold=True, bg_color="#c8ed72")
 
-    objects = qs.values()
+    objects = qs
 
     # writing headers
-    headers = objects.first().keys()
+    headers = objects[0].keys()
     for x, header in enumerate(headers):
         sheet.write_string(0, x, header, cell_format=header_format)
 
@@ -54,6 +53,7 @@ def queryset_to_xlsx(qs: QuerySet) -> str:
         float: sheet.write_number,
         bool: sheet.write_boolean,
         datetime: sheet.write_datetime,
+        NoneType: sheet.write_blank,
     }
 
     # writing objects
@@ -67,7 +67,6 @@ def queryset_to_xlsx(qs: QuerySet) -> str:
 
     sheet.autofit()
     workbook.close()
-
     return path
 
 
