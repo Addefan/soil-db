@@ -1,7 +1,6 @@
 import os
 import uuid
 from datetime import datetime
-from types import NoneType
 
 import django
 import xlsxwriter
@@ -12,6 +11,7 @@ from web.models import Plant
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "soil.settings")
 django.setup()
+NoneType = type(None)
 
 
 def create_media_xlsx_directory() -> None:
@@ -68,7 +68,3 @@ def queryset_to_xlsx(qs: list[dict]) -> str:
     sheet.autofit()
     workbook.close()
     return path
-
-
-if __name__ == "__main__":
-    queryset_to_xlsx(Plant.objects.all())

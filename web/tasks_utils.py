@@ -1,3 +1,4 @@
+from functools import cached_property
 from typing import Callable, Sized
 
 from django.db.models import QuerySet, Q
@@ -27,8 +28,7 @@ class QuerySetToListConverter:
 
         return decorator
 
-    @property
-    @cache.__get__("xlsx_default_columns")
+    @cached_property
     def default_columns(self):
         default_columns = [
             choice[0] for choice in xlsx_columns_default_choices() if choice[0] in self.columns or choice[0] == "genus"
@@ -38,8 +38,7 @@ class QuerySetToListConverter:
             for instance in self.qs.values("id", *default_columns).order_by("id")
         ]
 
-    @property
-    @cache.__get__("xlsx_taxon_columns")
+    @cached_property
     def taxon_columns(self):
         taxon_columns_queryset = {instance.id: instance for instance in Taxon.objects.all()}
         self.xlsx_taxon_columns = {}
@@ -56,8 +55,7 @@ class QuerySetToListConverter:
                     obj = taxon_columns_queryset.get(obj.parent_id)
         return self.xlsx_taxon_columns
 
-    @property
-    @cache.__get__("xlsx_custom_columns")
+    @cached_property
     def custom_columns(self):
         return [
             {self.translation[model.attribute.name]: model.value, "id": model.entity_id}
