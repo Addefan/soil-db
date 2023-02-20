@@ -1,7 +1,8 @@
+from django.conf import settings
+from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import redirect
 from django.views.generic import ListView, FormView, RedirectView
-from django.db.models import Q
 
 from web.forms import XlsxColumnsForm
 from web.models import Plant
@@ -32,5 +33,7 @@ class XlsxColumnsView(RedirectView):
         form = XlsxColumnsForm(request.POST)
         if form.is_valid():
             data = dict(request.POST)
-            export_to_excel.delay(columns=data.get("columns"))
+            export_to_excel.delay(
+                from_here=settings.DEFAULT_FROM_EMAIL, to_there=request.user.email, columns=data.get("columns")
+            )
         return redirect("plants")
