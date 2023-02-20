@@ -32,7 +32,7 @@ def suggestions(stage_form, names_to_select):
 
 
 @register.simple_tag(name="separate_form")
-def separate_slice(form, separating_index):
+def separate_form(form, separating_index):
     form, separating_index = list(form), int(separating_index)
     return form[:separating_index], form[separating_index:]
 
