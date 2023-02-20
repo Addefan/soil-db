@@ -10,49 +10,24 @@
 {% block body %}
     {% if not is_success %}
         <div class="container d-flex justify-content-center align-items-center">
-            <div class="card" style="width: 65%">
+            <div class="card w-75 my-4">
                 <div class="card-body">
                     <h5 class="card-title">{% if number %}Редактирование{% else %}
                                                 Новое растение{% endif %}
                     </h5>
-                    {% if form.errors %}
-                        <b>Возникли ошибки при заполнении формы. Пожалуйста, исправьте их:</b>
-                        {% for field in form %}
-                            {% for error in field.errors %}
-                                <p style="color: red">{{ error }}</p>
-                            {% endfor %}
-                        {% endfor %}
-                    {% endif %}
-                    <form action="" method="post" style="margin-top: 5px">
+                    <form action="" method="post">
                         {% csrf_token %}
-                        {% for field in form %}
-                            {% if field.name == 'latin_name' %}
-                                {% suggestions form_classification taxon_name %}
-                                <div class="form-floating mb-3">
-                                    <div class="form-floating mb-3">
-                                        {{ field }}
-                                        {{ field.label_tag }}
-                                    </div>
-                                </div>
-                            {% else %}
-                                <div class="form-floating mb-3">
-                                    {{ field }}
-                                    {{ field.label_tag }}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                        {% for field in attr_form_view %}
-                            <div class="form-floating mb-3">
-                                {{ field }}
-                                {{ field.label_tag }}
-                            </div>
-                        {% endfor %}
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#exampleModal" style="margin-bottom: 7px">
+                        {% separate_form form "2" as plant_form %}
+                        {% include 'web/form/form_with_errors.html' with form=plant_form.0 %}
+                        {% suggestions form_classification taxon_name %}
+                        {% include 'web/form/form_with_errors.html' with form=plant_form.1 %}
+                        {% include 'web/form/form_with_errors.html' with form=attr_form_view %}
+                        <button type="button" class="btn btn-success mt-3" data-bs-toggle="modal"
+                                data-bs-target="#exampleModal">
                             Добавить недостающие атрибуты
                         </button>
                         <br>
-                        <button type="submit" class="btn btn-success">{% if number %}Сохранить{% else %}
+                        <button type="submit" class="btn btn-success mt-3">{% if number %}Сохранить{% else %}
                                                                         Добавить{% endif %}
                         </button>
                     </form>
@@ -73,11 +48,11 @@
                     <div class="modal-body">
                         <form action="" method="post" id="attr_form">
                             {% csrf_token %}
-                            {{ attr_form.as_p }}
+                            {% include 'web/form/form_with_errors.html' with form=attr_form %}
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button id='add_button' type="button" class="btn btn-success">Добавить</button>
+                        <button id="add_button" type="button" class="btn btn-success">Добавить</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
                     </div>
                 </div>

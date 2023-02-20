@@ -9,28 +9,9 @@
             {% if not user.is_authenticated %}
                 <form action="" method="post">
                     {% csrf_token %}
+                    {% include 'web/form/form_with_errors.html' %}
                     <div class="text-center">
-                        {% if form.errors %}
-                            {% for field in form.non_field_errors %}
-                                <p class="text-danger mb-0">{{ field }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    {% for field in form %}
-                        {% if field.name != 'remember_me' %}
-                            <div class="form-floating mt-3">
-                                {{ field }}
-                                {{ field.label_tag }}
-                            </div>
-                        {% else %}
-                            <div class="checkbox mt-3">
-                                {{ field }}
-                                {{ field.label_tag }}
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                    <div class="text-center">
-                        <button class="btn btn-success mt-3">Войти</button>
+                        <button class="btn btn-success mt-3 w-100">Войти</button>
                     </div>
                 </form>
             {% else %}

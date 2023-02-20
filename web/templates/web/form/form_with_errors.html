@@ -1,0 +1,18 @@
+{% for error in form.non_field_errors %}
+    <div class="text-danger">{{ error }}</div>
+{% endfor %}
+{% for field in form %}
+    <div class="input-group has-validation {{ field.name }}">
+        <div class="{% if field.field.widget.input_type != 'checkbox' %}form-floating{% endif %} mt-3
+                    {% if field.errors %}is-invalid{% endif %}">
+            {{ field }}
+            {{ field.label_tag }}
+            {% if field.field.widget.attrs.list %}
+                {% block suggestions %}{% endblock %}
+            {% endif %}
+        </div>
+        <div class="invalid-feedback">
+            {{ field.errors }}
+        </div>
+    </div>
+{% endfor %}
