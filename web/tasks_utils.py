@@ -1,5 +1,4 @@
 from functools import cached_property
-from typing import Callable, Sized
 
 from django.db.models import QuerySet, Q
 from eav.models import Value
@@ -13,20 +12,6 @@ class QuerySetToListConverter:
         self.columns = set(columns)
         self.qs = qs
         self.translation = xlsx_columns_choices_dict()
-
-    @staticmethod
-    def cache(attr_name: str) -> Callable:
-        """caches method's returned values - methods won't calculate smth twice"""
-
-        def decorator(func: Callable) -> Callable:
-            def wrapper(self, *args, **kwargs) -> Sized:
-                if not hasattr(self, attr_name):
-                    setattr(self, attr_name, func(self, *args, **kwargs))
-                return getattr(self, attr_name)
-
-            return wrapper
-
-        return decorator
 
     @cached_property
     def default_columns(self):
