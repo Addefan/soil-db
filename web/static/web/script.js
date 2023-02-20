@@ -7,5 +7,5 @@ $('button[data-usage="xlsx-submit"]').on("click", (event) => {
 })
 
 $(document).ready(function() {
-    $(".toast").toast('show');
+    $(".toast .messages").toast('show');
 });
