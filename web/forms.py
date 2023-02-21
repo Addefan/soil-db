@@ -104,7 +104,7 @@ class PlantForm(forms.ModelForm):
             plant.genus = genus
             obj = Entity(plant)
             for attribute in obj.get_all_attributes():
-                plant.eav.__setattr__(attribute.slug, attrs[attribute.slug])
+                plant.eav.__setattr__(attribute.slug, attrs.get(attribute.slug))
             plant.save()
             return plant
         else:
