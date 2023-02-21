@@ -1,4 +1,5 @@
 {% extends 'web/base.html' %}
+{% load static %}
 {% load soil %}
 {% block title %}
     {% if number %}
@@ -13,7 +14,7 @@
             <div class="card w-75 my-4">
                 <div class="card-body">
                     <h5 class="card-title">{% if number %}Редактирование{% else %}
-                                                Новое растение{% endif %}
+                        Новое растение{% endif %}
                     </h5>
                     <form action="" method="post">
                         {% csrf_token %}
@@ -28,7 +29,7 @@
                         </button>
                         <br>
                         <button type="submit" class="btn btn-success mt-3">{% if number %}Сохранить{% else %}
-                                                                        Добавить{% endif %}
+                            Добавить{% endif %}
                         </button>
                     </form>
                     <br>
@@ -61,18 +62,11 @@
     {% else %}
         <h1>Вы успешно добавили растение</h1>
     {% endif %}
-    <script src="http://code.jquery.com/jquery-3.2.1.js"></script>
+{% endblock %}
+{% block scripts %}
+    {{ block.super }}
     <script>
-        $('#add_button').on('click', function () {
-            $.ajax({
-                url: '{% url 'ajax_response' %}',
-                method: 'post',
-                dataType: 'html',
-                data: $('#attr_form').serialize(),
-                success: function (smt) {
-                    window.location.reload()
-                },
-            })
-        })
+        let path_ajax = "{% url 'ajax_response' %}"
     </script>
+    <script src="{% static 'web/plant_crud.js' %}"></script>
 {% endblock %}
