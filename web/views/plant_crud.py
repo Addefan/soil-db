@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.http import JsonResponse
 from django.urls import reverse
 from django.views.generic import CreateView, UpdateView
@@ -86,11 +87,14 @@ class PlantMixin:
         return reverse("plant", args=(self.object.number,))
 
 
-class PlantCreateView(PlantMixin, LoginRequiredMixin, CreateView):
+class PlantCreateView(PlantMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
     form_class = PlantForm
 
+    def get_success_message(self, cleaned_data):
+        return f"Вы успешно добавили растение <strong>{self.object.name}</strong>"
 
-class PlantUpdateView(PlantMixin, LoginRequiredMixin, UpdateView):
+
+class PlantUpdateView(PlantMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     form_class = PlantForm
     model = Plant
 
@@ -109,3 +113,6 @@ class PlantUpdateView(PlantMixin, LoginRequiredMixin, UpdateView):
             "taxon_name": TAXON_NAME,
             "number": self.kwargs[self.slug_url_kwarg],
         }
+
+    def get_success_message(self, cleaned_data):
+        return f"Вы успешно изменили растение <strong>{self.object.name}</strong>"
