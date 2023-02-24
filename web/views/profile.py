@@ -48,3 +48,25 @@ class ProfileFormView(LoginRequiredMixin, UpdateView):
         if not self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
             return super().form_invalid(form)
         return JsonResponse(form.errors, status=HTTPStatus.NOT_FOUND)
+
+
+class ChangePasswordView(RedirectView):
+    url = reverse_lazy("profile")
+
+    def get(self, request, *args, **kwargs):
+        token = request.GET.get("token", None)
+        if not token:
+            raise Http404
+        r = redis.Redis(host="localhost", port=6379, db=0)
+        data = r.getdel(token)
+        if not data:
+            raise Http404
+        data = json.loads(data)
+        user = Staff.objects.get(id=data["user_id"])
+        if not user == self.request.user:
+            raise Http404
+        user.password = data["password"]
+        user.save()
+        update_session_auth_hash(self.request, user)
+        messages.success(request, "Вы успешно изменили пароль")
+        return super().get(request, *args, **kwargs)

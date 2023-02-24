@@ -11,12 +11,14 @@ from web.views import (
     PlantUpdateView,
     LogoutView,
     XlsxColumnsView,
+    ChangePasswordView,
 )
 
 urlpatterns = [
     path("", PlantsListView.as_view(), name="plants"),
     path("plants/", PlantsListView.as_view(), name="plants"),
     path("profile/", ProfileFormView.as_view(), name="profile"),
+    path("profile/change_password/", ChangePasswordView.as_view(), name="change_password"),
     path("login/", LoginView.as_view(), name="login"),
     path("logout/", LogoutView.as_view(), name="logout"),
     path("plants/add/", PlantCreateView.as_view(), name="plants_add"),
