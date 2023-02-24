@@ -1,5 +1,6 @@
 {% extends "web/base.html" %}
 {% load static %}
+{% load soil %}
 
 {% block title %}Профиль{% endblock %}
 
@@ -33,17 +34,8 @@
         </div>
     </div>
 
-    <div class="toast bottom-0 end-0 m-3 position-absolute" role="alert" aria-live="assertive"
-         aria-atomic="true" id="success_toast">
-        <div class="toast-header">
-            <strong class="me-auto text-success">Успешно!</strong>
-            <button type="button" class="btn-close" data-bs-dismiss="toast"
-                    aria-label="Close"></button>
-        </div>
-        <div class="toast-body">
-            Данные вашего профиля были успешно изменены
-        </div>
-    </div>
+    {% toast "success_toast" "Успешно!" "text-success" "Данные вашего профиля были успешно изменены" %}
+    {% toast "info_toast" "Уведомление!" "text-info" "Письмо с инстукциями по изменению пароля отправлены вам на почту" %}
 {% endblock %}
 
 {% block scripts %}
