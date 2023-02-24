@@ -1,4 +1,5 @@
 import os.path
+from pathlib import Path
 
 from django import template
 
@@ -47,3 +48,13 @@ def get_attr(obj, attr_name):
         return obj.get(attr_name, None) or obj.__getattribute__(attr_name)
     except AttributeError:
         return None
+
+
+@register.inclusion_tag(Path("web") / "snippets" / "toast.html")
+def toast(toast_id, message_header, text_color_class, message_text):
+    return {
+        "toast_id": toast_id,
+        "message_header": message_header,
+        "text_color_class": text_color_class,
+        "message_text": message_text,
+    }
