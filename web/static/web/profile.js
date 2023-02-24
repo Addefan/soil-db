@@ -1,20 +1,37 @@
 $("#save").click(function () {
-    $.ajax({
-        method: "post",
-        url: profile_url,
-        dataType: "json",
-        data: $("#profile_form").serialize(),
-        success: function () {
-            save_current_input_values();
-            $(".is-invalid").removeClass("is-invalid");
-            let success_toast = new bootstrap.Toast($("#success_toast"));
-            success_toast.show();
-        },
-        error: function (data) {
-            displaying_errors(data.responseJSON);
-        }
-    });
+    if (fields_is_changed()) {
+        $.ajax({
+            method: "post",
+            url: profile_url,
+            dataType: "json",
+            data: $("#profile_form").serialize(),
+            success: function () {
+                save_current_input_values();
+                $(".is-invalid").removeClass("is-invalid");
+                let success_toast = new bootstrap.Toast($("#success_toast"));
+                success_toast.show();
+            },
+            error: function (data) {
+                displaying_errors(data.responseJSON);
+            }
+        });
+    }
 });
+
+function fields_is_changed() {
+    for (let field of $(".input-group")) {
+        let input = $(field).children().children("input");
+        if ($(field).hasClass("password")) {
+            if (input.val() !== "") {
+                return true;
+            }
+        }
+        else if (input.attr("value") !== input.val()) {
+            return true;
+        }
+    }
+    return false;
+}
 
 function displaying_errors(errors) {
     for (let field_name in errors) {
