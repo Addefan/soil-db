@@ -60,6 +60,12 @@ function save_current_input_values() {
     }
 }
 
+function move_toasts_to_toast_container() {
+    for (let toast of $(".toast.not-messages")) {
+        $(".toast-container").append($(toast).detach());
+    }
+}
+
 $(document).ready(function () {
     // Setting attributes for the tooltip on the email's input
     let div_with_email = $("#id_email").parent();
@@ -70,4 +76,6 @@ $(document).ready(function () {
     // Activation all tooltips (code from Bootstrap documentation)
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
+    move_toasts_to_toast_container()
 });
