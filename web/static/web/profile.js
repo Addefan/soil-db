@@ -5,11 +5,15 @@ $("#save").click(function () {
             url: profile_url,
             dataType: "json",
             data: $("#profile_form").serialize(),
-            success: function () {
+            success: function (data) {
                 save_current_input_values();
                 $(".is-invalid").removeClass("is-invalid");
                 let success_toast = new bootstrap.Toast($("#success_toast"));
                 success_toast.show();
+                if (data["password"]) {
+                    let info_toast = new bootstrap.Toast($("#info_toast"));
+                    info_toast.show();
+                }
             },
             error: function (data) {
                 displaying_errors(data.responseJSON);
