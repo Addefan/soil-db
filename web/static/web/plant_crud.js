@@ -26,9 +26,9 @@ function make_custom_attribute(name_attribute, type_attribute, slug_name) {
     input_field.id = `id_${slug_name}`
     if (type_attribute === 'string') {
         input_field.type = 'text'
-    } else if (type_attribute === 'integer'){
+    } else if (type_attribute === 'integer') {
         input_field.type = 'number'
-    } else if (type_attribute === 'float'){
+    } else if (type_attribute === 'float') {
         input_field.type = 'number'
         input_field.step = 'any'
     } else {
@@ -45,5 +45,10 @@ function make_custom_attribute(name_attribute, type_attribute, slug_name) {
     div_elem.append(label)
     last_field.append(div_elem)
     field_form_last_div.after(last_field)
-    $("#exampleModal").modal('hide');
+    $("#attribute_modal_window").modal('hide');
 }
+
+$(`#attribute_modal_window`).on('hide.bs.modal', function () {
+    console.log('Я тут')
+    $("#attribute_modal_window form")[0].reset()
+})
