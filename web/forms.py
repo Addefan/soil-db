@@ -131,7 +131,7 @@ class AttributeFormView(forms.Form):
         self.label_suffix = ""
         for attr in Entity(Plant).get_all_attributes():
             if attr.datatype == "date":
-                self.fields[attr.slug] = INPUT_TYPES[attr.datatype](widget=forms.SelectDateWidget)
+                self.fields[attr.slug] = INPUT_TYPES[attr.datatype](widget=forms.NumberInput(attrs={"type": "date"}))
             else:
                 self.fields[attr.slug] = INPUT_TYPES[attr.datatype]()
             self.fields[attr.slug].label = attr.name

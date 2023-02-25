@@ -24,7 +24,16 @@ function make_custom_attribute(name_attribute, type_attribute, slug_name) {
 
     let input_field = document.createElement('input')
     input_field.id = `id_${slug_name}`
-    input_field.type = 'text'
+    if (type_attribute === 'string') {
+        input_field.type = 'text'
+    } else if (type_attribute === 'integer'){
+        input_field.type = 'number'
+    } else if (type_attribute === 'float'){
+        input_field.type = 'number'
+        input_field.step = 'any'
+    } else {
+        input_field.type = 'date'
+    }
     input_field.name = `${slug_name}`
     input_field.placeholder = 'smt'
     input_field.classList.add('form-control')
