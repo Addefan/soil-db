@@ -19,7 +19,7 @@ class PlantsListView(ListView, FormView):
         search = self.request.GET.get("search")
         if search:
             return Plant.objects.filter(Q(name__icontains=search) | Q(latin_name__icontains=search))
-        return super().get_queryset()
+        return self.model.objects.prefetch_related("organization").prefetch_related("genus").all()
 
 
 class XlsxColumnsView(RedirectView):
