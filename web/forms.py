@@ -145,7 +145,7 @@ class AttributeForm(forms.Form):
         self.label_suffix = ""
         for attr, value in self.fields.items():
             input_class = "form-select" if self.fields[attr].widget.input_type == "select" else "form-control"
-            self.fields[attr].widget.attrs.update({"class": input_class})
+            self.fields[attr].widget.attrs.update({"class": input_class, "placeholder": "smt"})
 
     name_attr = forms.CharField(label="Название")
     type_attr = forms.ChoiceField(widget=forms.Select, choices=TYPES, label="Тип данных")
