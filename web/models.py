@@ -2,7 +2,8 @@ import eav
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import UserManager as DjangoUserManager, PermissionsMixin
 from django.db import models
-from eav.models import Entity
+from django.forms import model_to_dict
+from eav.models import Entity, Value
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
 
@@ -60,10 +61,11 @@ class PlantModelMixin:
 
     def _get_eav_fields(self):
         dct: dict = {}
-        for attr in Entity(self).get_all_attributes():
-            value = getattr(self.eav, attr.slug, None)
+        eav_fields = Value.objects.prefetch_related("attribute").filter(entity_id=self.pk)
+        for field in eav_fields:
+            value = field.value
             if value is not None:
-                dct[attr.name] = value
+                dct[field.attribute.name] = value
         return dct
 
     def _get_plant_classification(self):
@@ -88,9 +90,14 @@ class Plant(models.Model, PlantModelMixin):
     def to_dict(self):
         obj: dict = {
             self._translate[key]: value or "Не указано"
-            for key, value in self.__dict__.items()
-            if not (key in self._stop_list or key.endswith("_id"))
+            for key, value in model_to_dict(self).items()
+            if key not in ("id", "organization", "genus")
         }
+        # obj: dict = {
+        #     self._translate[key]: value or "Не указано"
+        #     for key, value in self.__dict__.items()
+        #     if not (key in self._stop_list or key.endswith("_id"))
+        # }
         obj |= self._get_plant_classification()
         obj["Организация"] = self._get_organization_name()
         obj |= self._get_eav_fields()
