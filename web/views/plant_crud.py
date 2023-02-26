@@ -21,13 +21,15 @@ ATTRIBUTE_TYPE = {
     "float": Attribute.TYPE_FLOAT,
 }
 
-TAXON_NAME = {
-    "phylum": Taxon.objects.filter(level=TaxonLevel.phylum),
-    "class": Taxon.objects.filter(level=TaxonLevel.klass),
-    "order": Taxon.objects.filter(level=TaxonLevel.order),
-    "family": Taxon.objects.filter(level=TaxonLevel.family),
-    "genus": Taxon.objects.filter(level=TaxonLevel.genus),
-}
+
+def get_taxa():
+    return {
+        "phylum": Taxon.objects.filter(level=TaxonLevel.phylum),
+        "class": Taxon.objects.filter(level=TaxonLevel.klass),
+        "order": Taxon.objects.filter(level=TaxonLevel.order),
+        "family": Taxon.objects.filter(level=TaxonLevel.family),
+        "genus": Taxon.objects.filter(level=TaxonLevel.genus),
+    }
 
 
 def ajax_response(request):
@@ -64,7 +66,7 @@ class PlantMixin:
             else TaxonForm(),
             "attr_form_view": kwargs["attr_form_view"] if "attr_form_view" in kwargs.keys() else AttributeFormView(),
             "attr_form": AttributeForm(),
-            "taxon_name": TAXON_NAME,
+            "taxon_name": get_taxa(),
         }
 
     def get_initial(self):
@@ -110,7 +112,7 @@ class PlantUpdateView(PlantMixin, SuccessMessageMixin, LoginRequiredMixin, Updat
             "form_classification": form_classification,
             "attr_form_view": attr_form_view,
             "attr_form": AttributeForm(),
-            "taxon_name": TAXON_NAME,
+            "taxon_name": get_taxa(),
             "number": self.kwargs[self.slug_url_kwarg],
         }
 
