@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.forms import SelectDateWidget
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from eav.models import Entity, Attribute
@@ -11,7 +12,7 @@ from eav.models import Entity, Attribute
 from web.choices import xlsx_columns_choices
 from web.enums import TaxonLevel
 from web.models import Plant, Staff, Taxon
-from widgets import OptionalSelectDateWidget
+
 
 TYPES = [
     ("default", "Не выбрано"),
@@ -132,7 +133,7 @@ class AttributeFormView(forms.Form):
         self.label_suffix = ""
         for attr in Entity(Plant).get_all_attributes():
             if attr.datatype == "date":
-                self.fields[attr.slug] = INPUT_TYPES[attr.datatype](widget=OptionalSelectDateWidget())
+                self.fields[attr.slug] = INPUT_TYPES[attr.datatype](widget=SelectDateWidget())
             else:
                 self.fields[attr.slug] = INPUT_TYPES[attr.datatype]()
             self.fields[attr.slug].required = False
