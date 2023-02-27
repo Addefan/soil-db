@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
-from eav.models import Entity, Attribute
+from eav.models import Entity, Attribute, Value
 
 from web.choices import xlsx_columns_choices
 from web.enums import TaxonLevel
@@ -102,8 +102,18 @@ class PlantForm(forms.ModelForm):
                 genus = make_chain(classification)
             plant.genus = genus
             obj = Entity(plant)
+            content_type = Value.objects.first().entity_ct
+            values: list = []
             for attribute in obj.get_all_attributes():
-                plant.eav.__setattr__(attribute.slug, attrs[attribute.slug])
+                values.append(
+                    Value(
+                        **{f"value_{attribute.datatype}": attrs[attribute.slug]},
+                        entity_id=plant.id,
+                        attribute=attribute,
+                        entity_ct=content_type,
+                    )
+                )
+            Value.objects.bulk_create(values)
             plant.save()
             return plant
         else:
