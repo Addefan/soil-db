@@ -16,7 +16,7 @@
                     <h5 class="card-title">{% if number %}Редактирование{% else %}
                         Новое растение{% endif %}
                     </h5>
-                    <form action="" method="post" id="plant_form" name="form_my_name">
+                    <form action="" method="post" id="plant_form">
                         {% csrf_token %}
                         {% separate_form form "2" as plant_form %}
                         {% include 'web/form/form_with_errors.html' with form=plant_form.0 %}
