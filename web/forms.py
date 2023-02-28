@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.forms import SelectDateWidget
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from eav.models import Entity, Attribute
@@ -11,6 +12,7 @@ from eav.models import Entity, Attribute
 from web.choices import xlsx_columns_choices
 from web.enums import TaxonLevel
 from web.models import Plant, Staff, Taxon
+
 
 TYPES = [
     ("default", "Не выбрано"),
@@ -53,11 +55,8 @@ def modernization_dict(classification):
 def make_chain(classification):
     dct = modernization_dict(classification)
     parent = Taxon.objects.filter(level="kingdom").first()
-    print(parent)
     for level, names in dct.items():
-        print(level, *names)
         obj = Taxon.objects.filter(Q(level=f"{level}") & Q(title=names[0]) & Q(latin_title=names[1])).first()
-        print(obj)
         if not obj:
             parent = Taxon(parent=parent, level=level, title=names[0], latin_title=names[1])
             parent.save()
@@ -92,6 +91,13 @@ class PlantForm(forms.ModelForm):
             },
         }
 
+    def is_valid(self):
+        return (
+            super(PlantForm, self).is_valid()
+            and self.initial["attr_form_view"].is_valid()
+            and self.initial["form_classification"].is_valid()
+        )
+
     def save(self, *args, **kwargs):
         plant = super().save(*args, **kwargs)
         attrs = self.initial["attr_form_view"].cleaned_data
@@ -103,7 +109,7 @@ class PlantForm(forms.ModelForm):
             plant.genus = genus
             obj = Entity(plant)
             for attribute in obj.get_all_attributes():
-                plant.eav.__setattr__(attribute.slug, attrs[attribute.slug])
+                plant.eav.__setattr__(attribute.slug, attrs.get(attribute.slug))
             plant.save()
             return plant
         else:
@@ -129,11 +135,13 @@ class AttributeFormView(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.label_suffix = ""
-        for attr in Entity(Plant).get_all_attributes():
+        self.eav_attrs = Entity(Plant).get_all_attributes()
+        for attr in self.eav_attrs:
             if attr.datatype == "date":
                 self.fields[attr.slug] = INPUT_TYPES[attr.datatype](widget=forms.NumberInput(attrs={"type": "date"}))
             else:
                 self.fields[attr.slug] = INPUT_TYPES[attr.datatype]()
+            self.fields[attr.slug].required = False
             self.fields[attr.slug].label = attr.name
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update({"class": "form-control", "placeholder": "smt"})

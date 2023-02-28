@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.http import JsonResponse
 from django.urls import reverse
 from django.views.generic import CreateView, UpdateView
@@ -20,13 +21,15 @@ ATTRIBUTE_TYPE = {
     "float": Attribute.TYPE_FLOAT,
 }
 
-TAXON_NAME = {
-    "phylum": Taxon.objects.filter(level=TaxonLevel.phylum),
-    "class": Taxon.objects.filter(level=TaxonLevel.klass),
-    "order": Taxon.objects.filter(level=TaxonLevel.order),
-    "family": Taxon.objects.filter(level=TaxonLevel.family),
-    "genus": Taxon.objects.filter(level=TaxonLevel.genus),
-}
+
+def get_taxa():
+    return {
+        "phylum": Taxon.objects.filter(level=TaxonLevel.phylum),
+        "class": Taxon.objects.filter(level=TaxonLevel.klass),
+        "order": Taxon.objects.filter(level=TaxonLevel.order),
+        "family": Taxon.objects.filter(level=TaxonLevel.family),
+        "genus": Taxon.objects.filter(level=TaxonLevel.genus),
+    }
 
 
 def ajax_response(request):
@@ -64,7 +67,7 @@ class PlantMixin:
             else TaxonForm(),
             "attr_form_view": kwargs["attr_form_view"] if "attr_form_view" in kwargs.keys() else AttributeFormView(),
             "attr_form": AttributeForm(),
-            "taxon_name": TAXON_NAME,
+            "taxon_name": get_taxa(),
         }
 
     def get_initial(self):
@@ -87,11 +90,14 @@ class PlantMixin:
         return reverse("plant", args=(self.object.number,))
 
 
-class PlantCreateView(PlantMixin, LoginRequiredMixin, CreateView):
+class PlantCreateView(PlantMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
     form_class = PlantForm
 
+    def get_success_message(self, cleaned_data):
+        return f"Вы успешно добавили растение <strong>{self.object.name}</strong>"
 
-class PlantUpdateView(PlantMixin, LoginRequiredMixin, UpdateView):
+
+class PlantUpdateView(PlantMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     form_class = PlantForm
     model = Plant
 
@@ -107,6 +113,9 @@ class PlantUpdateView(PlantMixin, LoginRequiredMixin, UpdateView):
             "form_classification": form_classification,
             "attr_form_view": attr_form_view,
             "attr_form": AttributeForm(),
-            "taxon_name": TAXON_NAME,
+            "taxon_name": get_taxa(),
             "number": self.kwargs[self.slug_url_kwarg],
         }
+
+    def get_success_message(self, cleaned_data):
+        return f"Вы успешно изменили растение <strong>{self.object.name}</strong>"
