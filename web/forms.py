@@ -138,7 +138,7 @@ class AttributeFormView(forms.Form):
         self.eav_attrs = Entity(Plant).get_all_attributes()
         for attr in self.eav_attrs:
             if attr.datatype == "date":
-                self.fields[attr.slug] = INPUT_TYPES[attr.datatype](widget=SelectDateWidget())
+                self.fields[attr.slug] = INPUT_TYPES[attr.datatype](widget=forms.NumberInput(attrs={"type": "date"}))
             else:
                 self.fields[attr.slug] = INPUT_TYPES[attr.datatype]()
             self.fields[attr.slug].required = False
@@ -153,7 +153,7 @@ class AttributeForm(forms.Form):
         self.label_suffix = ""
         for attr, value in self.fields.items():
             input_class = "form-select" if self.fields[attr].widget.input_type == "select" else "form-control"
-            self.fields[attr].widget.attrs.update({"class": input_class})
+            self.fields[attr].widget.attrs.update({"class": input_class, "placeholder": "smt"})
 
     name_attr = forms.CharField(label="Название")
     type_attr = forms.ChoiceField(widget=forms.Select, choices=TYPES, label="Тип данных")
