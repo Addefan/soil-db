@@ -1,4 +1,5 @@
 {% extends 'web/base.html' %}
+{% load static %}
 {% load soil %}
 {% block title %}
     {% if number %}
@@ -13,9 +14,9 @@
             <div class="card w-75 my-4">
                 <div class="card-body">
                     <h5 class="card-title">{% if number %}Редактирование{% else %}
-                                                Новое растение{% endif %}
+                        Новое растение{% endif %}
                     </h5>
-                    <form action="" method="post">
+                    <form action="" method="post" id="plant_form">
                         {% csrf_token %}
                         {% separate_form form "2" as plant_form %}
                         {% include 'web/form/form_with_errors.html' with form=plant_form.0 %}
@@ -23,12 +24,12 @@
                         {% include 'web/form/form_with_errors.html' with form=plant_form.1 %}
                         {% include 'web/form/form_with_errors.html' with form=attr_form_view %}
                         <button type="button" class="btn btn-success mt-3" data-bs-toggle="modal"
-                                data-bs-target="#exampleModal">
+                                data-bs-target="#attribute_modal_window">
                             Добавить недостающие атрибуты
                         </button>
                         <br>
                         <button type="submit" class="btn btn-success mt-3">{% if number %}Сохранить{% else %}
-                                                                        Добавить{% endif %}
+                            Добавить{% endif %}
                         </button>
                     </form>
                     <br>
@@ -38,7 +39,7 @@
 
 
         <!-- Модальное окно -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="attribute_modal_window" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -61,18 +62,11 @@
     {% else %}
         <h1>Вы успешно добавили растение</h1>
     {% endif %}
-    <script src="http://code.jquery.com/jquery-3.2.1.js"></script>
+{% endblock %}
+{% block scripts %}
+    {{ block.super }}
     <script>
-        $('#add_button').on('click', function () {
-            $.ajax({
-                url: '{% url 'ajax_response' %}',
-                method: 'post',
-                dataType: 'html',
-                data: $('#attr_form').serialize(),
-                success: function (smt) {
-                    window.location.reload()
-                },
-            })
-        })
+        let path_ajax = "{% url 'ajax_response' %}"
     </script>
+    <script src="{% static 'web/plant_crud.js' %}"></script>
 {% endblock %}
