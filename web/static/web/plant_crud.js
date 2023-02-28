@@ -12,8 +12,13 @@ $('#add_button').on('click', function () {
     })
 })
 
-function make_custom_attribute(name_attribute, type_attribute, slug_name) {
-    console.log(name_attribute, type_attribute)
+function make_custom_attribute(name_attribute, type_attr, slug_name) {
+    const type_attributes = {
+        integer: 'number',
+        float: 'number',
+        string: 'text'
+    }
+    console.log(name_attribute, type_attr)
     let field_form_last_div = $('#plant_form div.input-group').last()
     let last_field = $('<div>', {
         class: 'input-group has-validation'
@@ -25,22 +30,13 @@ function make_custom_attribute(name_attribute, type_attribute, slug_name) {
     let input_field = $('<input>', {
         id: `id_${slug_name}`,
         type: () => {
-            if (type_attribute === 'string') {
-                return 'text'
-            } else if (type_attribute === 'integer') {
-                return 'number'
-            } else if (type_attribute === 'float') {
-                return 'number'
-                // input_field.step = 'any'
-            } else {
-                return 'date'
-            }
+            return type_attributes[type_attr] ?? 'date'
         },
         name: `${slug_name}`,
         placeholder: 'smt',
         class: 'form-control',
         step: () => {
-            if (type_attribute === 'float'){
+            if (type_attr === 'float'){
                 return 'any'
             }
             else {
