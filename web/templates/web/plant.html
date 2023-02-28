@@ -15,11 +15,11 @@
             </div>
             {% if plant.Организация == request.user.organization %}
                 <div class="col-2 d-flex justify-content-center align-items-center">
-                    <a class="title h1 mx-1 plant-icon" title="Редактировать растение"
+                    <a class="title h1 mx-1 soil-icon" title="Редактировать растение"
                             onclick="document.location='{% url 'plant_update' plant.Идентификатор %}'">
                         <iconify-icon icon="material-symbols:edit"></iconify-icon>
                     </a>
-                    <button class="title h1 mx-1 plant-icon" data-bs-toggle="modal"
+                    <button class="title h1 mx-1 soil-icon" data-bs-toggle="modal"
                             data-bs-target="#modal_delete" type="button" title="Удалить растение">
                         <iconify-icon icon="mdi:garbage-can"></iconify-icon>
                     </button>

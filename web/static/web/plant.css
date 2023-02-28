@@ -17,15 +17,6 @@ tr:hover {
     font-weight: bolder;
 }
 
-.plant-icon {
-    border: none;
-    background: none;
-}
-
-.plant-icon:hover {
-    color: #28a745;
-}
-
 .modal-overflow {
     height: 300px;
     overflow-y: scroll;

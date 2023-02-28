@@ -73,3 +73,12 @@ a {
     vertical-align: -0.2em;
     font-size: 1.3em;
 }
+
+.soil-icon {
+    border: none;
+    background: none;
+}
+
+.soil-icon:hover {
+    color: #28a745;
+}
