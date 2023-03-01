@@ -112,6 +112,8 @@ class UserManager(DjangoUserManager):
 
     def create_superuser(self, email=None, password=None, **extra_fields):
         extra_fields.setdefault("is_superuser", True)
+        organization = Organization.objects.get_or_create(name="Superuser Organization", address="")
+        extra_fields.setdefault("organization_id", organization.id)
         return self._create_user(email, password, **extra_fields)
 
 
