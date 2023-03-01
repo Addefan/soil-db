@@ -84,6 +84,7 @@ class Plant(models.Model, PlantModelMixin):
     genus = models.ForeignKey(Taxon, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=127)
     latin_name = models.CharField(max_length=127)
+    digitized_at = models.DateTimeField(auto_now_add=True)
 
     def to_dict(self):
         obj: dict = {
