@@ -1,3 +1,5 @@
+import os
+
 from django.conf import settings
 from django.core.mail import EmailMessage, send_mail
 from django.template.loader import render_to_string
@@ -18,6 +20,7 @@ def export_to_excel(from_here, to_there, columns, qs=Plant.objects.prefetch_rela
     )
     email.attach_file(path)
     email.send()
+    os.remove(path)
 
 
 @app.task
