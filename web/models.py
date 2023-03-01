@@ -6,6 +6,7 @@ from django.forms import model_to_dict
 from eav.models import Entity, Value
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
+from tree_queries.models import TreeNode
 
 from web.enums import TaxonLevel
 
@@ -18,15 +19,15 @@ class Organization(models.Model):
         return self.name
 
 
-class Taxon(MPTTModel):
+class Taxon(TreeNode):
     parent = TreeForeignKey("self", on_delete=models.CASCADE, null=True, blank=True, related_name="children")
     level = models.CharField(choices=TaxonLevel.choices, max_length=7)
     title = models.CharField(max_length=127)
     latin_title = models.CharField(max_length=127)
 
-    class MPTTMeta:
-        level_attr = "mptt_level"
-        order_insertion_by = ["title"]
+    # class MPTTMeta:
+    #     level_attr = "mptt_level"
+    #     order_insertion_by = ["title"]
 
     class Meta:
         unique_together = ("level", "title", "latin_title")
