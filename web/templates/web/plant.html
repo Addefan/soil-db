@@ -11,7 +11,7 @@
     <div class="flex-wrapper">
         <div class="row">
             <div class="col-10">
-                <h1 class="title">Страница растения {{ name }} ({{ latin_name }})</h1>
+                <h1 class="title">{{ name }} ({{ latin_name }})</h1>
             </div>
             {% if plant.Организация == request.user.organization %}
                 <div class="col-2 d-flex justify-content-center align-items-center">
@@ -26,12 +26,12 @@
                 </div>
             {% endif %}
         </div>
-        <table class="table table-bordered table-color">
+        <table class="table table-color table-bordered border-light rounded-4">
             <thead class="thead-dark">
-            <tr class="content-align">
-                <th scope="col">Характеристика</th>
-                <th scope="col">Значение</th>
-            </tr>
+                <tr class="content-align header-tr">
+                    <th scope="col">Характеристика</th>
+                    <th scope="col">Значение</th>
+                </tr>
             </thead>
             <tbody>
             {% for key, value in plant.items %}
@@ -43,7 +43,6 @@
             </tbody>
         </table>
     </div>
-
 
     <div class="modal fade" id="modal_delete" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">

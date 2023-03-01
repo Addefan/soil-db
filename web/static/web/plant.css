@@ -13,8 +13,8 @@
     margin: 0 25px 25px 25px;
 }
 
-tr:hover {
-    font-weight: bolder;
+.header-tr {
+    color: black;
 }
 
 .modal-overflow {
