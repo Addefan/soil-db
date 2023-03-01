@@ -102,24 +102,50 @@ class PlantForm(forms.ModelForm):
         plant = super().save(*args, **kwargs)
         attrs = self.initial["attr_form_view"].cleaned_data
         classification = self.initial["form_classification"].cleaned_data
+        print("attrs, classification", attrs, classification)
         if attrs and classification:
             genus = Taxon.objects.filter(latin_title=classification["genus_latin_title"], level="Genus").first()
             if not genus:
                 genus = make_chain(classification)
             plant.genus = genus
             obj = Entity(plant)
-            content_type = Value.objects.first().entity_ct
-            values: list = []
+            previous_values: dict = {
+                val.attribute.slug: val
+                for val in Value.objects.prefetch_related("attribute").filter(entity_id=plant.id)
+            }
+            created_values: list = []
+            updated_values: list = []
+            updated_fields: set = set()
+            print("previous_values", previous_values)
             for attribute in obj.get_all_attributes():
-                values.append(
-                    Value(
-                        **{f"value_{attribute.datatype}": attrs[attribute.slug]},
-                        entity_id=plant.id,
-                        attribute=attribute,
-                        entity_ct=content_type,
-                    )
+                if attrs[attribute.slug] is None or attrs[attribute.slug] == "":
+                    continue
+                print("attrs[attribute.slug]", attrs[attribute.slug])
+                print(
+                    "getattr(previous_values.get(attribute.slug), f'value_{attribute.datatype}', None)",
+                    getattr(previous_values.get(attribute.slug), f"value_{attribute.datatype}", None),
                 )
-            Value.objects.bulk_create(values)
+                previous_value = getattr(previous_values.get(attribute.slug), f"value_{attribute.datatype}", None)
+                if previous_value != attrs[attribute.slug]:
+                    setattr(previous_values.get(attribute.slug), f"value_{attribute.datatype}", attrs[attribute.slug])
+                    updated_values.append(previous_values[attribute.slug])
+                    updated_fields.add(f"value_{attribute.datatype}")
+                elif previous_value is None:
+                    created_values.append(
+                        Value(
+                            **{f"value_{attribute.datatype}": attrs[attribute.slug]},
+                            entity_id=plant.id,
+                            attribute=attribute,
+                            entity_ct_id=7,
+                        )
+                    )
+            print("created_values", created_values)
+            print("updated_values", updated_values)
+            print("updated_fields", updated_fields)
+            if created_values:
+                Value.objects.bulk_create(created_values)
+            if updated_values:
+                Value.objects.bulk_update(updated_values, fields=updated_fields)
             plant.save()
             return plant
         else:
