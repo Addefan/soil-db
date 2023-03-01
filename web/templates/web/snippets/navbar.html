@@ -24,7 +24,7 @@
             </ul>
             <form class="d-flex align-items-start" role="search" action="{% url 'plants' %}">
                 <input class="form-control rounded-0 rounded-start" type="search" placeholder="Поиск растений..."
-                       aria-label="Search" name="search">
+                       aria-label="Search" name="search" value="{{ search|default_if_none:'' }}">
                 <button class="btn btn-outline-success rounded-0 rounded-end" type="submit">
                     <iconify-icon icon="ic:baseline-search" class="search-icon"></iconify-icon>
                 </button>
