@@ -13,13 +13,8 @@
     margin: 0 25px 25px 25px;
 }
 
-.header-tr {
-    color: black;
-}
-
 .modal-overflow {
-    height: 300px;
-    overflow-y: scroll;
+    height: 30vh;
 }
 
 .export_to_xlsx__button {

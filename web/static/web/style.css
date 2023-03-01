@@ -90,3 +90,7 @@ tr {
 tr:hover {
     color: black;
 }
+
+.header-tr {
+    color: black;
+}
