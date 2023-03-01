@@ -72,6 +72,9 @@ class PlantForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.label_suffix = ""
         for attr, value in self.fields.items():
+            if attr == "number":
+                self.fields[attr].label = _("Номер будет сгенерирован автоматически")
+                self.fields[attr].widget.attrs.update({"disabled": True})
             self.fields[attr].widget.attrs.update({"class": "form-control", "placeholder": "smt"})
 
     class Meta:
