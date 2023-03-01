@@ -39,6 +39,7 @@ class PlantModelMixin:
         "latin_name": "Вид (лат.)",
         "name": "Вид",
         "number": "Идентификатор",
+        "digitized_at": "Время оцифровки",
     }
     _taxons: dict[str, str] = {
         "genus": "Род",

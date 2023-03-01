@@ -6,13 +6,14 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.forms import SelectDateWidget
 from django.http import Http404
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from eav.models import Entity, Attribute
 
 from web.choices import xlsx_columns_choices
 from web.enums import TaxonLevel
 from web.models import Plant, Staff, Taxon
-
+from web.services import create_plant_number
 
 TYPES = [
     ("default", "Не выбрано"),
@@ -74,13 +75,14 @@ class PlantForm(forms.ModelForm):
         for attr, value in self.fields.items():
             if attr == "number":
                 self.fields[attr].label = _("Номер будет сгенерирован автоматически")
+                self.fields[attr].required = False
                 self.fields[attr].widget.attrs.update({"disabled": True})
             self.fields[attr].widget.attrs.update({"class": "form-control", "placeholder": "smt"})
 
     class Meta:
         model = Plant
         fields = "__all__"
-        exclude = ["genus"]
+        exclude = ["genus", "digitized_at"]
         labels = {
             "name": _("Наименование растения"),
             "latin_name": _("Латинское наименование растения"),
@@ -94,6 +96,10 @@ class PlantForm(forms.ModelForm):
             },
         }
 
+    def clean(self):
+        self.cleaned_data["number"] = create_plant_number()
+        return self.cleaned_data
+
     def is_valid(self):
         return (
             super(PlantForm, self).is_valid()
@@ -102,6 +108,8 @@ class PlantForm(forms.ModelForm):
         )
 
     def save(self, *args, **kwargs):
+        plant_args = kwargs
+        print(plant_args)
         plant = super().save(*args, **kwargs)
         attrs = self.initial["attr_form_view"].cleaned_data
         classification = self.initial["form_classification"].cleaned_data
