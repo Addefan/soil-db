@@ -20,7 +20,7 @@ class Organization(models.Model):
 
 
 class Taxon(TreeNode):
-    parent = TreeForeignKey("self", on_delete=models.CASCADE, null=True, blank=True, related_name="children")
+    # parent = TreeForeignKey("self", on_delete=models.CASCADE, null=True, blank=True, related_name="children")
     level = models.CharField(choices=TaxonLevel.choices, max_length=7)
     title = models.CharField(max_length=127)
     latin_title = models.CharField(max_length=127)
@@ -72,7 +72,7 @@ class PlantModelMixin:
     def _get_plant_classification(self):
         dct: dict = {}
         plant_taxon: Taxon = Taxon.objects.get(id=self.genus_id)
-        plant_classification_tree = plant_taxon.get_ancestors(include_self=True, ascending=True)
+        plant_classification_tree = plant_taxon.ancestors(include_self=True).reverse()
         for taxon in plant_classification_tree:
             if taxon.level == "kingdom":
                 continue
@@ -94,11 +94,6 @@ class Plant(models.Model, PlantModelMixin):
             for key, value in model_to_dict(self).items()
             if key not in ("id", "organization", "genus")
         }
-        # obj: dict = {
-        #     self._translate[key]: value or "Не указано"
-        #     for key, value in self.__dict__.items()
-        #     if not (key in self._stop_list or key.endswith("_id"))
-        # }
         obj |= self._get_plant_classification()
         obj["Организация"] = self._get_organization_name()
         obj |= self._get_eav_fields()
