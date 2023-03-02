@@ -20,14 +20,9 @@ class Organization(models.Model):
 
 
 class Taxon(TreeNode):
-    # parent = TreeForeignKey("self", on_delete=models.CASCADE, null=True, blank=True, related_name="children")
     level = models.CharField(choices=TaxonLevel.choices, max_length=7)
     title = models.CharField(max_length=127)
     latin_title = models.CharField(max_length=127)
-
-    # class MPTTMeta:
-    #     level_attr = "mptt_level"
-    #     order_insertion_by = ["title"]
 
     class Meta:
         unique_together = ("level", "title", "latin_title")
