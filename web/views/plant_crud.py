@@ -1,3 +1,5 @@
+from functools import cache
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import JsonResponse
@@ -22,6 +24,7 @@ ATTRIBUTE_TYPE = {
 }
 
 
+@cache
 def get_taxa():
     return {
         "phylum": Taxon.objects.filter(level=TaxonLevel.phylum),
@@ -46,7 +49,7 @@ def ajax_response(request):
 def get_all_taxons(genus):
     """A function returning dictionary with data based on hierarchy of given genus"""
     taxons = {}
-    for taxon in genus.get_ancestors(include_self=True):
+    for taxon in genus.ancestors(include_self=True):
         taxons[f"{taxon.level}_title"] = taxon.title
         taxons[f"{taxon.level}_latin_title"] = taxon.latin_title
 
