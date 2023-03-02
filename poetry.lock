@@ -415,6 +415,21 @@ django-js-asset = "*"
 tests = ["coverage", "mock-django"]
 
 [[package]]
+name = "django-tree-queries"
+version = "0.14.0"
+description = "Tree queries with explicit opt-in, without configurability"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "django_tree_queries-0.14.0-py3-none-any.whl", hash = "sha256:424ef445b2129762b567304186338b912ec90fe371dd5c92915093c6db063598"},
+    {file = "django_tree_queries-0.14.0.tar.gz", hash = "sha256:8f83d6ef2d3871dbff7a9d9c68167dbe561565d99f4d41fae97676ae160360c5"},
+]
+
+[package.extras]
+tests = ["coverage"]
+
+[[package]]
 name = "filelock"
 version = "3.8.2"
 description = "A platform independent file lock."
@@ -1115,4 +1130,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "2aa1511b0ff48c91a60f745d2b4d049a92b31ba796f6f8105482d1519a39b997"
+content-hash = "59373016b9d2d218d2521bf259e6b6ea4ba517b540ef9c95e27033c949a38b8c"
