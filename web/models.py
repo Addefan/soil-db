@@ -40,7 +40,7 @@ class PlantModelMixin:
         "name": "Наименование растения",
         "number": "Уникальный номер",
     }
-    _taxons: dict[str, str] = {
+    _taxa: dict[str, str] = {
         "genus": "Род",
         "family": "Семейство",
         "order": "Порядок",
@@ -74,7 +74,7 @@ class PlantModelMixin:
             if taxon.level == "kingdom":
                 continue
             for title in self._suffix:
-                dct[self._taxons[taxon.level] + self._suffix[title]] = getattr(taxon, title, None)
+                dct[self._taxa[taxon.level] + self._suffix[title]] = getattr(taxon, title, None)
         return dct
 
 

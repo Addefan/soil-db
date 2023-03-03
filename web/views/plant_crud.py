@@ -43,14 +43,14 @@ def ajax_response(request):
     return JsonResponse(response_data)
 
 
-def get_all_taxons(genus):
+def get_all_taxa(genus):
     """A function returning dictionary with data based on hierarchy of given genus"""
-    taxons = {}
+    taxa = {}
     for taxon in genus.get_ancestors(include_self=True):
-        taxons[f"{taxon.level}_title"] = taxon.title
-        taxons[f"{taxon.level}_latin_title"] = taxon.latin_title
+        taxa[f"{taxon.level}_title"] = taxon.title
+        taxa[f"{taxon.level}_latin_title"] = taxon.latin_title
 
-    return taxons
+    return taxa
 
 
 class PlantMixin:
@@ -102,7 +102,7 @@ class PlantUpdateView(PlantMixin, SuccessMessageMixin, LoginRequiredMixin, Updat
     model = Plant
 
     def get_context_data(self, **kwargs):
-        classification_values = get_all_taxons(self.object.genus)
+        classification_values = get_all_taxa(self.object.genus)
         form_classification = TaxonForm(classification_values)
 
         eav_fields_values = Entity(self.object).get_values_dict()

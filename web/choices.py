@@ -5,7 +5,7 @@ from web.models import Plant
 
 
 def xlsx_columns_default_choices() -> list[tuple[str, str]]:
-    translate = Plant._translate | Plant._taxons | {"organization": "Организация"}
+    translate = Plant._translate | Plant._taxa | {"organization": "Организация"}
     return [
         (field.name + "__name" if field.name == "organization" else field.name, translate[field.name])
         for field in Plant._meta.fields
