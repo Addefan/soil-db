@@ -36,8 +36,8 @@ class Taxon(MPTTModel):
 
 class PlantModelMixin:
     _translate: dict[str, str] = {
-        "latin_name": "Вид (лат.)",
-        "name": "Вид",
+        "latin_name": "Латинское наименование растения",
+        "name": "Наименование растения",
         "number": "Идентификатор",
     }
     _taxons: dict[str, str] = {
