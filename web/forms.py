@@ -128,7 +128,7 @@ class TaxonForm(forms.Form):
             locals()[taxon + "_" + key] = forms.CharField(label=taxons[taxon] + value)
 
 
-class AttributeFormView(forms.Form):
+class AttributeMainForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.label_suffix = ""
