@@ -7,8 +7,6 @@ import xlsxwriter
 from django.conf import settings
 from xlsxwriter import Workbook
 
-from web.models import Plant
-
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "soil.settings")
 django.setup()
 NoneType = type(None)

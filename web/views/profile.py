@@ -1,5 +1,4 @@
 import json
-import logging
 from datetime import timedelta
 from http import HTTPStatus
 from uuid import uuid4

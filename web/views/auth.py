@@ -1,4 +1,3 @@
-from django.contrib import messages
 from django.contrib.auth.views import LoginView as DjangoLoginView, LogoutView as DjangoLogoutView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponse
