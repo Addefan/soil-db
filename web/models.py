@@ -38,7 +38,7 @@ class PlantModelMixin:
     _translate: dict[str, str] = {
         "latin_name": "Латинское наименование растения",
         "name": "Наименование растения",
-        "number": "Идентификатор",
+        "number": "Уникальный номер",
     }
     _taxons: dict[str, str] = {
         "genus": "Род",

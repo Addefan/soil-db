@@ -79,7 +79,7 @@ class PlantForm(forms.ModelForm):
             "name": _("Наименование растения"),
             "latin_name": _("Латинское наименование растения"),
             "number": _("Уникальный номер"),
-            "organization": _("Наименование организации"),
+            "organization": _("Организация"),
             "genus": _("Род (лат.)"),
         }
         error_messages = {
