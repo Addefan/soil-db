@@ -15,7 +15,6 @@ packages = [{include = "soil_db"}]
 python = "^3.9"
 django = "<4.1"
 django-eav2 = "^1.2.3"
-django-mptt = "^0.14.0"
 psycopg2-binary = "^2.9.5"
 redis = "^4.5.1"
 celery = "^5.2.7"
