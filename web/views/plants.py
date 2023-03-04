@@ -34,6 +34,9 @@ class XlsxColumnsView(RedirectView):
         if form.is_valid():
             data = dict(request.POST)
             export_to_excel.delay(
-                from_here=settings.DEFAULT_FROM_EMAIL, to_there=request.user.email, columns=data.get("columns")
+                from_here=settings.DEFAULT_FROM_EMAIL,
+                to_there=request.user.email,
+                columns=data.get("columns"),
+                user_id=request.user.id,
             )
         return redirect("plants")
