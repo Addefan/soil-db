@@ -3,8 +3,6 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import UserManager as DjangoUserManager, PermissionsMixin
 from django.db import models
 from eav.models import Entity
-from mptt.fields import TreeForeignKey
-from mptt.models import MPTTModel
 
 from web.enums import TaxonLevel
 
