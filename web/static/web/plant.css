@@ -13,24 +13,6 @@
     margin: 0 25px 25px 25px;
 }
 
-tr:hover {
-    font-weight: bolder;
-}
-
-.plant-icon {
-    border: none;
-    background: none;
-}
-
-.plant-icon:hover {
-    color: #28a745;
-}
-
-.modal-overflow {
-    height: 300px;
-    overflow-y: scroll;
-}
-
 .export_to_xlsx__button {
     margin: 10px 0 10px 25px;
 }
