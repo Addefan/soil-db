@@ -4,14 +4,13 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.forms import SelectDateWidget
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
-from eav.models import Entity, Attribute
+from eav.models import Entity
 
 from web.choices import xlsx_columns_choices
-from web.enums import TaxonLevel
 from web.models import Plant, Staff, Taxon
+from web.services import create_plant_number
 
 TYPES = [
     ("default", "Не выбрано"),
@@ -76,7 +75,7 @@ class PlantForm(forms.ModelForm):
     class Meta:
         model = Plant
         fields = "__all__"
-        exclude = ["genus"]
+        exclude = ["number", "genus", "digitized_at"]
         labels = {
             "name": _("Наименование растения"),
             "latin_name": _("Латинское наименование растения"),
@@ -89,6 +88,10 @@ class PlantForm(forms.ModelForm):
                 "unique": _("Проверьте, пожалуйста, уникальность введенного вами номера"),
             },
         }
+
+    def clean(self):
+        self.cleaned_data["number"] = create_plant_number()
+        return self.cleaned_data
 
     def is_valid(self):
         return (
