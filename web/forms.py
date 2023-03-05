@@ -196,9 +196,9 @@ class AuthForm(forms.Form):
                 raise self.get_invalid_login_error()
             else:
                 if not remember_me:
-                    settings.SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+                    self.request.session.set_expiry(0)
                 else:
-                    settings.SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+                    self.request.session.set_expiry(settings.SESSION_COOKIE_AGE)
 
         return self.cleaned_data
 

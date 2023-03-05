@@ -10,11 +10,12 @@
 
 {% block body %}
     {% include "web/snippets/popup-xlsx-form.html" %}
-    <button type="button" class="btn btn-primary export_to_xlsx__button" data-bs-toggle="modal" data-bs-target="#ModalXlsx">Экспортировать в xlsx</button>
     <div class="flex-wrapper">
-        <div class="row">
+        <div class="row m-1">
+            <div class="col-9 mx-3"></div>
+            <button type="button" class="btn btn-success export_to_xlsx__button float-end col-2" data-bs-toggle="modal" data-bs-target="#ModalXlsx">Экспорт</button>
         </div>
-        <table class="table table-bordered table-color">
+        <table class="table table-hover table-bordered table-color border-light rounded-4">
             <thead class="thead-dark">
             <tr class="content-align">
                 <th scope="col">Уникальный номер</th>

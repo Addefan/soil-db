@@ -11,27 +11,27 @@
     <div class="flex-wrapper">
         <div class="row">
             <div class="col-10">
-                <h1 class="title">Страница растения {{ name }} ({{ latin_name }})</h1>
+                <h1 class="title">{{ name }} ({{ latin_name }})</h1>
             </div>
             {% if plant.Организация == request.user.organization %}
                 <div class="col-2 d-flex justify-content-center align-items-center">
-                    <a class="title h1 mx-1 plant-icon" title="Редактировать растение"
+                    <a class="title h1 mx-1 soil-icon" title="Редактировать растение"
                             onclick="document.location='{% url 'plant_update' plant.Идентификатор %}'">
                         <iconify-icon icon="material-symbols:edit"></iconify-icon>
                     </a>
-                    <button class="title h1 mx-1 plant-icon" data-bs-toggle="modal"
+                    <button class="title h1 mx-1 soil-icon" data-bs-toggle="modal"
                             data-bs-target="#modal_delete" type="button" title="Удалить растение">
                         <iconify-icon icon="mdi:garbage-can"></iconify-icon>
                     </button>
                 </div>
             {% endif %}
         </div>
-        <table class="table table-bordered table-color">
+        <table class="table table-hover table-color table-bordered border-light rounded-4">
             <thead class="thead-dark">
-            <tr class="content-align">
-                <th scope="col">Характеристика</th>
-                <th scope="col">Значение</th>
-            </tr>
+                <tr class="content-align">
+                    <th scope="col">Характеристика</th>
+                    <th scope="col">Значение</th>
+                </tr>
             </thead>
             <tbody>
             {% for key, value in plant.items %}
@@ -43,7 +43,6 @@
             </tbody>
         </table>
     </div>
-
 
     <div class="modal fade" id="modal_delete" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
