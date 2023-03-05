@@ -1,5 +1,7 @@
+import os
+
 from django.conf import settings
-from django.core.mail import EmailMessage, send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
@@ -10,14 +12,24 @@ from web.transitions import queryset_to_xlsx
 
 
 @app.task
-def export_to_excel(from_here, to_there, columns, qs=Plant.objects.prefetch_related("organization").all()):
+def export_to_excel(from_here, to_there, columns, user_id, qs=Plant.objects.prefetch_related("organization").all()):
     prepared_qs = prepare_queryset(columns, qs)
     path = queryset_to_xlsx(prepared_qs)
-    email = EmailMessage(
-        subject="Файл xlsx", body="Вы успешно экспортировали таблицу!", from_email=from_here, to=[to_there]
+    user = Staff.objects.get(id=user_id)
+    context = {
+        "origin": "http://127.0.0.1:8000",
+        "full_name": f"{user.name} {user.surname}",
+        "path_to_file": os.path.basename(path),
+    }
+    html_content = render_to_string("emails/export_excel.html", context)
+    text_contetn = strip_tags(html_content)
+    email = EmailMultiAlternatives(
+        subject="Экспорт данных в excel", body=text_contetn, from_email=from_here, to=[to_there]
     )
-    email.attach_file(path)
+    email.attach_alternative(html_content, "text/html")
+    # email.attach_file(path)
     email.send()
+    # os.remove(path)
 
 
 @app.task
