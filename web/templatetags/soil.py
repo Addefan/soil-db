@@ -1,4 +1,3 @@
-import os.path
 from pathlib import Path
 
 from django import template
@@ -13,7 +12,7 @@ def queryset_names(names_to_select, var):
     return ans
 
 
-@register.inclusion_tag(os.path.join("web", "form", "form-in-view.html"))
+@register.inclusion_tag(Path("web") / "form" / "form-in-view.html")
 def suggestions(stage_form, names_to_select):
     return {
         "form": stage_form,

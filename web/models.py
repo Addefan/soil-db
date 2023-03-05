@@ -1,11 +1,11 @@
 import eav
+
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import UserManager as DjangoUserManager, PermissionsMixin
 from django.db import models
 from django.forms import model_to_dict
+
 from eav.models import Entity, Value
-from mptt.fields import TreeForeignKey
-from mptt.models import MPTTModel
 from tree_queries.models import TreeNode
 
 from web.enums import TaxonLevel
@@ -33,12 +33,12 @@ class Taxon(TreeNode):
 
 class PlantModelMixin:
     _translate: dict[str, str] = {
-        "latin_name": "Вид (лат.)",
-        "name": "Вид",
-        "number": "Идентификатор",
+        "latin_name": "Латинское наименование растения",
+        "name": "Наименование растения",
+        "number": "Уникальный номер",
         "digitized_at": "Дата и время оцифровки",
     }
-    _taxons: dict[str, str] = {
+    _taxa: dict[str, str] = {
         "genus": "Род",
         "family": "Семейство",
         "order": "Порядок",
@@ -73,7 +73,7 @@ class PlantModelMixin:
             if taxon.level == "kingdom":
                 continue
             for title in self._suffix:
-                dct[self._taxons[taxon.level] + self._suffix[title]] = getattr(taxon, title, None)
+                dct[self._taxa[taxon.level] + self._suffix[title]] = getattr(taxon, title, None)
         return dct
 
 

@@ -98,7 +98,7 @@ class PlantForm(forms.ModelForm):
             "name": _("Наименование растения"),
             "latin_name": _("Латинское наименование растения"),
             "number": _("Уникальный номер"),
-            "organization": _("Наименование организации"),
+            "organization": _("Организация"),
             "genus": _("Род (лат.)"),
         }
         error_messages = {
@@ -176,7 +176,7 @@ class PlantForm(forms.ModelForm):
 
 class TaxonForm(forms.Form):
     suffixes = {"title": "", "latin_title": " (лат.)"}
-    taxons = {"phylum": "Отдел", "class": "Класс", "order": "Порядок", "family": "Семейство", "genus": "Род"}
+    taxa = {"phylum": "Отдел", "class": "Класс", "order": "Порядок", "family": "Семейство", "genus": "Род"}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -184,12 +184,12 @@ class TaxonForm(forms.Form):
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update({"class": "form-control", "placeholder": "smt", "list": f"{attr}"})
 
-    for taxon in taxons:
+    for taxon in taxa:
         for key, value in suffixes.items():
-            locals()[taxon + "_" + key] = forms.CharField(label=taxons[taxon] + value)
+            locals()[taxon + "_" + key] = forms.CharField(label=taxa[taxon] + value)
 
 
-class AttributeFormView(forms.Form):
+class AttributeMainForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.label_suffix = ""

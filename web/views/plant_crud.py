@@ -11,7 +11,7 @@ from web.enums import TaxonLevel
 from web.forms import (
     PlantForm,
     AttributeForm,
-    AttributeFormView,
+    AttributeMainForm,
     TaxonForm,
 )
 from web.models import Taxon, Plant
@@ -46,14 +46,14 @@ def ajax_response(request):
     return JsonResponse(response_data)
 
 
-def get_all_taxons(genus):
+def get_all_taxa(genus):
     """A function returning dictionary with data based on hierarchy of given genus"""
-    taxons = {}
-    for taxon in genus.ancestors(include_self=True):
-        taxons[f"{taxon.level}_title"] = taxon.title
-        taxons[f"{taxon.level}_latin_title"] = taxon.latin_title
+    taxa = {}
+    for taxon in genus.get_ancestors(include_self=True):
+        taxa[f"{taxon.level}_title"] = taxon.title
+        taxa[f"{taxon.level}_latin_title"] = taxon.latin_title
 
-    return taxons
+    return taxa
 
 
 class PlantMixin:
@@ -68,13 +68,13 @@ class PlantMixin:
             "form_classification": kwargs["form_classification"]
             if "form_classification" in kwargs.keys()
             else TaxonForm(),
-            "attr_form_view": kwargs["attr_form_view"] if "attr_form_view" in kwargs.keys() else AttributeFormView(),
+            "attr_form_view": kwargs["attr_form_view"] if "attr_form_view" in kwargs.keys() else AttributeMainForm(),
             "attr_form": AttributeForm(),
             "taxon_name": get_taxa(),
         }
 
     def get_initial(self):
-        attr_form_view = AttributeFormView(self.request.POST)
+        attr_form_view = AttributeMainForm(self.request.POST)
         taxon_form = TaxonForm(self.request.POST)
         attr_form_view.is_valid()
         taxon_form.is_valid()
@@ -85,7 +85,7 @@ class PlantMixin:
             self.get_context_data(
                 form=form,
                 form_classification=TaxonForm(self.request.POST),
-                attr_form_view=AttributeFormView(self.request.POST),
+                attr_form_view=AttributeMainForm(self.request.POST),
             )
         )
 
@@ -105,11 +105,11 @@ class PlantUpdateView(PlantMixin, SuccessMessageMixin, LoginRequiredMixin, Updat
     model = Plant
 
     def get_context_data(self, **kwargs):
-        classification_values = get_all_taxons(self.object.genus)
+        classification_values = get_all_taxa(self.object.genus)
         form_classification = TaxonForm(classification_values)
 
         eav_fields_values = Entity(self.object).get_values_dict()
-        attr_form_view = AttributeFormView(eav_fields_values)
+        attr_form_view = AttributeMainForm(eav_fields_values)
 
         return {
             **super().get_context_data(**kwargs),
