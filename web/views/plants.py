@@ -16,10 +16,15 @@ class PlantsListView(ListView, FormView):
     form_class = XlsxColumnsForm
 
     def get_queryset(self):
-        search = self.request.GET.get("search")
-        if search:
-            return Plant.objects.filter(Q(name__icontains=search) | Q(latin_name__icontains=search))
+        self.search = self.request.GET.get("search")
+        if self.search:
+            return Plant.objects.filter(
+                Q(number__icontains=self.search) | Q(name__icontains=self.search) | Q(latin_name__icontains=self.search)
+            )
         return super().get_queryset()
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        return {**super().get_context_data(object_list=object_list, **kwargs), "search": self.search}
 
 
 class XlsxColumnsView(RedirectView):
