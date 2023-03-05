@@ -70,16 +70,12 @@ class PlantForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.label_suffix = ""
         for attr, value in self.fields.items():
-            if attr == "number":
-                self.fields[attr].label = _("Номер будет сгенерирован автоматически")
-                self.fields[attr].required = False
-                self.fields[attr].widget.attrs.update({"disabled": True})
             self.fields[attr].widget.attrs.update({"class": "form-control", "placeholder": "smt"})
 
     class Meta:
         model = Plant
         fields = "__all__"
-        exclude = ["genus", "digitized_at"]
+        exclude = ["number", "genus", "digitized_at"]
         labels = {
             "name": _("Наименование растения"),
             "latin_name": _("Латинское наименование растения"),
