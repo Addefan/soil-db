@@ -18,7 +18,9 @@ class PlantsListView(ListView, FormView):
     def get_queryset(self):
         self.search = self.request.GET.get("search")
         if self.search:
-            return Plant.objects.filter(Q(name__icontains=self.search) | Q(latin_name__icontains=self.search))
+            return Plant.objects.filter(
+                Q(number__icontains=self.search) | Q(name__icontains=self.search) | Q(latin_name__icontains=self.search)
+            )
         return super().get_queryset()
 
     def get_context_data(self, *, object_list=None, **kwargs):
