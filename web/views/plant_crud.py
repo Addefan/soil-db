@@ -1,3 +1,5 @@
+from functools import cache
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import JsonResponse
@@ -22,6 +24,7 @@ ATTRIBUTE_TYPE = {
 }
 
 
+@cache
 def get_taxa():
     return {
         "phylum": Taxon.objects.filter(level=TaxonLevel.phylum),

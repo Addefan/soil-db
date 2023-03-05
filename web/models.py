@@ -1,8 +1,12 @@
 import eav
+
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import UserManager as DjangoUserManager, PermissionsMixin
 from django.db import models
-from eav.models import Entity
+from django.forms import model_to_dict
+
+from eav.models import Entity, Value
+from tree_queries.models import TreeNode
 
 from web.enums import TaxonLevel
 
@@ -15,15 +19,10 @@ class Organization(models.Model):
         return self.name
 
 
-class Taxon(MPTTModel):
-    parent = TreeForeignKey("self", on_delete=models.CASCADE, null=True, blank=True, related_name="children")
+class Taxon(TreeNode):
     level = models.CharField(choices=TaxonLevel.choices, max_length=7)
     title = models.CharField(max_length=127)
     latin_title = models.CharField(max_length=127)
-
-    class MPTTMeta:
-        level_attr = "mptt_level"
-        order_insertion_by = ["title"]
 
     class Meta:
         unique_together = ("level", "title", "latin_title")
@@ -37,6 +36,7 @@ class PlantModelMixin:
         "latin_name": "Латинское наименование растения",
         "name": "Наименование растения",
         "number": "Уникальный номер",
+        "digitized_at": "Дата и время оцифровки",
     }
     _taxa: dict[str, str] = {
         "genus": "Род",
@@ -58,16 +58,17 @@ class PlantModelMixin:
 
     def _get_eav_fields(self):
         dct: dict = {}
-        for attr in Entity(self).get_all_attributes():
-            value = getattr(self.eav, attr.slug, None)
+        eav_fields = Value.objects.prefetch_related("attribute").filter(entity_id=self.pk)
+        for field in eav_fields:
+            value = field.value
             if value is not None:
-                dct[attr.name] = value
+                dct[field.attribute.name] = value
         return dct
 
     def _get_plant_classification(self):
         dct: dict = {}
         plant_taxon: Taxon = Taxon.objects.get(id=self.genus_id)
-        plant_classification_tree = plant_taxon.get_ancestors(include_self=True, ascending=True)
+        plant_classification_tree = plant_taxon.ancestors(include_self=True).reverse()
         for taxon in plant_classification_tree:
             if taxon.level == "kingdom":
                 continue
@@ -82,12 +83,13 @@ class Plant(models.Model, PlantModelMixin):
     genus = models.ForeignKey(Taxon, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=127)
     latin_name = models.CharField(max_length=127)
+    digitized_at = models.DateTimeField(auto_now_add=True)
 
     def to_dict(self):
         obj: dict = {
             self._translate[key]: value or "Не указано"
-            for key, value in self.__dict__.items()
-            if not (key in self._stop_list or key.endswith("_id"))
+            for key, value in model_to_dict(self).items()
+            if key not in ("id", "organization", "genus")
         }
         obj |= self._get_plant_classification()
         obj["Организация"] = self._get_organization_name()
@@ -110,6 +112,8 @@ class UserManager(DjangoUserManager):
 
     def create_superuser(self, email=None, password=None, **extra_fields):
         extra_fields.setdefault("is_superuser", True)
+        organization = Organization.objects.get_or_create(name="Superuser Organization", address="")
+        extra_fields.setdefault("organization_id", organization.id)
         return self._create_user(email, password, **extra_fields)
 
 
