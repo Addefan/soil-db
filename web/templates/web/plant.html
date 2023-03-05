@@ -16,7 +16,7 @@
             {% if plant.Организация == request.user.organization %}
                 <div class="col-2 d-flex justify-content-center align-items-center">
                     <a class="title h1 mx-1 soil-icon" title="Редактировать растение"
-                            onclick="document.location='{% url 'plant_update' plant.Идентификатор %}'">
+                            onclick="document.location='{% url 'plant_update' plant|getattr:"Уникальный номер" %}'">
                         <iconify-icon icon="material-symbols:edit"></iconify-icon>
                     </a>
                     <button class="title h1 mx-1 soil-icon" data-bs-toggle="modal"
@@ -56,7 +56,7 @@
                     <span>Вы действительно хотите удалить <strong>{{ plant.Вид }}</strong>?</span>
                 </div>
                 <div class="modal-footer">
-                    <form method="POST" action="{% url 'plants_delete' plant.Идентификатор %}">
+                    <form method="POST" action="{% url 'plants_delete' plant|getattr:"Уникальный номер" %}">
                         {% csrf_token %}
                         <button class="btn btn-success">Подтвердить</button>
                     </form>

@@ -18,7 +18,7 @@
                     </h5>
                     <form action="" method="post" id="plant_form">
                         {% csrf_token %}
-                        {% separate_form form "2" as plant_form %}
+                        {% separate_form form "1" as plant_form %}
                         {% include 'web/form/form_with_errors.html' with form=plant_form.0 %}
                         {% suggestions form_classification taxon_name %}
                         {% include 'web/form/form_with_errors.html' with form=plant_form.1 %}

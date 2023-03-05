@@ -49,7 +49,7 @@ def ajax_response(request):
 def get_all_taxa(genus):
     """A function returning dictionary with data based on hierarchy of given genus"""
     taxa = {}
-    for taxon in genus.get_ancestors(include_self=True):
+    for taxon in genus.ancestors(include_self=True):
         taxa[f"{taxon.level}_title"] = taxon.title
         taxa[f"{taxon.level}_latin_title"] = taxon.latin_title
 

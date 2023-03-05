@@ -12,7 +12,7 @@ from web.transitions import queryset_to_xlsx
 
 
 @app.task
-def export_to_excel(from_here, to_there, columns, user_id, qs=Plant.objects.prefetch_related("organization").all()):
+def export_to_excel(receiver, columns, user_id, qs=Plant.objects.prefetch_related("organization").all()):
     prepared_qs = prepare_queryset(columns, qs)
     path = queryset_to_xlsx(prepared_qs)
     user = Staff.objects.get(id=user_id)
@@ -22,12 +22,12 @@ def export_to_excel(from_here, to_there, columns, user_id, qs=Plant.objects.pref
         "path_to_file": os.path.basename(path),
     }
     html_content = render_to_string("emails/export_excel.html", context)
-    text_contetn = strip_tags(html_content)
+    text_content = strip_tags(html_content)
     email = EmailMultiAlternatives(
-        subject="Экспорт данных в excel", body=text_contetn, from_email=from_here, to=[to_there]
+        subject="Экспорт данных в excel", body=text_content, from_email=settings.DEFAULT_FROM_EMAIL, to=[receiver]
     )
     email.attach_alternative(html_content, "text/html")
-    # email.attach_file(path)
+    email.attach_file(path)
     email.send()
     # os.remove(path)
 

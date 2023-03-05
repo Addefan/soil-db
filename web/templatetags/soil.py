@@ -44,7 +44,7 @@ def get_attr(obj, attr_name):
     Example: {% if block|getattr:"editable" %}
     """
     try:
-        return obj.get(attr_name, None) or obj.__getattribute__(attr_name)
+        return obj.get(attr_name) or obj.__getattribute__(attr_name)
     except AttributeError:
         return None
 
