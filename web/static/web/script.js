@@ -11,7 +11,7 @@ $(document).ready(() => {
 });
 
 $('form[role="search"]').submit(event => {
-    if (!this.search.value) {
+    if (!event.target.elements.search.value) {
         event.preventDefault();
     }
 });
