@@ -1,7 +1,6 @@
 from django import forms
-from eav.models import Entity
+from eav.models import Entity, Attribute
 
-from web.enums import EavAttributeType
 from web.models import Plant
 
 INPUT_TYPES = {
@@ -37,4 +36,4 @@ class AttributeForm(forms.Form):
             self.fields[attr].widget.attrs.update({"class": input_class, "placeholder": "smt"})
 
     name_attr = forms.CharField(label="Название")
-    type_attr = forms.ChoiceField(widget=forms.Select, choices=EavAttributeType.choices, label="Тип данных")
+    type_attr = forms.ChoiceField(widget=forms.Select, choices=Attribute.DATATYPE_CHOICES[:4], label="Тип данных")
