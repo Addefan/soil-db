@@ -211,10 +211,3 @@ class AttributeForm(forms.Form):
 
     name_attr = forms.CharField(label="Название")
     type_attr = forms.ChoiceField(widget=forms.Select, choices=TYPES, label="Тип данных")
-
-
-class XlsxColumnsForm(forms.Form):
-    columns = forms.MultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple(attrs={"checked": True}),
-        choices=xlsx_columns_choices(),
-    )
