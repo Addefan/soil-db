@@ -6,24 +6,8 @@ from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from eav.models import Entity, Value
 
-from web.choices import xlsx_columns_choices
 from web.models import Plant, Taxon
 from web.services import create_plant_number
-
-TYPES = [
-    ("default", "Не выбрано"),
-    ("integer", "Целое число"),
-    ("float", "Число с плавающей точкой"),
-    ("string", "Строка"),
-    ("date", "Дата"),
-]
-INPUT_TYPES = {
-    "int": forms.IntegerField,
-    "text": forms.CharField,
-    "float": forms.FloatField,
-    "date": forms.DateField,
-}
-
 
 LEVEL = {
     0: "phylum",
@@ -183,31 +167,3 @@ class TaxonForm(forms.Form):
     for taxon in taxa:
         for key, value in suffixes.items():
             locals()[taxon + "_" + key] = forms.CharField(label=taxa[taxon] + value)
-
-
-class AttributeMainForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.label_suffix = ""
-        self.eav_attrs = Entity(Plant).get_all_attributes()
-        for attr in self.eav_attrs:
-            if attr.datatype == "date":
-                self.fields[attr.slug] = INPUT_TYPES[attr.datatype](widget=forms.NumberInput(attrs={"type": "date"}))
-            else:
-                self.fields[attr.slug] = INPUT_TYPES[attr.datatype]()
-            self.fields[attr.slug].required = False
-            self.fields[attr.slug].label = attr.name
-        for attr, value in self.fields.items():
-            self.fields[attr].widget.attrs.update({"class": "form-control", "placeholder": "smt"})
-
-
-class AttributeForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.label_suffix = ""
-        for attr, value in self.fields.items():
-            input_class = "form-select" if self.fields[attr].widget.input_type == "select" else "form-control"
-            self.fields[attr].widget.attrs.update({"class": input_class, "placeholder": "smt"})
-
-    name_attr = forms.CharField(label="Название")
-    type_attr = forms.ChoiceField(widget=forms.Select, choices=TYPES, label="Тип данных")
