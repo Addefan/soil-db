@@ -6,7 +6,7 @@ from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from eav.models import Entity, Value
 
-from web.models import Plant, Taxon
+from web.models import Taxon, Plant
 from web.services import create_plant_number
 
 LEVEL = {
