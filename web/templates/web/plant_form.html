@@ -18,10 +18,8 @@
                     </h5>
                     <form action="" method="post" id="plant_form">
                         {% csrf_token %}
-                        {% separate_form form "1" as plant_form %}
-                        {% include 'web/form/form_with_errors.html' with form=plant_form.0 %}
                         {% suggestions form_classification taxon_name %}
-                        {% include 'web/form/form_with_errors.html' with form=plant_form.1 %}
+                        {% include 'web/form/form_with_errors.html' with form=form %}
                         {% include 'web/form/form_with_errors.html' with form=attr_form_view %}
                         <button type="button" class="btn btn-outline-success mt-3" data-bs-toggle="modal"
                                 data-bs-target="#attribute_modal_window">

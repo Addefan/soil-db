@@ -78,7 +78,11 @@ class PlantMixin:
         taxon_form = TaxonForm(self.request.POST)
         attr_form_view.is_valid()
         taxon_form.is_valid()
-        return {"attr_form_view": attr_form_view, "form_classification": taxon_form}
+        return {
+            "attr_form_view": attr_form_view,
+            "form_classification": taxon_form,
+            "user_organization": self.request.user.organization,
+        }
 
     def form_invalid(self, form):
         return self.render_to_response(
