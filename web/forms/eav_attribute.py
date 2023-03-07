@@ -1,15 +1,9 @@
 from django import forms
 from eav.models import Entity
 
+from web.enums import EavAttributeType
 from web.models import Plant
 
-TYPES = [
-    ("default", "Не выбрано"),
-    ("integer", "Целое число"),
-    ("float", "Число с плавающей точкой"),
-    ("string", "Строка"),
-    ("date", "Дата"),
-]
 INPUT_TYPES = {
     "int": forms.IntegerField,
     "text": forms.CharField,
@@ -43,4 +37,4 @@ class AttributeForm(forms.Form):
             self.fields[attr].widget.attrs.update({"class": input_class, "placeholder": "smt"})
 
     name_attr = forms.CharField(label="Название")
-    type_attr = forms.ChoiceField(widget=forms.Select, choices=TYPES, label="Тип данных")
+    type_attr = forms.ChoiceField(widget=forms.Select, choices=EavAttributeType.choices, label="Тип данных")

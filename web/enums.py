@@ -8,3 +8,10 @@ class TaxonLevel(models.TextChoices):
     klass = "class", "Класс"
     phylum = "phylum", "Отдел"
     kingdom = "kingdom", "Царство"
+
+
+class EavAttributeType(models.TextChoices):
+    integer = "integer", "Целое число"
+    float = "float", "Число с плавающей точкой"
+    string = "string", "Строка"
+    date = "date", "Дата"
