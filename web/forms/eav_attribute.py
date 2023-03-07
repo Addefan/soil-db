@@ -18,7 +18,7 @@ class AttributeMainForm(forms.Form):
         self.eav_attrs = Entity(Plant).get_all_attributes()
         for attr in self.eav_attrs:
             if attr.datatype == "date":
-                self.fields[attr.slug] = INPUT_TYPES[attr.datatype](widget=forms.NumberInput(attrs={"type": "date"}))
+                self.fields[attr.slug] = INPUT_TYPES[attr.datatype](widget=forms.DateInput(attrs={"type": "date"}))
             else:
                 self.fields[attr.slug] = INPUT_TYPES[attr.datatype]()
             self.fields[attr.slug].required = False
