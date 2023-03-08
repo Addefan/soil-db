@@ -1,10 +1,11 @@
-$("#save").click(function () {
+$("#profile_form").submit((event) => {
+    event.preventDefault();
     if (profile_fields_is_changed()) {
         $.ajax({
             method: "post",
             url: profile_url,
             dataType: "json",
-            data: $("#profile_form").serialize(),
+            data: $(event.target).serialize(),
             success: function (data) {
                 save_current_profile_input_values();
                 $(".is-invalid").removeClass("is-invalid");
