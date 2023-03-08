@@ -9,6 +9,7 @@ $("#profile_form").submit((event) => {
             success: () => {
                 save_current_profile_input_values();
                 $("#profile_form .is-invalid").removeClass("is-invalid");
+                $("#profile_form .invalid-feedback").empty();
                 const success_toast = new bootstrap.Toast($("#success_toast"));
                 success_toast.show();
             },
@@ -67,9 +68,10 @@ $("#password_form").submit((event) => {
             method: "post",
             url: password_url,
             dataType: "json",
-            data: {"new_password": new_password},
+            data: $(event.target).serialize(),
             success: () => {
                 $("#password_form .is-invalid").removeClass("is-invalid");
+                $("password_form .invalid-feedback").empty();
                 const info_toast = new bootstrap.Toast($("#info_toast"));
                 info_toast.show();
             },
