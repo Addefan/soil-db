@@ -1,5 +1,5 @@
 $("#save").click(function () {
-    if (fields_is_changed()) {
+    if (profile_fields_is_changed()) {
         $.ajax({
             method: "post",
             url: profile_url,
@@ -22,15 +22,9 @@ $("#save").click(function () {
     }
 });
 
-function fields_is_changed() {
-    for (let field of $(".input-group")) {
-        let input = $(field).children().children("input");
-        if ($(field).hasClass("password")) {
-            if (input.val() !== "") {
-                return true;
-            }
-        }
-        else if (input.attr("value") !== input.val()) {
+function profile_fields_is_changed() {
+    for (let input of $("#profile_form input")) {
+        if (input.getAttribute("value") !== input.value) {
             return true;
         }
     }
