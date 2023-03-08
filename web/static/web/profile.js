@@ -14,6 +14,7 @@ $("#profile_form").submit((event) => {
                 success_toast.show();
             },
             error: (data) => {
+                $("#profile_form .invalid-feedback").empty();
                 displaying_errors(data.responseJSON);
             }
         });
@@ -71,11 +72,12 @@ $("#password_form").submit((event) => {
             data: $(event.target).serialize(),
             success: () => {
                 $("#password_form .is-invalid").removeClass("is-invalid");
-                $("password_form .invalid-feedback").empty();
+                $("#password_form .invalid-feedback").empty();
                 const info_toast = new bootstrap.Toast($("#info_toast"));
                 info_toast.show();
             },
             error: (data) => {
+                $("#password_form .invalid-feedback").empty();
                 displaying_errors(data.responseJSON);
             }
         })
