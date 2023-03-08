@@ -19,7 +19,7 @@
                     <form action="" method="post" id="plant_form">
                         {% csrf_token %}
                         {% suggestions form_classification taxon_name %}
-                        {% include 'web/form/form_with_errors.html' with form=form %}
+                        {% include 'web/form/form_with_errors.html' %}
                         {% include 'web/form/form_with_errors.html' with form=attr_form_view %}
                         <button type="button" class="btn btn-outline-success mt-3" data-bs-toggle="modal"
                                 data-bs-target="#attribute_modal_window">
