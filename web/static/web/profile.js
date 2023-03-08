@@ -6,17 +6,13 @@ $("#profile_form").submit((event) => {
             url: profile_url,
             dataType: "json",
             data: $(event.target).serialize(),
-            success: function (data) {
+            success: () => {
                 save_current_profile_input_values();
-                $(".is-invalid").removeClass("is-invalid");
-                let success_toast = new bootstrap.Toast($("#success_toast"));
+                $("#profile_form .is-invalid").removeClass("is-invalid");
+                const success_toast = new bootstrap.Toast($("#success_toast"));
                 success_toast.show();
-                if (data["password"]) {
-                    let info_toast = new bootstrap.Toast($("#info_toast"));
-                    info_toast.show();
-                }
             },
-            error: function (data) {
+            error: (data) => {
                 displaying_errors(data.responseJSON);
             }
         });
@@ -62,6 +58,27 @@ function move_toasts_to_toast_container() {
         $(".toast-container").append($(toast).detach());
     }
 }
+
+$("#password_form").submit((event) => {
+    event.preventDefault();
+    const new_password = event.target.password.value;
+    if (new_password) {
+        $.ajax({
+            method: "post",
+            url: password_url,
+            dataType: "json",
+            data: {"new_password": new_password},
+            success: () => {
+                $("#password_form .is-invalid").removeClass("is-invalid");
+                const info_toast = new bootstrap.Toast($("#info_toast"));
+                info_toast.show();
+            },
+            error: (data) => {
+                displaying_errors(data.responseJSON);
+            }
+        })
+    }
+})
 
 $(document).ready(function () {
     // Setting attributes for the tooltip on the email's input

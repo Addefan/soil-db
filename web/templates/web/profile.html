@@ -35,7 +35,7 @@
                         </form>
                         <hr>
                         <h5 class="mb-0">Смена пароля</h5>
-                        <form id="change_password">
+                        <form id="password_form">
                             <div class="input-group has-validation password">
                                 <div class="form-floating mt-3">
                                     <input type="password" name="password" maxlength="128" class="form-control"
@@ -65,7 +65,8 @@
 {% block scripts %}
     {{ block.super }}
     <script>
-        let profile_url = "{% url 'profile' %}"
+        let profile_url = "{% url 'profile' %}";
+        let password_url = "{% url 'change_password' %}";
     </script>
     <script src="{% static 'web/profile.js' %}?">
     </script>
