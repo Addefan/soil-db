@@ -1,0 +1,18 @@
+{% extends "web/base.html" %}
+{% load static %}
+{% block title %}Страница не найдена{% endblock %}
+{% block body %}
+    <main class="wrapper_404">
+        <div class="description_404">
+            <img class="page_not_found__image" src="{% static "error404.png" %}" alt="">
+            <span class="page_not_found__error_code">{{ status_code }}</span>
+            <span class="page_not_found__error_header">
+                Страница не найдена.
+            </span>
+            <span class="page_not_found__error_text">
+                Возможно, вы неверно указали её адрес или она была перемещена.
+            </span>
+            <a href="{% url "plants" %}" class="page_not_found__button btn btn-outline-primary" role="button">Перейти на главную</a>
+        </div>
+    </main>
+{% endblock %}
