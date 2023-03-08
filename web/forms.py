@@ -3,12 +3,11 @@ from typing import Iterable
 from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate
-from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
-from eav.models import Entity, Attribute, Value
+from eav.models import Entity, Value
 
 from web.choices import xlsx_columns_choices
 from web.models import Plant, Staff, Taxon
@@ -27,7 +26,6 @@ INPUT_TYPES = {
     "float": forms.FloatField,
     "date": forms.DateField,
 }
-
 
 LEVEL = {
     0: "phylum",
@@ -277,15 +275,6 @@ class ProfileForm(forms.ModelForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
             visible.field.widget.attrs["placeholder"] = "placeholder"
-
-    def clean(self):
-        cleaned_data = super().clean()
-        raw_password = cleaned_data["password"]
-        if raw_password:
-            cleaned_data["password"] = make_password(raw_password)
-        else:
-            del cleaned_data["password"]
-        return cleaned_data
 
     class Meta:
         model = Staff
