@@ -6,9 +6,8 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.http import Http404
 from django.utils.translation import gettext_lazy as _
-from eav.models import Entity, Attribute, Value
+from eav.models import Entity, Value
 
 from web.choices import xlsx_columns_choices
 from web.models import Plant, Staff, Taxon
@@ -27,7 +26,6 @@ INPUT_TYPES = {
     "float": forms.FloatField,
     "date": forms.DateField,
 }
-
 
 LEVEL = {
     0: "phylum",
@@ -161,20 +159,17 @@ class PlantForm(forms.ModelForm):
         plant = super().save(*args, **kwargs)
         attrs = self.initial["attr_form_view"].cleaned_data
         classification = self.initial["form_classification"].cleaned_data
-        if attrs and classification:
-            genus = Taxon.objects.filter(latin_title=classification["genus_latin_title"], level="Genus").first()
-            if not genus:
-                genus = make_chain(classification)
-            plant.genus = genus
-            created_values, updated_values, updated_fields = self.prepare_bulk_edit_eav_fields(plant, attrs)
-            if created_values:
-                Value.objects.bulk_create(created_values)
-            if updated_values:
-                Value.objects.bulk_update(updated_values, fields=updated_fields)
-            plant.save()
-            return plant
-        else:
-            raise Http404
+        genus = Taxon.objects.filter(latin_title=classification["genus_latin_title"], level="Genus").first()
+        if not genus:
+            genus = make_chain(classification)
+        plant.genus = genus
+        created_values, updated_values, updated_fields = self.prepare_bulk_edit_eav_fields(plant, attrs)
+        if created_values:
+            Value.objects.bulk_create(created_values)
+        if updated_values:
+            Value.objects.bulk_update(updated_values, fields=updated_fields)
+        plant.save()
+        return plant
 
 
 class TaxonForm(forms.Form):
