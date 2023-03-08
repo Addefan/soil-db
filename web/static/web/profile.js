@@ -6,7 +6,7 @@ $("#save").click(function () {
             dataType: "json",
             data: $("#profile_form").serialize(),
             success: function (data) {
-                save_current_input_values();
+                save_current_profile_input_values();
                 $(".is-invalid").removeClass("is-invalid");
                 let success_toast = new bootstrap.Toast($("#success_toast"));
                 success_toast.show();
@@ -46,11 +46,9 @@ function displaying_errors(errors) {
     }
 }
 
-function save_current_input_values() {
-    for (let field of $(".input-group")) {
-        if ($(field).hasClass("password")) {
-            $(field).children().children("input").val("");
-        } else if ($(field).hasClass("email")) {
+function save_current_profile_input_values() {
+    for (let field of $("#profile_form .input-group")) {
+        if ($(field).hasClass("email")) {
         } else {
             let input = $(field).children().children("input");
             input.attr("value", input.val());
