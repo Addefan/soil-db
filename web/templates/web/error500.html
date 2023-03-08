@@ -3,6 +3,10 @@
 {% block title %}
     Внутренняя ошибка сервера
 {% endblock %}
+{% block styles %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static "web/errors.css" %}">
+{% endblock %}
 {% block body %}
     <main class="wrapper_500">
         <div class="description_500">

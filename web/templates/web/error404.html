@@ -1,6 +1,10 @@
 {% extends "web/base.html" %}
 {% load static %}
 {% block title %}Страница не найдена{% endblock %}
+{% block styles %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static "web/errors.css" %}">
+{% endblock %}
 {% block body %}
     <main class="wrapper_404">
         <div class="description_404">
