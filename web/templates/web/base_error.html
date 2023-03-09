@@ -1,0 +1,24 @@
+{% extends "web/base.html" %}
+{% load static %}
+{% block title %}
+    {{ title }}
+{% endblock %}
+{% block styles %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static "web/errors.css" %}">
+{% endblock %}
+{% block body %}
+    <main class="wrapper_error">
+        <div class="description_error">
+            <img src="{% static image %}" alt="" class="error__image">
+            <span class="error__code">{{ status_code }}</span>
+            <span class="error__header">
+                {{ title }}.
+            </span>
+            <span class="error__text">
+                {{ text|safe }}
+            </span>
+            {% block button %}{% endblock %}
+        </div>
+    </main>
+{% endblock %}
