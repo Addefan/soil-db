@@ -87,6 +87,10 @@ class PlantForm(forms.ModelForm):
             },
         }
 
+    def clean(self):
+        self.cleaned_data["number"] = create_plant_number()
+        return self.cleaned_data
+
     def is_valid(self):
         return (
             super(PlantForm, self).is_valid()
@@ -131,7 +135,6 @@ class PlantForm(forms.ModelForm):
         return created_values, updated_values, updated_fields
 
     def save(self, *args, **kwargs):
-        self.instance.number = create_plant_number()
         plant = super().save(*args, **kwargs)
         attrs = self.initial["attr_form_view"].cleaned_data
         classification = self.initial["form_classification"].cleaned_data
