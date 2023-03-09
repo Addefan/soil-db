@@ -1,38 +1,37 @@
-.wrapper_404, .wrapper_500 {
+.wrapper_error {
     display: flex;
     flex-direction: column;
 }
 
-.description_404, .description_500 {
+.description_error {
     display: flex;
     flex-direction: column;
     margin: 0 auto;
     color: red;
 }
 
-.description_404 > *, .description_500 > * {
+.description_error > * {
     display: block;
     margin: 0 auto;
 }
 
-.page_not_found__image, .internal_server_error__image {
+.error__image {
     margin: 4% auto 0;
     object-fit: cover;
     width: 256px;
     height: 256px;
 }
 
-.page_not_found__error_code, .internal_server_error__code {
+.error__code {
     font-size: 6em;
 }
 
-.page_not_found__error_text, .page_not_found__error_header,
-.internal_server_error__text, .internal_server_error__header {
+.error__text, .error__header {
     text-align: center;
     font-size: 1.5em;
     margin-bottom: 20px;
 }
 
-.page_not_found__button {
+.error__button {
     margin: 10px auto 25px;
 }
