@@ -73,7 +73,7 @@ class PlantForm(forms.ModelForm):
     class Meta:
         model = Plant
         fields = "__all__"
-        exclude = ["number", "genus", "digitized_at"]
+        exclude = ["number", "genus", "digitized_at", "organization"]
         labels = {
             "name": _("Наименование растения"),
             "latin_name": _("Латинское наименование растения"),
@@ -86,10 +86,6 @@ class PlantForm(forms.ModelForm):
                 "unique": _("Проверьте, пожалуйста, уникальность введенного вами номера"),
             },
         }
-
-    def clean(self):
-        self.cleaned_data["number"] = create_plant_number()
-        return self.cleaned_data
 
     def is_valid(self):
         return (
@@ -135,6 +131,8 @@ class PlantForm(forms.ModelForm):
         return created_values, updated_values, updated_fields
 
     def save(self, *args, **kwargs):
+        self.instance.number = create_plant_number()
+        self.instance.organization = self.initial["user_organization"]
         plant = super().save(*args, **kwargs)
         attrs = self.initial["attr_form_view"].cleaned_data
         classification = self.initial["form_classification"].cleaned_data
