@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 
-from web.views.errors import Page404View, Page500View
+from web.views import Page404View, Page500View
 
 urlpatterns = [
     path("admin/", admin.site.urls),
