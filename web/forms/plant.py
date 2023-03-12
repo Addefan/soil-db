@@ -1,31 +1,13 @@
 from typing import Iterable
 
 from django import forms
-from django.conf import settings
-from django.contrib.auth import authenticate
-from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from eav.models import Entity, Value
 
-from web.choices import xlsx_columns_choices
-from web.models import Plant, Staff, Taxon
+from web.models import Taxon, Plant
 from web.services import create_plant_number
-
-TYPES = [
-    ("default", "Не выбрано"),
-    ("integer", "Целое число"),
-    ("float", "Число с плавающей точкой"),
-    ("string", "Строка"),
-    ("date", "Дата"),
-]
-INPUT_TYPES = {
-    "int": forms.IntegerField,
-    "text": forms.CharField,
-    "float": forms.FloatField,
-    "date": forms.DateField,
-}
 
 LEVEL = {
     0: "phylum",
@@ -91,7 +73,7 @@ class PlantForm(forms.ModelForm):
     class Meta:
         model = Plant
         fields = "__all__"
-        exclude = ["number", "genus", "digitized_at"]
+        exclude = ["number", "genus", "digitized_at", "organization"]
         labels = {
             "name": _("Наименование растения"),
             "latin_name": _("Латинское наименование растения"),
@@ -107,6 +89,7 @@ class PlantForm(forms.ModelForm):
 
     def clean(self):
         self.cleaned_data["number"] = create_plant_number()
+        self.cleaned_data["organization"] = self.initial["user_organization"]
         return self.cleaned_data
 
     def is_valid(self):
@@ -153,6 +136,8 @@ class PlantForm(forms.ModelForm):
         return created_values, updated_values, updated_fields
 
     def save(self, *args, **kwargs):
+        self.instance.number = self.cleaned_data["number"]
+        self.instance.organization = self.cleaned_data["organization"]
         plant = super().save(*args, **kwargs)
         attrs = self.initial["attr_form_view"].cleaned_data
         classification = self.initial["form_classification"].cleaned_data
@@ -185,107 +170,3 @@ class TaxonForm(forms.Form):
     for taxon in taxa:
         for key, value in suffixes.items():
             locals()[taxon + "_" + key] = forms.CharField(label=taxa[taxon] + value)
-
-
-class AttributeMainForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.label_suffix = ""
-        self.eav_attrs = Entity(Plant).get_all_attributes()
-        for attr in self.eav_attrs:
-            if attr.datatype == "date":
-                self.fields[attr.slug] = INPUT_TYPES[attr.datatype](widget=forms.NumberInput(attrs={"type": "date"}))
-            else:
-                self.fields[attr.slug] = INPUT_TYPES[attr.datatype]()
-            self.fields[attr.slug].required = False
-            self.fields[attr.slug].label = attr.name
-        for attr, value in self.fields.items():
-            self.fields[attr].widget.attrs.update({"class": "form-control", "placeholder": "smt"})
-
-
-class AttributeForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.label_suffix = ""
-        for attr, value in self.fields.items():
-            input_class = "form-select" if self.fields[attr].widget.input_type == "select" else "form-control"
-            self.fields[attr].widget.attrs.update({"class": input_class, "placeholder": "smt"})
-
-    name_attr = forms.CharField(label="Название")
-    type_attr = forms.ChoiceField(widget=forms.Select, choices=TYPES, label="Тип данных")
-
-
-class AuthForm(forms.Form):
-    def __init__(self, request=None, *args, **kwargs):
-        self.request = request
-        self.user_cache = None
-        super().__init__(*args, **kwargs)
-        self.label_suffix = ""
-
-        for _, field in self.fields.items():
-            field.widget.attrs["placeholder"] = "placeholder"
-
-    email = forms.EmailField(widget=forms.EmailInput(attrs={"autofocus": True, "class": "form-control"}))
-    password = forms.CharField(
-        label=_("Пароль"),
-        strip=False,
-        widget=forms.PasswordInput(attrs={"autocomplete": "current-password", "class": "form-control"}),
-    )
-    remember_me = forms.BooleanField(
-        label="Запомнить меня", widget=forms.CheckboxInput(attrs={"class": "form-check-input"}), required=False
-    )
-
-    error_messages = {
-        "invalid_login": _("Удостоверьтесь, что вы правильно ввели почту и пароль"),
-    }
-
-    def clean(self):
-        email = self.cleaned_data.get("email")
-        password = self.cleaned_data.get("password")
-        remember_me = self.cleaned_data.get("remember_me")
-
-        if self.is_valid():
-            self.user_cache = authenticate(self.request, username=email, password=password)
-            if self.user_cache is None:
-                raise self.get_invalid_login_error()
-            else:
-                if not remember_me:
-                    self.request.session.set_expiry(0)
-                else:
-                    self.request.session.set_expiry(settings.SESSION_COOKIE_AGE)
-
-        return self.cleaned_data
-
-    def get_user(self):
-        return self.user_cache
-
-    def get_invalid_login_error(self):
-        return ValidationError(
-            self.error_messages["invalid_login"],
-            code="invalid_login",
-            params={"email": self.cleaned_data["email"]},
-        )
-
-
-class ProfileForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.label_suffix = ""
-        self.fields["email"].widget.attrs["readonly"] = ""
-        for visible in self.visible_fields():
-            visible.field.widget.attrs["class"] = "form-control"
-            visible.field.widget.attrs["placeholder"] = "placeholder"
-
-    class Meta:
-        model = Staff
-        widgets = {"email": forms.EmailInput()}
-        fields = ("surname", "name", "email")
-        readonly_fields = ("email",)
-
-
-class XlsxColumnsForm(forms.Form):
-    columns = forms.MultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple(attrs={"checked": True}),
-        choices=xlsx_columns_choices(),
-        label="Столбцы для экспорта",
-    )
