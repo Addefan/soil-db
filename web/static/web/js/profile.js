@@ -1,36 +1,29 @@
-$("#save").click(function () {
-    if (fields_is_changed()) {
+$("#profile_form").submit((event) => {
+    event.preventDefault();
+    if (profile_fields_is_changed()) {
         $.ajax({
             method: "post",
             url: profile_url,
             dataType: "json",
-            data: $("#profile_form").serialize(),
-            success: function (data) {
-                save_current_input_values();
-                $(".is-invalid").removeClass("is-invalid");
-                let success_toast = new bootstrap.Toast($("#success_toast"));
+            data: $(event.target).serialize(),
+            success: () => {
+                save_current_profile_input_values();
+                $("#profile_form .is-invalid").removeClass("is-invalid");
+                $("#profile_form .invalid-feedback").empty();
+                const success_toast = new bootstrap.Toast($("#success_toast"));
                 success_toast.show();
-                if (data["password"]) {
-                    let info_toast = new bootstrap.Toast($("#info_toast"));
-                    info_toast.show();
-                }
             },
-            error: function (data) {
+            error: (data) => {
+                $("#profile_form .invalid-feedback").empty();
                 displaying_errors(data.responseJSON);
             }
         });
     }
 });
 
-function fields_is_changed() {
-    for (let field of $(".input-group")) {
-        let input = $(field).children().children("input");
-        if ($(field).hasClass("password")) {
-            if (input.val() !== "") {
-                return true;
-            }
-        }
-        else if (input.attr("value") !== input.val()) {
+function profile_fields_is_changed() {
+    for (let input of $("#profile_form input")) {
+        if (input.getAttribute("value") !== input.value) {
             return true;
         }
     }
@@ -52,11 +45,9 @@ function displaying_errors(errors) {
     }
 }
 
-function save_current_input_values() {
-    for (let field of $(".input-group")) {
-        if ($(field).hasClass("password")) {
-            $(field).children().children("input").val("");
-        } else if ($(field).hasClass("email")) {
+function save_current_profile_input_values() {
+    for (let field of $("#profile_form .input-group")) {
+        if ($(field).hasClass("email")) {
         } else {
             let input = $(field).children().children("input");
             input.attr("value", input.val());
@@ -69,6 +60,29 @@ function move_toasts_to_toast_container() {
         $(".toast-container").append($(toast).detach());
     }
 }
+
+$("#password_form").submit((event) => {
+    event.preventDefault();
+    const new_password = event.target.password.value;
+    if (new_password) {
+        $.ajax({
+            method: "post",
+            url: password_url,
+            dataType: "json",
+            data: $(event.target).serialize(),
+            success: () => {
+                $("#password_form .is-invalid").removeClass("is-invalid");
+                $("#password_form .invalid-feedback").empty();
+                const info_toast = new bootstrap.Toast($("#info_toast"));
+                info_toast.show();
+            },
+            error: (data) => {
+                $("#password_form .invalid-feedback").empty();
+                displaying_errors(data.responseJSON);
+            }
+        })
+    }
+})
 
 $(document).ready(function () {
     // Setting attributes for the tooltip on the email's input

@@ -9,23 +9,12 @@ class ProfileForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.label_suffix = ""
         self.fields["email"].widget.attrs["readonly"] = ""
-        self.fields["password"].required = False
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
             visible.field.widget.attrs["placeholder"] = "placeholder"
 
-    def clean(self):
-        cleaned_data = super().clean()
-        raw_password = cleaned_data["password"]
-        if raw_password:
-            cleaned_data["password"] = make_password(raw_password)
-        else:
-            del cleaned_data["password"]
-        return cleaned_data
-
     class Meta:
         model = Staff
-        widgets = {"email": forms.EmailInput(), "password": forms.PasswordInput()}
-        labels = {"password": "Новый пароль"}
-        fields = ("surname", "name", "email", "password")
+        widgets = {"email": forms.EmailInput()}
+        fields = ("surname", "name", "email")
         readonly_fields = ("email",)

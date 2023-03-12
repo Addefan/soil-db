@@ -19,16 +19,37 @@
                                 </a>
                             </div>
                         </div>
+                        <hr class="mt-0">
+                        <h5 class="mb-0">Персональная информация</h5>
                         <form method="post" class="mb-2" id="profile_form">
                             {% csrf_token %}
                             {% include 'web/form/form_with_errors.html' %}
                             <div class="row mt-3">
-                                <button type="button" id="save" class="btn btn-success col mx-3">
+                                <button id="save" class="btn btn-success col mx-3">
                                     Сохранить
                                 </button>
                                 <button type="reset" class="btn btn-secondary col me-3">
                                     Сбросить
                                 </button>
+                            </div>
+                        </form>
+                        <hr>
+                        <h5 class="mb-0">Смена пароля</h5>
+                        <form id="password_form">
+                            {% csrf_token %}
+                            <div class="input-group has-validation password">
+                                <div class="form-floating mt-3">
+                                    <input type="password" name="password" maxlength="128" class="form-control"
+                                           placeholder="placeholder" id="id_password">
+                                    <label for="id_password">Новый пароль</label>
+                                </div>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <div class="row mt-3">
+                                <button class="btn btn-success col mx-3">
+                                    Сменить
+                                </button>
+                                <div class="col"></div>
                             </div>
                         </form>
                     </div>
@@ -45,7 +66,8 @@
 {% block scripts %}
     {{ block.super }}
     <script>
-        let profile_url = "{% url 'profile' %}"
+        let profile_url = "{% url 'profile' %}";
+        let password_url = "{% url 'change_password' %}";
     </script>
     <script src="{% static 'web/js/profile.js' %}?">
     </script>
