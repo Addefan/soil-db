@@ -16,13 +16,6 @@ from web.forms import (
 )
 from web.models import Taxon, Plant
 
-ATTRIBUTE_TYPE = {
-    "integer": Attribute.TYPE_INT,
-    "string": Attribute.TYPE_TEXT,
-    "date": Attribute.TYPE_DATE,
-    "float": Attribute.TYPE_FLOAT,
-}
-
 
 @cache
 def get_taxa():
@@ -41,7 +34,7 @@ def ajax_response(request):
     type_attr = request.POST.get("type_attr")
     response_data["name_attr"] = name
     response_data["type_attr"] = type_attr
-    attr = Attribute.objects.create(name=name, datatype=ATTRIBUTE_TYPE[type_attr])
+    attr = Attribute.objects.create(name=name, datatype=type_attr)
     response_data["slug_name"] = attr.slug
     return JsonResponse(response_data)
 
