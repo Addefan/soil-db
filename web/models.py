@@ -43,7 +43,7 @@ class PlantModelMixin:
         "family": "Семейство",
         "order": "Порядок",
         "class": "Класс",
-        "phylum": "Тип",
+        "phylum": "Отдел",
     }
     _suffix: dict[str, str] = {
         "latin_title": " (лат.)",
