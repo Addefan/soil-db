@@ -1,8 +1,22 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import { createStore } from "vuex";
 
-import './assets/main.css'
+const store = createStore({
+    state() {
+        return {
+            count: 10
+        }
+    },
+    mutations: {
+        inc(state) {
+            state.count++;
+        }
+    }
+})
 
 const app = createApp(App)
 
+app.use(store)
 app.mount('#app')
+
