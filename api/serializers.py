@@ -4,7 +4,23 @@ from rest_framework import serializers
 from web.models import Plant
 
 
-class PlantSerializer(serializers.ModelSerializer):
+class PlantSerializerMixin:
+    def fill_in_taxon_fields(self, taxa):
+        for taxon in taxa:
+            self.instance[self.translation[taxon.level]] = taxon.title
+            self.instance[f"{self.translation[taxon.level]} (лат.)"] = taxon.latin_title
+
+    def fill_in_eav_fields(self, eav_fields):
+        for field in eav_fields:
+            self.instance[field.attribute.name] = field.value
+
+    def fill_in_missing_fields(self, attributes):
+        # fill in all missing fields as None
+        for attr in attributes:
+            self.instance.setdefault(attr.name, None)
+
+
+class PlantSerializer(serializers.ModelSerializer, PlantSerializerMixin):
     # 'translation' attribute isn't used in serializing
     translation = Plant._taxa
     organization = serializers.StringRelatedField()
@@ -14,19 +30,13 @@ class PlantSerializer(serializers.ModelSerializer):
         fields = ("id", "number", "digitized_at", "latin_name", "name", "organization", "genus")
 
     def to_representation(self, instance):
-        instance = super(PlantSerializer, self).to_representation(instance)
-        eav_fields = self.context.get("eav_fields").get(instance["id"])
+        self.instance = super(PlantSerializer, self).to_representation(instance)
+        eav_fields = self.context.get("eav_fields").get(self.instance["id"])
         attributes = self.context.get("attributes")
-        taxa = self.context.get("taxa")
-        genus = instance.pop("genus")
+        genus = self.instance.pop("genus")
         # TODO optimize queries, using 'ancestors' method creates N+1 problem
-        taxa = taxa.get(genus).ancestors(include_self=True).reverse()
-        for taxon in taxa:
-            instance[self.translation[taxon.level]] = taxon.title
-            instance[f"{self.translation[taxon.level]} (лат.)"] = taxon.latin_title
-        for field in eav_fields:
-            instance[field.attribute.name] = field.value
-        # fill in all missing fields as None
-        for attr in attributes:
-            instance.setdefault(attr.name, None)
-        return instance
+        taxa = self.context.get("taxa").get(genus).ancestors(include_self=True).reverse()
+        self.fill_in_taxon_fields(taxa)
+        self.fill_in_eav_fields(eav_fields)
+        self.fill_in_missing_fields(attributes)
+        return self.instance
