@@ -16,13 +16,17 @@ class PlantSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         instance = super(PlantSerializer, self).to_representation(instance)
         eav_fields = self.context.get("eav_fields").get(instance["id"])
+        attributes = self.context.get("attributes")
         taxa = self.context.get("taxa")
         genus = instance.pop("genus")
         # TODO optimize queries, using 'ancestors' method creates N+1 problem
         taxa = taxa.get(genus).ancestors(include_self=True).reverse()
         for taxon in taxa:
-            instance.setdefault(self.translation[taxon.level], taxon.title)
-            instance.setdefault(f"{self.translation[taxon.level]} (лат.)", taxon.latin_title)
+            instance[self.translation[taxon.level]] = taxon.title
+            instance[f"{self.translation[taxon.level]} (лат.)"] = taxon.latin_title
         for field in eav_fields:
-            instance.setdefault(field.attribute.name, field.value)
+            instance[field.attribute.name] = field.value
+        # fill in all missing fields as None
+        for attr in attributes:
+            instance.setdefault(attr.name, None)
         return instance

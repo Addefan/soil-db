@@ -1,4 +1,4 @@
-from eav.models import Value
+from eav.models import Value, Attribute
 from rest_framework import generics
 from rest_framework.response import Response
 
@@ -12,6 +12,7 @@ class PlantAPIView(generics.ListAPIView):
 
     def get(self, request, *args, **kwargs):
         plants = self.get_queryset()
+        attributes = Attribute.objects.all()
         plants_id = [plant.id for plant in plants]
         eav_fields_as_queryset = Value.objects.filter(entity_id__in=plants_id).prefetch_related("attribute")
         eav_fields: dict = {}
@@ -21,5 +22,7 @@ class PlantAPIView(generics.ListAPIView):
             else:
                 eav_fields[item.entity_id].append(item)
         taxa = {taxon.id: taxon for taxon in Taxon.objects.all()}
-        serializer = PlantSerializer(plants, many=True, context={"eav_fields": eav_fields, "taxa": taxa})
+        serializer = PlantSerializer(
+            plants, many=True, context={"eav_fields": eav_fields, "taxa": taxa, "attributes": attributes}
+        )
         return Response(serializer.data)
