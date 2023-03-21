@@ -1,4 +1,3 @@
-from eav.models import Entity, Value
 from rest_framework import serializers
 
 from web.models import Plant
@@ -27,16 +26,11 @@ class PlantSerializer(serializers.ModelSerializer, PlantSerializerMixin):
 
     class Meta:
         model = Plant
-        fields = ("id", "number", "digitized_at", "latin_name", "name", "organization", "genus")
+        fields = (
+            "number",
+            "organization",
+        )
 
     def to_representation(self, instance):
-        self.instance = super(PlantSerializer, self).to_representation(instance)
-        eav_fields = self.context.get("eav_fields").get(self.instance["id"])
-        attributes = self.context.get("attributes")
-        genus = self.instance.pop("genus")
-        # TODO optimize queries, using 'ancestors' method creates N+1 problem
-        taxa = self.context.get("taxa").get(genus).ancestors(include_self=True).reverse()
-        self.fill_in_taxon_fields(taxa)
-        self.fill_in_eav_fields(eav_fields)
-        self.fill_in_missing_fields(attributes)
-        return self.instance
+        instance = super(PlantSerializer, self).to_representation(instance)
+        return self.context.get("data")[instance["number"]]
