@@ -23,14 +23,21 @@ from web.models import Plant
 
 
 class PlantSerializer(serializers.ModelSerializer):
+    translation = Plant._taxa
+
     class Meta:
         model = Plant
         fields = ("number", "digitized_at", "latin_name", "name", "organization", "genus")
 
     def to_representation(self, instance):
         instance = super(PlantSerializer, self).to_representation(instance)
-        plants = self.context.get("plants")
         eav_fields = self.context.get("eav_fields")
+        taxa = self.context.get("taxa")
+        genus = instance.pop("genus")
+        taxa = taxa.get(genus).ancestors(include_self=True).reverse()
+        for taxon in taxa:
+            instance.setdefault(self.translation[taxon.level], taxon.title)
+            instance.setdefault(f"{self.translation[taxon.level]} (лат.)", taxon.latin_title)
         for field in eav_fields:
             instance.setdefault(field.attribute.name, field.value)
         return instance

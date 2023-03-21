@@ -4,7 +4,7 @@ from rest_framework import generics
 from rest_framework.response import Response
 
 from api.serializers import PlantSerializer
-from web.models import Plant
+from web.models import Plant, Taxon
 
 
 class PlantAPIView(generics.GenericAPIView):
@@ -15,5 +15,6 @@ class PlantAPIView(generics.GenericAPIView):
         plants = self.get_queryset()
         plants_id = [plant.id for plant in plants]
         eav_fields = Value.objects.filter(entity_id__in=plants_id).prefetch_related("attribute")
-        serializer = PlantSerializer(plants, many=True, context={"plants": plants, "eav_fields": eav_fields})
+        taxa = {taxon.id: taxon for taxon in Taxon.objects.all()}
+        serializer = PlantSerializer(plants, many=True, context={"eav_fields": eav_fields, "taxa": taxa})
         return Response(serializer.data)
