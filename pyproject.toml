@@ -16,11 +16,15 @@ python = "^3.9"
 django = "<4.1"
 django-eav2 = "^1.2.3"
 psycopg2-binary = "^2.9.5"
+django-jsonfield-backport = "^1.0.5"
 redis = "^4.5.1"
 celery = "^5.2.7"
 xlsxwriter = "^3.0.8"
 python-dotenv = "^0.21.1"
 django-tree-queries = "^0.14.0"
+djangorestframework = "^3.14.0"
+markdown = "^3.4.1"
+django-filter = "^22.1"
 
 
 [tool.poetry.group.dev.dependencies]

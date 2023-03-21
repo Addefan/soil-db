@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "web",
     "eav",
     "django_jsonfield_backport",
+    "rest_framework",
 ]
 
 MIDDLEWARE = [

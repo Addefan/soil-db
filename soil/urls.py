@@ -7,6 +7,7 @@ from web.views import Page404View, Page500View
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("web.urls")),
+    path("api/", include("api.urls")),
 ]
 
 # requires DEBUG = False
