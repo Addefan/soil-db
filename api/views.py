@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from eav.models import Value
 from rest_framework import generics
 from rest_framework.response import Response
@@ -7,7 +6,7 @@ from api.serializers import PlantSerializer
 from web.models import Plant, Taxon
 
 
-class PlantAPIView(generics.GenericAPIView):
+class PlantAPIView(generics.ListAPIView):
     serializer_class = PlantSerializer
     queryset = Plant.objects.prefetch_related("organization")
 

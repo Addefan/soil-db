@@ -23,7 +23,9 @@ from web.models import Plant
 
 
 class PlantSerializer(serializers.ModelSerializer):
+    # 'translation' attribute isn't used in serializing
     translation = Plant._taxa
+    organization = serializers.StringRelatedField()
 
     class Meta:
         model = Plant
