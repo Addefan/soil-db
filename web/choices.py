@@ -30,6 +30,19 @@ def xlsx_columns_custom_choices() -> list[tuple[str, str]]:
     return [(eav_field.name, eav_field.name) for eav_field in Attribute.objects.all()]
 
 
+def attributes_custom_choices() -> dict:
+    table = Value.objects.all().select_related("attribute")
+    custom_attributes = {}
+    for field in table:
+        if field.attribute.name not in custom_attributes.keys():
+            filtered_table = table.filter(attribute__name=field.attribute.name)
+            attr = f"value_{field.attribute.datatype}"
+            custom_attributes[field.attribute.name] = [
+                {f"{getattr(f, attr)}": f.attribute.datatype for f in filtered_table}
+            ]
+    return custom_attributes
+
+
 def xlsx_columns_taxon_choices() -> list[tuple[str, str]]:
     taxon_choices = []
     for choice in TaxonLevel.choices:

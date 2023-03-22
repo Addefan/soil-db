@@ -2,7 +2,7 @@ from rest_framework import generics, views
 from rest_framework.response import Response
 
 from api.serializers import PlantSerializer
-from web.choices import xlsx_columns_choices, attributes_default_choices
+from web.choices import xlsx_columns_choices, attributes_default_choices, attributes_custom_choices
 from web.models import Plant
 from web.tasks_utils import prepare_queryset
 
@@ -21,5 +21,4 @@ class PlantAPIView(generics.ListAPIView):
 
 class AttributesAPIView(views.APIView):
     def get(self, request):
-        attributes = attributes_default_choices()
-        return Response(attributes)
+        return Response(attributes_default_choices() | attributes_custom_choices())
