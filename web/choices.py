@@ -1,4 +1,4 @@
-from eav.models import Attribute
+from eav.models import Attribute, Value
 
 from web.enums import TaxonLevel
 from web.models import Plant
@@ -11,6 +11,19 @@ def xlsx_columns_default_choices() -> list[tuple[str, str]]:
         for field in Plant._meta.fields
         if translate.get(field.name)
     ]
+
+
+def attributes_default_choices() -> dict:
+    plants = Plant.objects.all()
+    return {
+        "organization": [
+            {f"{plant.organization}": Attribute.TYPE_TEXT}
+            for plant in plants.filter(organization__isnull=False).distinct("organization")
+        ],
+        "genus": [
+            {f"{plant.genus}": Attribute.TYPE_TEXT} for plant in plants.filter(genus__isnull=False).distinct("genus")
+        ],
+    }
 
 
 def xlsx_columns_custom_choices() -> list[tuple[str, str]]:
