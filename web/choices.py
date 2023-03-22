@@ -54,6 +54,16 @@ def xlsx_columns_taxon_choices() -> list[tuple[str, str]]:
     return taxon_choices
 
 
+def attribute_taxon_choices() -> dict:
+    taxon_attributes = {}
+    for choice in TaxonLevel.choices:
+        if choice[0] == "kingdom":
+            continue
+        filtered_qs = Taxon.objects.filter(level=choice[0])
+        taxon_attributes[choice[0]] = {f"{field.title}": "text" for field in filtered_qs}
+    return taxon_attributes
+
+
 def xlsx_columns_choices() -> list[tuple[str, str]]:
     return (
         [choice for choice in xlsx_columns_default_choices() if choice[0] != "genus"]
