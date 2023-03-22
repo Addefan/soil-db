@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-4 h-100 mh-50 table-color">
     <div v-for="param in this.$store.state.parameters" :key="param" class="pt-1 px-2">
-      {{ param.name }}
+      {{ param }}
       <!--TODO: component depending on parameter type-->
     </div>
     <div class="text-center buttons position-sticky top-100 mb-1">
@@ -17,9 +17,9 @@ import axios from "axios";
 export default {
   name: "filtersPanel",
   methods: {
-    async getPrameters() {
-      // const response = await axios.get(''); // TODO: real api
-      // this.$store.state.parameters = response.data.args;
+    async getParameters() {
+      const response = await axios.get(''); // TODO: real api
+      this.$store.state.parameters = response.data.args;
     },
     async getPlants() {
       const response = await axios.get(''); // TODO: real api
