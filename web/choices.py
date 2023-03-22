@@ -1,7 +1,7 @@
 from eav.models import Attribute, Value
 
 from web.enums import TaxonLevel
-from web.models import Plant
+from web.models import Plant, Taxon
 
 
 def xlsx_columns_default_choices() -> list[tuple[str, str]]:
@@ -16,13 +16,13 @@ def xlsx_columns_default_choices() -> list[tuple[str, str]]:
 def attributes_default_choices() -> dict:
     plants = Plant.objects.all()
     return {
-        "organization": [
-            {f"{plant.organization}": Attribute.TYPE_TEXT}
+        "organization": {
+            f"{plant.organization}": Attribute.TYPE_TEXT
             for plant in plants.filter(organization__isnull=False).distinct("organization")
-        ],
-        "genus": [
-            {f"{plant.genus}": Attribute.TYPE_TEXT} for plant in plants.filter(genus__isnull=False).distinct("genus")
-        ],
+        },
+        # "genus": {
+        #     f"{plant.genus}": Attribute.TYPE_TEXT for plant in plants.filter(genus__isnull=False).distinct("genus")
+        # },
     }
 
 
@@ -37,9 +37,10 @@ def attributes_custom_choices() -> dict:
         if field.attribute.name not in custom_attributes.keys():
             filtered_table = table.filter(attribute__name=field.attribute.name)
             attr = f"value_{field.attribute.datatype}"
-            custom_attributes[field.attribute.name] = [
-                {f"{getattr(f, attr)}": f.attribute.datatype for f in filtered_table}
-            ]
+            custom_attributes[field.attribute.name] = {
+                f"{getattr(f, attr)}": f.attribute.datatype for f in filtered_table
+            }
+
     return custom_attributes
 
 
