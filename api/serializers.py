@@ -15,4 +15,4 @@ class PlantSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         instance = super(PlantSerializer, self).to_representation(instance)
-        return self.context.get("data")[instance["number"]]
+        return self.context.get("data") if instance["number"] not in self.context.get("data").keys() else {}
