@@ -12,18 +12,18 @@ class PlantAPIView(generics.ListAPIView):
     serializer_class = PlantSerializer
     queryset = Plant.objects.prefetch_related("organization")
 
-    # if type str or int in request, parametr need to be tuple (min_val, max_val)
+    # if type str or int in request, variable need to be tuple (min_val, max_val)
     @staticmethod
-    def filtering(request, parament, raw_data):
+    def filtering(request, variable, raw_data):
         def filtering_text_types(plant):
-            return plant[parament] == request.GET[parament]
+            return plant[variable] == request.GET[variable]
 
         def filtering_int_float_types(plant):
-            return request.GET[parament][0] <= plant[parament] <= request.GET[parament][1]
+            return request.GET[variable][0] <= plant[variable] <= request.GET[variable][1]
 
-        if Attribute.objects.get(name=parament).datatype == "text":
+        if Attribute.objects.get(name=variable).datatype == "text":
             raw_data = filter(filtering_text_types, raw_data)
-        elif Attribute.objects.get(parament).datatype == "int" or Attribute.objects.get(parament).datatype == "float":
+        elif Attribute.objects.get(variable).datatype == "int" or Attribute.objects.get(variable).datatype == "float":
             raw_data = filter(filtering_int_float_types, raw_data)
         return raw_data
 
