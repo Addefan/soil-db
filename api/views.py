@@ -1,3 +1,4 @@
+from eav.models import Attribute
 from rest_framework import generics
 from rest_framework.response import Response
 
@@ -11,12 +12,19 @@ class PlantAPIView(generics.ListAPIView):
     serializer_class = PlantSerializer
     queryset = Plant.objects.prefetch_related("organization")
 
+    # if type str or int in request, parametr need to be tuple (min_val, max_val)
     @staticmethod
     def filtering(request, parament, raw_data):
-        def filtering_solve(plant):
+        def filtering_text_types(plant):
             return plant[parament] == request.GET[parament]
 
-        raw_data = filter(filtering_solve, raw_data)
+        def filtering_int_float_types(plant):
+            return request.GET[parament][0] <= plant[parament] <= request.GET[parament][1]
+
+        if Attribute.objects.get(name=parament).datatype == "text":
+            raw_data = filter(filtering_text_types, raw_data)
+        elif Attribute.objects.get(parament).datatype == "int" or Attribute.objects.get(parament).datatype == "float":
+            raw_data = filter(filtering_int_float_types, raw_data)
         return raw_data
 
     def filter_raw_data(self, request, raw_data):
@@ -28,8 +36,9 @@ class PlantAPIView(generics.ListAPIView):
 
     def get(self, request, *args, **kwargs):
         qs = self.get_queryset()
-        raw_data = prepare_queryset(columns=[choice[0] for choice in xlsx_columns_choices()], qs=qs)
-        filtered_raw_data = self.filter_raw_data(request, raw_data)
-        data = {instance.get("Уникальный номер"): instance for instance in filtered_raw_data}
+        data = prepare_queryset(columns=[choice[0] for choice in xlsx_columns_choices()], qs=qs)
+        if len(request.GET) != 0:
+            data = self.filter_raw_data(request, data)
+        data = {instance.get("Уникальный номер"): instance for instance in data}
         serializer = PlantSerializer(qs, many=True, context={"data": data})
         return Response(serializer.data)
