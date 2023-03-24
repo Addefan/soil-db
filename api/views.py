@@ -29,7 +29,6 @@ class PlantAPIView(generics.ListAPIView):
 
     def filter_raw_data(self, request, raw_data):
         filters = request.GET
-        print(raw_data)
         for parament in filters:
             raw_data = self.filtering(request, parament, raw_data)
         return raw_data
