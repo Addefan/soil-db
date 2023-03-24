@@ -17,7 +17,7 @@ def attributes_default_choices() -> dict:
     plants = Plant.objects.all()
     return {
         "organization": {
-            f"{plant.organization}": Attribute.TYPE_TEXT
+            plant.organization: Attribute.TYPE_TEXT
             for plant in plants.filter(organization__isnull=False).distinct("organization")
         },
         # "genus": {
