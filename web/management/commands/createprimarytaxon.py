@@ -7,5 +7,5 @@ from web.models import Taxon
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        Taxon.objects.create(level=TaxonLevel.kingdom, title="Растения", latin_title="Plantae")
-        print(_('Царство "Растения" успешно создано'))
+        Taxon.objects.get_or_create(level=TaxonLevel.kingdom, title="Растения", latin_title="Plantae")
+        print(_('Царство "Растения" создано'))
