@@ -1,7 +1,7 @@
 from eav.models import Attribute, Value
 
 from web.enums import TaxonLevel
-from web.models import Plant, Taxon
+from web.models import Plant, Taxon, Organization
 
 
 def xlsx_columns_default_choices() -> list[tuple[str, str]]:
@@ -14,15 +14,9 @@ def xlsx_columns_default_choices() -> list[tuple[str, str]]:
 
 
 def attributes_default_choices() -> dict:
-    plants = Plant.objects.all()
+    organizations = Organization.objects.all()
     return {
-        "organization": {
-            plant.organization: Attribute.TYPE_TEXT
-            for plant in plants.filter(organization__isnull=False).distinct("organization")
-        },
-        # "genus": {
-        #     f"{plant.genus}": Attribute.TYPE_TEXT for plant in plants.filter(genus__isnull=False).distinct("genus")
-        # },
+        "organization": {organization.name: Attribute.TYPE_TEXT for organization in organizations},
     }
 
 
@@ -34,7 +28,7 @@ def attributes_custom_choices() -> dict:
     table = Value.objects.all().select_related("attribute")
     custom_attributes = {}
     for field in table:
-        if field.attribute.name not in custom_attributes.keys():
+        if field.attribute.name not in custom_attributes:
             filtered_table = table.filter(attribute__name=field.attribute.name)
             attr = f"value_{field.attribute.datatype}"
             custom_attributes[field.attribute.name] = {
@@ -60,7 +54,7 @@ def attribute_taxon_choices() -> dict:
         if choice[0] == "kingdom":
             continue
         filtered_qs = Taxon.objects.filter(level=choice[0])
-        taxon_attributes[choice[0]] = {f"{field.title}": "text" for field in filtered_qs}
+        taxon_attributes[choice[0]] = {{field.title}: "text" for field in filtered_qs}
     return taxon_attributes
 
 
