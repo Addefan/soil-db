@@ -8,6 +8,14 @@ const store = createStore({
             plants: []
         }
     },
+    getters: {
+        getParameters(state) {
+            return state.parameters;
+        },
+        getPlants(state) {
+            return state.plants;
+        }
+    },
     actions: {
         loadPlants: async function ({commit}) {
             const response = await axios.get("api/plants/");

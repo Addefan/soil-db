@@ -11,7 +11,7 @@
       </tr>
       </thead>
       <tbody>
-        <tr class="content-align" v-for="plant in this.$store.state.plants" :key="plant">
+        <tr class="content-align" v-for="plant in this.getPlants()" :key="plant">
           <td><a href="" style="color: #000">{{ plant.number }}</a></td>
           <td>{{ plant.name }}</td>
           <td>{{ plant.latin_name }}</td>
@@ -24,12 +24,13 @@
 </template>
 
 <script>
-import {mapActions} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 
 export default {
   name: "PlantsTable",
   methods: {
-    ...mapActions(["loadPlants"])
+    ...mapActions(["loadPlants"]),
+    ...mapGetters(["getPlants"])
   },
   mounted() {
     this.loadPlants();
