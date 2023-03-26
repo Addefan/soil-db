@@ -19,11 +19,11 @@ export default {
   methods: {
     async getParameters() {
       const response = await axios.get(''); // TODO: real api
-      this.$store.setParameters(response.data);
+      this.$store.SETPARAMETERS(response.data);
     },
     async getPlants() {
       const response = await axios.get(''); // TODO: real api
-      this.$store.setPlants(response.data);
+      this.$store.SETPLANTS(response.data);
     }
   }
 }
