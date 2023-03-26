@@ -16,7 +16,7 @@ class PlantAPIView(generics.ListAPIView):
     @staticmethod
     def filtering(request, variable, raw_data):
         def filtering_text_types(plant):
-            return plant[variable].lower() == request.GET[variable].lower()
+            return plant[variable] == request.GET[variable]
 
         def filtering_int_float_types(plant):
             return request.GET[variable][0] <= plant[variable] <= request.GET[variable][1]
