@@ -12,7 +12,7 @@ class PlantAPIView(generics.ListAPIView):
     serializer_class = PlantSerializer
     queryset = Plant.objects.prefetch_related("organization")
 
-    # if type str or int in request, variable need to be tuple (min_val, max_val)
+    # if type float or int in request, variable need to be tuple (min_val, max_val)
     @staticmethod
     def filtering(request, variable, raw_data):
         def filtering_text_types(plant):
@@ -29,14 +29,14 @@ class PlantAPIView(generics.ListAPIView):
 
     def filter_raw_data(self, request, raw_data):
         filters = request.GET
-        for parament in filters:
-            raw_data = self.filtering(request, parament, raw_data)
+        for param in filters:
+            raw_data = self.filtering(request, param, raw_data)
         return raw_data
 
     def get(self, request, *args, **kwargs):
         qs = self.get_queryset()
         data = prepare_queryset(columns=[choice[0] for choice in xlsx_columns_choices()], qs=qs)
-        if len(request.GET) != 0:
+        if request.GET:
             data = self.filter_raw_data(request, data)
         data = {instance.get("Уникальный номер"): instance for instance in data}
         serializer = PlantSerializer(qs, many=True, context={"data": data})
