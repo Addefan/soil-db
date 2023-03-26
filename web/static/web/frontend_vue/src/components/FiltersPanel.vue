@@ -15,7 +15,7 @@
 import axios from "axios";
 
 export default {
-  name: "filtersPanel",
+  name: "FiltersPanel",
   methods: {
     async getParameters() {
       const response = await axios.get(''); // TODO: real api

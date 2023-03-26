@@ -1,6 +1,6 @@
 <script setup>
-  import FiltersPanel from "@/components/filtersPanel.vue";
-  import PlantsTable from "@/components/plantsTable.vue";
+  import FiltersPanel from "@/components/FiltersPanel.vue";
+  import PlantsTable from "@/components/PlantsTable.vue";
 </script>
 
 <template>
