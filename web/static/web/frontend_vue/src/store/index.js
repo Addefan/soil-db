@@ -1,4 +1,5 @@
 import {createStore} from "vuex";
+import axios from "axios";
 
 const store = createStore({
     state() {
@@ -6,6 +7,16 @@ const store = createStore({
             parameters: [],
             plants: []
         }
+    },
+    actions: {
+        loadPlants: async function ({commit}) {
+            const response = await axios.get("api/plants/");
+            commit("SET_PLANTS", response.data.results);
+        },
+        loadParameters: async function ({commit}) {
+            const response = await axios.get("api/attributes/");
+            commit("SET_PARAMETERS", response.data.results);
+        },
     },
     mutations: {
         SET_PARAMETERS(state, new_parameters) {

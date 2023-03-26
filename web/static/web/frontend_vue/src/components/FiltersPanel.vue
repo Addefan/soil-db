@@ -12,19 +12,15 @@
 </template>
 
 <script>
-import axios from "axios";
+import {mapActions} from "vuex";
 
 export default {
   name: "FiltersPanel",
   methods: {
-    async getParameters() {
-      const response = await axios.get(''); // TODO: real api
-      this.$store.SETPARAMETERS(response.data);
-    },
-    async getPlants() {
-      const response = await axios.get(''); // TODO: real api
-      this.$store.SETPLANTS(response.data);
-    }
+    ...mapActions(["loadParameters"])
+  },
+  mounted() {
+    this.loadParameters();
   }
 }
 </script>

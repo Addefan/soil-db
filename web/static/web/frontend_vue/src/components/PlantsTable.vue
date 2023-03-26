@@ -24,8 +24,16 @@
 </template>
 
 <script>
+import {mapActions} from "vuex";
+
 export default {
-  name: "PlantsTable"
+  name: "PlantsTable",
+  methods: {
+    ...mapActions(["loadPlants"])
+  },
+  mounted() {
+    this.loadPlants();
+  }
 }
 </script>
 
