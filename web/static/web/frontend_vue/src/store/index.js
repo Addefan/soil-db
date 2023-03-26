@@ -8,10 +8,10 @@ const store = createStore({
         }
     },
     mutations: {
-        SETPARAMETERS(state, new_parameters) {
+        SET_PARAMETERS(state, new_parameters) {
             state.parameters = new_parameters;
         },
-        SETPLANTS(state, new_plants) {
+        SET_PLANTS(state, new_plants) {
             state.plants = new_plants;
         }
     }
