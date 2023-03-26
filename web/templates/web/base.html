@@ -19,13 +19,13 @@
     <header>
         {% include "web/snippets/navbar.html" %}
     </header>
-    <div class="container">
+    <div class="container-fluid">
         {% block body %}{% endblock %}
         {% block messages %}
             {% include "messages.html" %}
         {% endblock %}
     </div>
-    <footer class="d-flex align-items-center justify-content-center">
+    <footer class="d-flex align-items-center justify-content-center position-sticky top-100">
         © KFU ITIS, 2022
     </footer>
 </div>
