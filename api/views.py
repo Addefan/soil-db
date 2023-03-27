@@ -30,9 +30,10 @@ class PlantAPIView(generics.ListAPIView):
         def filtering_int_float_types(plant):
             return request.GET[variable][0] <= plant[obj.name] <= request.GET[variable][1]
 
-        def filtering_taxon_types(plant):
+        def filtering_taxon_organization_types(plant):
             return plant[translate[variable]] == request.GET[variable]
 
+        translate = xlsx_columns_choices_dict()
         if type_attr == "custom":
             obj = Attribute.objects.get(slug=variable)
             if obj.datatype == "text":
@@ -40,8 +41,9 @@ class PlantAPIView(generics.ListAPIView):
             elif obj.datatype == "int" or obj.datatype == "float":
                 data = filter(filtering_int_float_types, data)
         elif type_attr == "taxon":
-            translate = xlsx_columns_choices_dict()
-            data = filter(filtering_taxon_types, data)
+            data = filter(filtering_taxon_organization_types, data)
+        elif type_attr == "organization":
+            data = filter(filtering_taxon_organization_types, data)
         return data
 
     # slug because from front we send slug english name
@@ -52,6 +54,8 @@ class PlantAPIView(generics.ListAPIView):
                 data = self.filtering_attr(request, variable, data, "custom")
             elif variable != "organization":
                 data = self.filtering_attr(request, variable, data, "taxon")
+            elif variable == "organization":
+                data = self.filtering_attr(request, variable, data, "organization")
         return data
 
     def get_queryset(self, filtering=False, numbers=None):
