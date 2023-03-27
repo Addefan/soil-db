@@ -16,7 +16,11 @@ def xlsx_columns_default_choices() -> list[tuple[str, str]]:
 def attributes_default_choices() -> dict:
     organizations = Organization.objects.all()
     return {
-        "organization": {organization.name: Attribute.TYPE_TEXT for organization in organizations},
+        "organization": {
+            "english_name": "organization",
+            "russian_name": "Организация",
+            "values": {organization.name: Attribute.TYPE_TEXT for organization in organizations},
+        },
     }
 
 
@@ -31,10 +35,11 @@ def attributes_custom_choices() -> dict:
         if field.attribute.name not in custom_attributes:
             filtered_table = table.filter(attribute__name=field.attribute.name)
             attr = f"value_{field.attribute.datatype}"
-            custom_attributes[field.attribute.name] = {
-                f"{getattr(f, attr)}": f.attribute.datatype for f in filtered_table
+            custom_attributes[field.attribute.slug] = {
+                "english_name": field.attribute.slug,
+                "russian_name": field.attribute.name,
+                "values": {f"{getattr(f, attr)}": f.attribute.datatype for f in filtered_table},
             }
-
     return custom_attributes
 
 
@@ -54,7 +59,11 @@ def attribute_taxon_choices() -> dict:
         if choice[0] == "kingdom":
             continue
         filtered_qs = Taxon.objects.filter(level=choice[0])
-        taxon_attributes[choice[0]] = {{field.title}: "text" for field in filtered_qs}
+        taxon_attributes[choice[0]] = {
+            "english_name": choice[0],
+            "russian_name": choice[1],
+            "values": {field.title: "text" for field in filtered_qs},
+        }
     return taxon_attributes
 
 
