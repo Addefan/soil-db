@@ -9,4 +9,4 @@ class PlantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Plant
-        fields = "__all__"
+        exclude = ["digitized_at", "id"]
