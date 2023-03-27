@@ -15,11 +15,12 @@ from web.tasks_utils import prepare_queryset
 
 class PlantAPIView(generics.ListAPIView):
     serializer_class = PlantSerializer
-    queryset = Plant.objects.prefetch_related("organization")
+
+    # queryset = Plant.objects.prefetch_related("organization")
 
     # if type float or int in request, variable need to be tuple (min_val, max_val)
     @staticmethod
-    def filtering(request, variable, raw_data):
+    def filtering_custom_attr(request, variable, raw_data):
         def filtering_text_types(plant):
             return plant[variable] == request.GET[variable]
 
@@ -28,23 +29,38 @@ class PlantAPIView(generics.ListAPIView):
 
         if Attribute.objects.get(name=variable).datatype == "text":
             raw_data = filter(filtering_text_types, raw_data)
-        elif Attribute.objects.get(variable).datatype == "int" or Attribute.objects.get(variable).datatype == "float":
+        elif (
+            Attribute.objects.get(name=variable).datatype == "int"
+            or Attribute.objects.get(name=variable).datatype == "float"
+        ):
             raw_data = filter(filtering_int_float_types, raw_data)
         return raw_data
 
+    # slug because from front we send slug english name
     def filter_raw_data(self, request, raw_data):
         filters = request.GET
         for param in filters:
-            raw_data = self.filtering(request, param, raw_data)
+            if param in [attr.slug for attr in Attribute.objects.all()]:
+                raw_data = self.filtering_custom_attr(request, param, raw_data)
+            elif param != "organization":
+                raw_data = self.filtering_taxon_attr(request, param, raw_data)
         return raw_data
+
+    def get_queryset(self, filtering=False, numbers=None):
+        plants = Plant.objects.prefetch_related("organization")
+        if not filtering:
+            return plants
+        else:
+            return Plant.objects.filter(number__in=numbers)
 
     def get(self, request, *args, **kwargs):
         qs = self.get_queryset()
         data = prepare_queryset(columns=[choice[0] for choice in xlsx_columns_choices()], qs=qs)
         if request.GET:
             data = self.filter_raw_data(request, data)
-        data = {instance.get("Уникальный номер"): instance for instance in data}
-        serializer = PlantSerializer(qs, many=True, context={"data": data})
+        numbers = [instance.get("Уникальный номер") for instance in data]
+        filtered_qs = self.get_queryset(True, numbers)
+        serializer = PlantSerializer(filtered_qs, many=True)
         return Response(serializer.data)
 
 
