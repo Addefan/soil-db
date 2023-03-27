@@ -10,7 +10,3 @@ class PlantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Plant
         fields = "__all__"
-
-    # def to_representation(self, instance):
-    #     instance = super(PlantSerializer, self).to_representation(instance)
-    #     return self.context["data"].get(instance["number"], {})

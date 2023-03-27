@@ -17,8 +17,6 @@ from web.tasks_utils import prepare_queryset
 class PlantAPIView(generics.ListAPIView):
     serializer_class = PlantSerializer
 
-    # queryset = Plant.objects.prefetch_related("organization")
-
     # if type float or int in request, variable need to be tuple (min_val, max_val)
     # slug because from front we send slug english name
     @staticmethod
