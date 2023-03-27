@@ -18,12 +18,12 @@ const store = createStore({
     },
     actions: {
         loadPlants: async function ({commit}) {
-            const response = await axios.get("api/plants/");
-            commit("SET_PLANTS", response.data.results);
+            const response = await axios.get("/api/plants/");
+            commit("SET_PLANTS", response.data);
         },
         loadParameters: async function ({commit}) {
-            const response = await axios.get("api/attributes/");
-            commit("SET_PARAMETERS", response.data.results);
+            const response = await axios.get("/api/attributes/");
+            commit("SET_PARAMETERS", response.data);
         },
     },
     mutations: {
