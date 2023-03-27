@@ -13,28 +13,35 @@ def xlsx_columns_default_choices() -> list[tuple[str, str]]:
     ]
 
 
-def attributes_default_choices() -> dict:
+def attributes_default_choices() -> list:
     organizations = Organization.objects.all()
-    return {
-        "organization": {organization.name: Attribute.TYPE_TEXT for organization in organizations},
-    }
+    return [
+        {
+            "english_name": "organization",
+            "russian_name": "Организация",
+            "values": {organization.name: Attribute.TYPE_TEXT for organization in organizations},
+        }
+    ]
 
 
 def xlsx_columns_custom_choices() -> list[tuple[str, str]]:
     return [(eav_field.name, eav_field.name) for eav_field in Attribute.objects.all()]
 
 
-def attributes_custom_choices() -> dict:
+def attributes_custom_choices() -> list:
     table = Value.objects.all().select_related("attribute")
-    custom_attributes = {}
+    custom_attributes = []
     for field in table:
         if field.attribute.name not in custom_attributes:
             filtered_table = table.filter(attribute__name=field.attribute.name)
             attr = f"value_{field.attribute.datatype}"
-            custom_attributes[field.attribute.name] = {
-                f"{getattr(f, attr)}": f.attribute.datatype for f in filtered_table
-            }
-
+            custom_attributes.append(
+                {
+                    "english_name": field.attribute.slug,
+                    "russian_name": field.attribute.name,
+                    "values": {f"{getattr(f, attr)}": f.attribute.datatype for f in filtered_table},
+                }
+            )
     return custom_attributes
 
 
@@ -48,13 +55,19 @@ def xlsx_columns_taxon_choices() -> list[tuple[str, str]]:
     return taxon_choices
 
 
-def attribute_taxon_choices() -> dict:
-    taxon_attributes = {}
+def attribute_taxon_choices() -> list:
+    taxon_attributes = []
     for choice in TaxonLevel.choices:
         if choice[0] == "kingdom":
             continue
         filtered_qs = Taxon.objects.filter(level=choice[0])
-        taxon_attributes[choice[0]] = {{field.title}: "text" for field in filtered_qs}
+        taxon_attributes.append(
+            {
+                "english_name": choice[0],
+                "russian_name": choice[1],
+                "values": {field.title: "text" for field in filtered_qs},
+            }
+        )
     return taxon_attributes
 
 
