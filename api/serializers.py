@@ -4,7 +4,8 @@ from web.models import Plant
 
 
 class PlantSerializer(serializers.ModelSerializer):
-    # organization = serializers.StringRelatedField()
+    organization = serializers.StringRelatedField()
+    genus = serializers.StringRelatedField()
 
     class Meta:
         model = Plant

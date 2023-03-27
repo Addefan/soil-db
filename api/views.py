@@ -10,8 +10,7 @@ from web.choices import (
     attribute_taxon_choices,
     xlsx_columns_choices_dict,
 )
-from web.enums import TaxonLevel
-from web.models import Plant, Taxon
+from web.models import Plant
 from web.tasks_utils import prepare_queryset
 
 
@@ -36,21 +35,22 @@ class PlantAPIView(generics.ListAPIView):
         translate = xlsx_columns_choices_dict()
         if type_attr == "custom":
             obj = Attribute.objects.get(slug=variable)
+            func = None
             if obj.datatype == "text":
-                data = filter(filtering_text_types, data)
+                func = filtering_text_types
             elif obj.datatype == "int" or obj.datatype == "float":
-                data = filter(filtering_int_float_types, data)
-        elif type_attr == "taxon":
-            data = filter(filtering_taxon_organization_types, data)
-        elif type_attr == "organization":
+                func = filtering_int_float_types
+            data = filter(func, data)
+        else:
             data = filter(filtering_taxon_organization_types, data)
         return data
 
     # slug because from front we send slug english name
     def filter_data(self, request, data):
         filters = request.GET
+        custom_attr = [attr.slug for attr in Attribute.objects.all()]
         for variable in filters:
-            if variable in [attr.slug for attr in Attribute.objects.all()]:
+            if variable in custom_attr:
                 data = self.filtering_attr(request, variable, data, "custom")
             elif variable != "organization":
                 data = self.filtering_attr(request, variable, data, "taxon")
