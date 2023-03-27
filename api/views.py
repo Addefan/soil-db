@@ -50,4 +50,7 @@ class PlantAPIView(generics.ListAPIView):
 
 class AttributesAPIView(views.APIView):
     def get(self, request):
-        return Response(attributes_default_choices() | attributes_custom_choices() | attribute_taxon_choices())
+        attribute_list = attributes_default_choices()
+        attribute_list.extend(attributes_custom_choices())
+        attribute_list.extend(attribute_taxon_choices())
+        return Response(attribute_list)
