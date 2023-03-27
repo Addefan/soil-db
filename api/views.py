@@ -8,6 +8,7 @@ from web.choices import (
     attributes_default_choices,
     attributes_custom_choices,
     attribute_taxon_choices,
+    xlsx_columns_choices_dict,
 )
 from web.models import Plant
 from web.tasks_utils import prepare_queryset
@@ -15,36 +16,61 @@ from web.tasks_utils import prepare_queryset
 
 class PlantAPIView(generics.ListAPIView):
     serializer_class = PlantSerializer
-    queryset = Plant.objects.prefetch_related("organization")
 
     # if type float or int in request, variable need to be tuple (min_val, max_val)
+    # slug because from front we send slug english name
     @staticmethod
-    def filtering(request, variable, raw_data):
+    def filtering_attr(request, variable, data, type_attr):
         def filtering_text_types(plant):
-            return plant[variable] == request.GET[variable]
+            return plant[obj.name] == request.GET[variable]
 
         def filtering_int_float_types(plant):
-            return request.GET[variable][0] <= plant[variable] <= request.GET[variable][1]
+            return request.GET[variable][0] <= plant[obj.name] <= request.GET[variable][1]
 
-        if Attribute.objects.get(name=variable).datatype == "text":
-            raw_data = filter(filtering_text_types, raw_data)
-        elif Attribute.objects.get(variable).datatype == "int" or Attribute.objects.get(variable).datatype == "float":
-            raw_data = filter(filtering_int_float_types, raw_data)
-        return raw_data
+        def filtering_taxon_organization_types(plant):
+            return plant[translate[variable]] == request.GET[variable]
 
-    def filter_raw_data(self, request, raw_data):
+        translate = xlsx_columns_choices_dict()
+        if type_attr == "custom":
+            obj = Attribute.objects.get(slug=variable)
+            func = None
+            if obj.datatype == "text":
+                func = filtering_text_types
+            elif obj.datatype == "int" or obj.datatype == "float":
+                func = filtering_int_float_types
+            data = filter(func, data)
+        else:
+            data = filter(filtering_taxon_organization_types, data)
+        return data
+
+    # slug because from front we send slug english name
+    def filter_data(self, request, data):
         filters = request.GET
-        for param in filters:
-            raw_data = self.filtering(request, param, raw_data)
-        return raw_data
+        custom_attr = [attr.slug for attr in Attribute.objects.all()]
+        for variable in filters:
+            if variable in custom_attr:
+                data = self.filtering_attr(request, variable, data, "custom")
+            elif variable != "organization":
+                data = self.filtering_attr(request, variable, data, "taxon")
+            elif variable == "organization":
+                data = self.filtering_attr(request, variable, data, "organization")
+        return data
+
+    def get_queryset(self, filtering=False, numbers=None):
+        plants = Plant.objects.prefetch_related("organization")
+        if not filtering:
+            return plants
+        else:
+            return Plant.objects.filter(number__in=numbers)
 
     def get(self, request, *args, **kwargs):
         qs = self.get_queryset()
         data = prepare_queryset(columns=[choice[0] for choice in xlsx_columns_choices()], qs=qs)
         if request.GET:
-            data = self.filter_raw_data(request, data)
-        data = {instance.get("Уникальный номер"): instance for instance in data}
-        serializer = PlantSerializer(qs, many=True, context={"data": data})
+            data = self.filter_data(request, data)
+        numbers = [instance.get("Уникальный номер") for instance in data]
+        filtered_qs = self.get_queryset(True, numbers)
+        serializer = PlantSerializer(filtered_qs, many=True)
         return Response(serializer.data)
 
 
