@@ -25,21 +25,19 @@ class PlantAPIView(generics.ListAPIView):
     @staticmethod
     def filtering_attr(request, variable, data, type_attr):
         def filtering_text_types(plant):
-            return plant[variable] == request.GET[variable]
+            return plant[obj.name] == request.GET[variable]
 
         def filtering_int_float_types(plant):
-            return request.GET[variable][0] <= plant[variable] <= request.GET[variable][1]
+            return request.GET[variable][0] <= plant[obj.name] <= request.GET[variable][1]
 
         def filtering_taxon_types(plant):
             return plant[translate[variable]] == request.GET[variable]
 
         if type_attr == "custom":
-            if Attribute.objects.get(slug=variable).datatype == "text":
+            obj = Attribute.objects.get(slug=variable)
+            if obj.datatype == "text":
                 data = filter(filtering_text_types, data)
-            elif (
-                Attribute.objects.get(slug=variable).datatype == "int"
-                or Attribute.objects.get(slug=variable).datatype == "float"
-            ):
+            elif obj.datatype == "int" or obj.datatype == "float":
                 data = filter(filtering_int_float_types, data)
         elif type_attr == "taxon":
             translate = xlsx_columns_choices_dict()
