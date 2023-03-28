@@ -1,10 +1,8 @@
 <template>
   <div class="rounded-4 h-100 mh-50 table-color">
+    <CustomDateFilter></CustomDateFilter>
     <div v-for="param in this.getParameters()" :key="param" class="pt-1 px-2">
       {{ param }}
-      <div v-if="param.type === 'date'">
-        <CustomDateFilter v-model="dates[param.english_name]"></CustomDateFilter>
-      </div>
       <!--TODO: component depending on parameter type-->
     </div>
     <div class="text-center buttons position-sticky top-100 mb-1">
@@ -15,15 +13,10 @@
 </template>
 
 <script>
-import {mapActions, mapGetters, mapState} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import CustomDateFilter from "./CustomDateFilter.vue";
 export default {
   name: "FiltersPanel",
-  data() {
-    return {
-       dates: Object.fromEntries(this.getParameters().map(property => [property.english_name, null])),
-    }
-  },
   components: {CustomDateFilter},
   methods: {
     ...mapActions(["loadParameters"]),

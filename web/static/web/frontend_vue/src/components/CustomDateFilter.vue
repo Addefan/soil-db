@@ -1,5 +1,6 @@
 <template>
-  <VueDatePicker :date="date" range locale="ru" cancelText="Закрыть" selectText="Выбрать"></VueDatePicker>
+  <VueDatePicker range utc="preserve" :date="date" locale="ru" cancelText="Закрыть"
+                 selectText="Выбрать" :enable-time-picker="false"></VueDatePicker>
 </template>
 
 <script>
@@ -10,6 +11,7 @@ export default {
     date: {
       type: Date,
       required: false,
+      default: null,
     }
   },
   components: {VueDatePicker},
