@@ -1,5 +1,5 @@
 <template>
-  <slider v-model="value" @end="showValue" />
+  <slider v-model="value" @end="showValue" :min="this.min" :max="this.max" />
 </template>
 
 <script>
@@ -12,13 +12,17 @@ export default {
   },
   data() {
     return {
-      value: [0, 20]
+      value: [this.min, this.max],
     }
   },
   methods: {
     showValue() {
       console.log(this.value)
     }
+  },
+  props: {
+    min: {type: Number, default: 0},
+    max: {type: Number, default: 100}
   }
 }
 </script>
