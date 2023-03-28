@@ -1,6 +1,6 @@
 <template>
   <div class="rounded-4 h-100 mh-50 table-color">
-    <div v-for="param in this.getParameters()" :key="param" class="pt-1 px-2">
+    <div v-for="param in this.getParameters()" :key="param" class="">
       <number-input v-if="param.type === 'float' || param.type === 'int'" :min="param.values[0]" :max="param.values[1]" />
     </div>
     <div class="text-center buttons position-sticky top-100 mb-1">
