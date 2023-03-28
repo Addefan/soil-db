@@ -130,7 +130,8 @@ class PlantForm(forms.ModelForm):
         return created_values, updated_values, updated_fields
 
     def save(self, *args, **kwargs):
-        self.instance.number = create_plant_number()
+        if not self.instance.number:
+            self.instance.number = create_plant_number()
         self.instance.organization = self.initial["user_organization"]
         plant = super().save(*args, **kwargs)
         attrs = self.initial["attr_form_view"].cleaned_data
