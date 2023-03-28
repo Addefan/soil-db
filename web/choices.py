@@ -19,7 +19,8 @@ def attributes_default_choices() -> list:
         {
             "english_name": "organization",
             "russian_name": "Организация",
-            "values": {organization.name: Attribute.TYPE_TEXT for organization in organizations},
+            "type": Attribute.TYPE_TEXT,
+            "values": [organization.name for organization in organizations],
         }
     ]
 
@@ -31,15 +32,22 @@ def xlsx_columns_custom_choices() -> list[tuple[str, str]]:
 def attributes_custom_choices() -> list:
     table = Value.objects.all().select_related("attribute")
     custom_attributes = []
+    attributes_distinct = []
     for field in table:
-        if field.attribute.name not in custom_attributes:
+        if field.attribute.name not in attributes_distinct:
+            attributes_distinct.append(field.attribute.name)
             filtered_table = table.filter(attribute__name=field.attribute.name)
             attr = f"value_{field.attribute.datatype}"
+            attr_type = field.attribute.datatype
+            values = [f"{getattr(f, attr)}" for f in filtered_table]
             custom_attributes.append(
                 {
                     "english_name": field.attribute.slug,
                     "russian_name": field.attribute.name,
-                    "values": {f"{getattr(f, attr)}": f.attribute.datatype for f in filtered_table},
+                    "type": attr_type,
+                    "values": [min(values), max(values)]
+                    if (attr_type == Attribute.TYPE_INT or attr_type == Attribute.TYPE_INT) and len(values) != 1
+                    else values,
                 }
             )
     return custom_attributes
