@@ -1,5 +1,5 @@
 <template>
-  <VueDatePicker range utc="preserve" :date="date" locale="ru" cancelText="Закрыть"
+  <VueDatePicker range :date="date" locale="ru" cancelText="Закрыть"
                  selectText="Выбрать" :enable-time-picker="false"></VueDatePicker>
 </template>
 
