@@ -40,14 +40,15 @@ def attributes_custom_choices() -> list:
             attr = f"value_{field.attribute.datatype}"
             attr_type = field.attribute.datatype
             values = [f"{getattr(f, attr)}" for f in filtered_table]
+            if attr_type == Attribute.TYPE_INT or attr_type == Attribute.TYPE_FLOAT:
+                values = list(map(float, values))
+                values = [min(values), max(values)]
             custom_attributes.append(
                 {
                     "english_name": field.attribute.slug,
                     "russian_name": field.attribute.name,
                     "type": attr_type,
-                    "values": [min(values), max(values)]
-                    if (attr_type == Attribute.TYPE_INT or attr_type == Attribute.TYPE_INT) and len(values) != 1
-                    else values,
+                    "values": values,
                 }
             )
     return custom_attributes
