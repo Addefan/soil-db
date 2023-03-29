@@ -34,9 +34,9 @@ class PlantAPIView(generics.ListAPIView):
         if type_attr == "custom":
             obj = Attribute.objects.get(slug=variable)
             func = None
-            if obj.datatype == "text":
+            if obj.datatype == Attribute.TYPE_TEXT:
                 func = filtering_text_types
-            elif obj.datatype == "int" or obj.datatype == "float":
+            elif obj.datatype == Attribute.TYPE_INT or obj.datatype == Attribute.TYPE_FLOAT:
                 func = filtering_int_float_types
             data = filter(func, data)
         else:
