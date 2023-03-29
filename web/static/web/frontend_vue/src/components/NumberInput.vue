@@ -4,8 +4,18 @@
       <slider v-model="value" :min="this.min" :max="this.max" />
     </div>
     <div class="row">
-      <div class="col-6"><input type="number" v-model="value[0]" class="form-control"></div>
-      <div class="col-6"><input type="number" v-model="value[1]" class="form-control"></div>
+      <div class="col-6">
+      <div class="input-group mb-3">
+        <span class="input-group-text px-1" id="from">От</span>
+        <input type="number" v-model="value[0]" class="form-control px-1" aria-describedby="from">
+      </div>
+      </div>
+      <div class="col-6">
+      <div class="col-6 input-group  mb-3">
+        <span class="input-group-text px-1" id="to">До</span>
+        <input type="number" v-model="value[1]" class="form-control px-1" aria-describedby="to">
+      </div>
+      </div>
     </div>
   </div>
 </template>
