@@ -2,7 +2,8 @@
   <div>
     <Multiselect v-model="value" :options="variants" :multiple="true" :close-on-select="false" :clear-on-select="false"
                  :preserve-search="true" placeholder="Pick some" label="name" track-by="name" :preselect-first="false"
-    @select="$emit('change', value)">
+                 @close="$emit('add', {'val': value, 'key': field_key})"
+                 @remove="$emit('delete', {'val': value, 'key': field_key})">
     </Multiselect>
   </div>
 </template>
@@ -22,6 +23,7 @@ export default {
   },
   props: {
     variants: Array,
+    field_key: String,
   },
 }
 </script>

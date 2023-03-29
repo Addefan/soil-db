@@ -4,7 +4,8 @@
       <div v-for="param in this.getParameters()" :key="param" class="pt-1 px-2">
         {{ param.russian_name }}
         <div v-if="param.type === 'text'">
-          <SearchSelect @change="collectAttrib" :variants="param.values"></SearchSelect>
+          <SearchSelect @add="addAttrib" @delete="deleteAttrib" :variants="param.values"
+                        :field_key="param.english_name"></SearchSelect>
         </div>
         <!--TODO: component depending on parameter type-->
       </div>
@@ -23,24 +24,30 @@
 <script>
 import {mapActions, mapGetters} from "vuex";
 import SearchSelect from "@/components/SearchSelect.vue";
-import { toRaw } from 'vue';
 
 export default {
   name: "FiltersPanel",
-  data(){
+  data() {
     return {
-      values: []
+      value: {},
     }
   },
   components: {SearchSelect},
   methods: {
     ...mapActions(["loadParameters"]),
     ...mapGetters(["getParameters"]),
-    collectAttrib(v){
-      this.values.push(v)
+
+    addAttrib(context) {
+      if (context.val.length !== 0) {
+        this.value[context.key] = context.val
+      }
     },
-    submitEvent(){
-      console.log(toRaw(this.values))
+    deleteAttrib(context) {
+      this.value[context.key] = context.val
+    },
+
+    submitEvent() {
+      console.log(this.value)
     }
   },
   mounted() {
