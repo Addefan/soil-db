@@ -1,7 +1,7 @@
 <template>
   <div class="row text-center">
     <div class="row mb-2">
-      <slider v-model="value" :min="this.min" :max="this.max" />
+      <slider v-model="value" :min="this.min" :max="this.max" @change="$emit('change', value)" />
     </div>
     <div class="row">
       <div class="col-6 px-2">
