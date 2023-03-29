@@ -17,10 +17,9 @@ def attributes_default_choices() -> list:
     organizations = Organization.objects.all()
     return [
         {
-            "english_name": "organization",
             "russian_name": "Организация",
             "type": Attribute.TYPE_TEXT,
-            "values": [{"name": organization.name} for organization in organizations],
+            "values": [{"english_name": "organization", "name": organization.name} for organization in organizations],
         }
     ]
 
@@ -39,20 +38,28 @@ def attributes_custom_choices() -> list:
             filtered_table = table.filter(attribute__name=field.attribute.name)
             attr = f"value_{field.attribute.datatype}"
             attr_type = field.attribute.datatype
-            if (attr_type == Attribute.TYPE_INT or attr_type == Attribute.TYPE_FLOAT) and len(filtered_table) >= 2:
-                max_min_values = [int(getattr(f, attr)) for f in filtered_table]
-                values = [{"name": min(max_min_values)}, {"name": max(max_min_values)}]
-            else:
-                values = [{"name": getattr(f, attr)} for f in filtered_table]
+            if field.attribute.datatype == Attribute.TYPE_TEXT:
+                values = [{"english_name": field.attribute.slug, "name": getattr(f, attr)} for f in filtered_table]
+                custom_attributes.append(
+                    {
+                        "russian_name": field.attribute.name,
+                        "type": attr_type,
+                        "values": values,
+                    }
+                )
+            elif attr_type == Attribute.TYPE_INT or attr_type == Attribute.TYPE_FLOAT:
+                values = [f"{getattr(f, attr)}" for f in filtered_table]
+                values = list(map(float, values))
+                values = [min(values), max(values)]
+                custom_attributes.append(
+                    {
+                        "english_name": field.attribute.slug,
+                        "russian_name": field.attribute.name,
+                        "type": attr_type,
+                        "values": values,
+                    }
+                )
 
-            custom_attributes.append(
-                {
-                    "english_name": field.attribute.slug,
-                    "russian_name": field.attribute.name,
-                    "type": attr_type,
-                    "values": values,
-                }
-            )
     return custom_attributes
 
 
@@ -74,10 +81,9 @@ def attribute_taxon_choices() -> list:
         filtered_qs = Taxon.objects.filter(level=choice[0])
         taxon_attributes.append(
             {
-                "english_name": choice[0],
                 "russian_name": choice[1],
                 "type": Attribute.TYPE_TEXT,
-                "values": [{"name": field.title} for field in filtered_qs],
+                "values": [{"english_name": choice[0], "name": field.title} for field in filtered_qs],
             }
         )
     return taxon_attributes
