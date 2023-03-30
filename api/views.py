@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pytz
 from dateutil.parser import parse
 from datetime import datetime
@@ -24,6 +26,12 @@ class PlantAPIView(generics.ListAPIView):
     # slug because from front we send slug english name
     @staticmethod
     def filtering_attr(request, variable, data, type_attr):
+        def convert_string_to_datetime(string: Optional[str], default: datetime) -> datetime:
+            dt_naive = parse(string) if string is not None else default
+            utc = pytz.utc
+            # convert datetime instance to a specific timezone
+            return utc.localize(dt_naive)
+
         def filtering_text_types(plant):
             return plant[obj.name] == request.GET[variable]
 
@@ -36,12 +44,9 @@ class PlantAPIView(generics.ListAPIView):
                 return False
 
             parameters = request.query_params.getlist(variable)
-            utc = pytz.utc
+            floor_value = convert_string_to_datetime(parameters[0], datetime.min)
+            ceiling_value = convert_string_to_datetime(parameters[1], datetime.max)
 
-            floor_value_naive = parse(parameters[0]) if parameters[0] is not None else datetime.min
-            ceiling_value_naive = parse(parameters[1]) if parameters[1] is not None else datetime.max
-            floor_value = utc.localize(floor_value_naive)
-            ceiling_value = utc.localize(ceiling_value_naive)
             return floor_value <= plant[obj.name] <= ceiling_value
 
         def filtering_taxon_organization_types(plant):
