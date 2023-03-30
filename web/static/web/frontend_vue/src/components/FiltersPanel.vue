@@ -3,7 +3,7 @@
     <div v-for="param in this.getParameters()" :key="param" class="pt-1 px-2">
       {{ param }}
       <div v-if="param.type === 'date'">
-        <CustomDateFilter v-model="dates[param.english_name]"></CustomDateFilter>
+        <CustomDateFilter v-model="date"></CustomDateFilter>
       </div>
       <!--TODO: component depending on parameter type-->
     </div>
@@ -19,11 +19,6 @@ import {mapActions, mapGetters, mapState} from "vuex";
 import CustomDateFilter from "./CustomDateFilter.vue";
 export default {
   name: "FiltersPanel",
-  data() {
-    return {
-       dates: Object.fromEntries(this.getParameters().map(property => [property.english_name, null])),
-    }
-  },
   components: {CustomDateFilter},
   methods: {
     ...mapActions(["loadParameters"]),
