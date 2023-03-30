@@ -1,3 +1,6 @@
+import pytz
+from dateutil.parser import parse
+from datetime import datetime
 from eav.models import Attribute
 from rest_framework import generics, views
 from rest_framework.response import Response
@@ -33,8 +36,12 @@ class PlantAPIView(generics.ListAPIView):
                 return False
 
             parameters = request.query_params.getlist(variable)
-            floor_value = parameters[0] or float("-inf")
-            ceiling_value = parameters[1] or float("inf")
+            utc = pytz.utc
+
+            floor_value_naive = parse(parameters[0]) if parameters[0] is not None else datetime.min
+            ceiling_value_naive = parse(parameters[1]) if parameters[1] is not None else datetime.max
+            floor_value = utc.localize(floor_value_naive)
+            ceiling_value = utc.localize(ceiling_value_naive)
             return floor_value <= plant[obj.name] <= ceiling_value
 
         def filtering_taxon_organization_types(plant):
