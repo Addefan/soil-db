@@ -1,8 +1,7 @@
-from typing import Optional
+from datetime import datetime
 
 import pytz
 from dateutil.parser import parse
-from datetime import datetime
 from eav.models import Attribute
 from rest_framework import generics, views
 from rest_framework.response import Response
