@@ -4,8 +4,7 @@
       <div v-for="param in this.getParameters()" :key="param" class="pt-1 px-2">
         {{ param.russian_name }}
         <div v-if="param.type === 'text'">
-          <SearchSelect @add="addAttrib" @delete="deleteAttrib" :variants="param.values"
-                        :field_key="param.english_name"></SearchSelect>
+          <SearchSelect :variants="param.values" @change="logConsole"></SearchSelect>
         </div>
         <!--TODO: component depending on parameter type-->
       </div>
@@ -37,18 +36,6 @@ export default {
     ...mapActions(["loadParameters"]),
     ...mapGetters(["getParameters"]),
 
-    addAttrib(context) {
-      if (context.val.length !== 0) {
-        this.value[context.key] = context.val
-      }
-    },
-    deleteAttrib(context) {
-      this.value[context.key] = context.val
-    },
-
-    submitEvent() {
-      console.log(this.value)
-    }
   },
   mounted() {
     this.loadParameters();
