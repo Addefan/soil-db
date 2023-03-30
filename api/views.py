@@ -26,8 +26,8 @@ class PlantAPIView(generics.ListAPIView):
     # slug because from front we send slug english name
     @staticmethod
     def filtering_attr(request, variable, data, type_attr):
-        def convert_string_to_datetime(string: Optional[str], default: datetime) -> datetime:
-            dt_naive = parse(string) if string is not None else default
+        def convert_string_to_datetime(string: str) -> datetime:
+            dt_naive = parse(string)
             utc = pytz.utc
             # convert datetime instance to a specific timezone
             return utc.localize(dt_naive)
@@ -44,8 +44,8 @@ class PlantAPIView(generics.ListAPIView):
                 return False
 
             parameters = request.query_params.getlist(variable)
-            floor_value = convert_string_to_datetime(parameters[0], datetime.min)
-            ceiling_value = convert_string_to_datetime(parameters[1], datetime.max)
+            floor_value = convert_string_to_datetime(parameters[0])
+            ceiling_value = convert_string_to_datetime(parameters[1])
 
             return floor_value <= plant[obj.name] <= ceiling_value
 
