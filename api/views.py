@@ -27,13 +27,23 @@ class PlantAPIView(generics.ListAPIView):
         def filtering_int_float_types(plant):
             return request.GET[variable][0] <= plant[obj.name] <= request.GET[variable][1]
 
+        def filtering_date_types(plant):
+            # if plant instance doesn't have required attribute, throw it out!
+            if plant[obj.name] is None:
+                return False
+
+            parameters = request.query_params.getlist(variable)
+            floor_value = parameters[0] or float("-inf")
+            ceiling_value = parameters[1] or float("inf")
+            return floor_value <= plant[obj.name] <= ceiling_value
+
         def filtering_taxon_organization_types(plant):
             return plant[translate[variable]] == request.GET[variable]
 
         translate = xlsx_columns_choices_dict()
         if type_attr == "custom":
             obj = Attribute.objects.get(slug=variable)
-            func = None
+            func = filtering_date_types
             if obj.datatype == "text":
                 func = filtering_text_types
             elif obj.datatype == "int" or obj.datatype == "float":
