@@ -1,7 +1,6 @@
 <template>
   <div class="rounded-4 h-100 mh-50 table-color">
     <div v-for="param in this.getParameters()" :key="param" class="pt-1 px-2">
-      {{ param }}
       <div v-if="param.type === 'date'">
         <CustomDateFilter v-model="date"></CustomDateFilter>
       </div>
