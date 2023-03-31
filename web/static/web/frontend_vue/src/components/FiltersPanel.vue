@@ -9,6 +9,7 @@
         <div v-else-if="param.type === 'date'">
           <CustomDateFilter v-model="date"></CustomDateFilter>
         </div>
+        <number-input v-else-if="param.type === 'float' || param.type === 'int'" :min="param.values[0]" :max="param.values[1]" />
       </div>
       <div class="text-center buttons position-sticky top-100 mb-1">
         <button class="btn btn-success btn-sm me-1">
@@ -24,11 +25,13 @@
 
 <script>
 import {mapActions, mapGetters, mapState} from "vuex";
-import SearchSelect from "@/components/SearchSelect.vue";
 import CustomDateFilter from "./CustomDateFilter.vue";
+import NumberInput from "./NumberInput.vue";
+import SearchSelect from "@/components/SearchSelect.vue";
+
 export default {
   name: "FiltersPanel",
-  components: {CustomDateFilter, SearchSelect},
+  components: {CustomDateFilter, SearchSelect, NumberInput},
   methods: {
     ...mapActions(["loadParameters"]),
     ...mapGetters(["getParameters"]),
