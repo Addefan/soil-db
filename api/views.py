@@ -54,10 +54,10 @@ class PlantAPIView(generics.ListAPIView):
         translate = xlsx_columns_choices_dict()
         if type_attr == "custom":
             obj = Attribute.objects.get(slug=variable)
-            func = filtering_date_types
-            if obj.datatype == "text":
-                func = filtering_text_types
-            elif obj.datatype == "int" or obj.datatype == "float":
+            func = filtering_text_types
+            if obj.datatype == Attribute.TYPE_DATE:
+                func = filtering_date_types
+            elif obj.datatype == Attribute.TYPE_INT or obj.datatype == Attribute.TYPE_FLOAT:
                 func = filtering_int_float_types
             data = filter(func, data)
         else:
