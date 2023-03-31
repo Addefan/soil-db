@@ -24,6 +24,7 @@ python-dotenv = "^0.21.1"
 django-tree-queries = "^0.14.0"
 djangorestframework = "^3.14.0"
 django-filter = "^22.1"
+python-dateutil = "^2.8.2"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -1,12 +1,14 @@
 <template>
   <div class="rounded-4 h-100 mh-50 table-color">
-    <form @submit.prevent="submitEvent">
+    <form>
       <div v-for="param in this.getParameters()" :key="param" class="pt-1 px-2">
         {{ param.russian_name }}
         <div v-if="param.type === 'text'">
-          <SearchSelect :variants="param.values" @change="logConsole"></SearchSelect>
+          <SearchSelect :variants="param.values"></SearchSelect>
         </div>
-        <!--TODO: component depending on parameter type-->
+        <div v-else-if="param.type === 'date'">
+          <CustomDateFilter v-model="date"></CustomDateFilter>
+        </div>
       </div>
       <div class="text-center buttons position-sticky top-100 mb-1">
         <button class="btn btn-success btn-sm me-1">
@@ -21,17 +23,12 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
+import {mapActions, mapGetters, mapState} from "vuex";
 import SearchSelect from "@/components/SearchSelect.vue";
-
+import CustomDateFilter from "./CustomDateFilter.vue";
 export default {
   name: "FiltersPanel",
-  data() {
-    return {
-      value: {},
-    }
-  },
-  components: {SearchSelect},
+  components: {CustomDateFilter, SearchSelect},
   methods: {
     ...mapActions(["loadParameters"]),
     ...mapGetters(["getParameters"]),
