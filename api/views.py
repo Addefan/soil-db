@@ -1,3 +1,7 @@
+from datetime import datetime
+
+import pytz
+from dateutil.parser import parse
 from eav.models import Attribute
 from rest_framework import generics, views
 from rest_framework.response import Response
@@ -21,11 +25,28 @@ class PlantAPIView(generics.ListAPIView):
     # slug because from front we send slug english name
     @staticmethod
     def filtering_attr(request, variable, data, type_attr):
+        def convert_string_to_datetime(string: str) -> datetime:
+            dt_naive = parse(string)
+            utc = pytz.utc
+            # convert datetime instance to a specific timezone
+            return utc.localize(dt_naive)
+
         def filtering_text_types(plant):
             return plant[obj.name] == request.GET[variable]
 
         def filtering_int_float_types(plant):
             return request.GET[variable][0] <= plant[obj.name] <= request.GET[variable][1]
+
+        def filtering_date_types(plant):
+            # if plant instance doesn't have required attribute, throw it out!
+            if plant[obj.name] is None:
+                return False
+
+            parameters = request.query_params.getlist(variable)
+            floor_value = convert_string_to_datetime(parameters[0])
+            ceiling_value = convert_string_to_datetime(parameters[1])
+
+            return floor_value <= plant[obj.name] <= ceiling_value
 
         def filtering_taxon_organization_types(plant):
             return plant[translate[variable]] == request.GET[variable]
@@ -33,10 +54,10 @@ class PlantAPIView(generics.ListAPIView):
         translate = xlsx_columns_choices_dict()
         if type_attr == "custom":
             obj = Attribute.objects.get(slug=variable)
-            func = None
-            if obj.datatype == "text":
-                func = filtering_text_types
-            elif obj.datatype == "int" or obj.datatype == "float":
+            func = filtering_text_types
+            if obj.datatype == Attribute.TYPE_DATE:
+                func = filtering_date_types
+            elif obj.datatype == Attribute.TYPE_INT or obj.datatype == Attribute.TYPE_FLOAT:
                 func = filtering_int_float_types
             data = filter(func, data)
         else:

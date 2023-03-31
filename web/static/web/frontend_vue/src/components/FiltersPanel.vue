@@ -1,26 +1,41 @@
 <template>
   <div class="rounded-4 h-100 mh-50 table-color">
-    <div v-for="param in this.getParameters()" :key="param" class="">
-      <number-input v-if="param.type === 'float' || param.type === 'int'" :min="param.values[0]" :max="param.values[1]" />
-    </div>
-    <div class="text-center buttons position-sticky top-100 mb-1">
-      <button type="button" class="btn btn-success btn-sm me-1" data-bs-toggle="modal" data-bs-target="#ModalXlsx">Применить</button>
-      <button type="button" class="btn btn-outline-success ms-1 btn-sm mx-auto export_to_xlsx__button" data-bs-toggle="modal" data-bs-target="#ModalXlsx">Экспорт</button>
-    </div>
+    <form>
+      <div v-for="param in this.getParameters()" :key="param" class="pt-1 px-2">
+        {{ param.russian_name }}
+        <div v-if="param.type === 'text'">
+          <SearchSelect :variants="param.values"></SearchSelect>
+        </div>
+        <div v-else-if="param.type === 'date'">
+          <CustomDateFilter v-model="date"></CustomDateFilter>
+        </div>
+        <number-input v-else-if="param.type === 'float' || param.type === 'int'" :min="param.values[0]" :max="param.values[1]" />
+      </div>
+      <div class="text-center buttons position-sticky top-100 mb-1">
+        <button class="btn btn-success btn-sm me-1">
+          Применить
+        </button>
+        <button type="button" class="btn btn-outline-success ms-1 btn-sm mx-auto export_to_xlsx__button"
+                data-bs-toggle="modal" data-bs-target="#ModalXlsx">Экспорт
+        </button>
+      </div>
+    </form>
   </div>
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
+import {mapActions, mapGetters, mapState} from "vuex";
+import CustomDateFilter from "./CustomDateFilter.vue";
 import NumberInput from "./NumberInput.vue";
+import SearchSelect from "@/components/SearchSelect.vue";
 
 export default {
   name: "FiltersPanel",
-  components: {NumberInput},
-
+  components: {CustomDateFilter, SearchSelect, NumberInput},
   methods: {
     ...mapActions(["loadParameters"]),
     ...mapGetters(["getParameters"]),
+
   },
   mounted() {
     this.loadParameters();
