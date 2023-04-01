@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-4 h-100 mh-50 table-color">
     <form>
-      <div v-for="param in this.getParameters()" :key="param" class="pt-1 px-2">
+      <div v-for="param in this.getAttributes()" :key="param" class="mt-2 pt-1 px-2">
         {{ param.russian_name }}
         <div v-if="param.type === 'text'">
           <SearchSelect :variants="param.values"></SearchSelect>
@@ -9,7 +9,8 @@
         <div v-else-if="param.type === 'date'">
           <CustomDateFilter v-model="date"></CustomDateFilter>
         </div>
-        <number-input v-else-if="param.type === 'float' || param.type === 'int'" :min="param.values[0]" :max="param.values[1]" />
+        <number-input v-else-if="param.type === 'float' || param.type === 'int'" :min="param.values[0]"
+                      :max="param.values[1]"/>
       </div>
       <div class="text-center buttons position-sticky top-100 mb-1">
         <button class="btn btn-success btn-sm me-1">
@@ -24,21 +25,20 @@
 </template>
 
 <script>
-import {mapActions, mapGetters, mapState} from "vuex";
-import CustomDateFilter from "./CustomDateFilter.vue";
-import NumberInput from "./NumberInput.vue";
+import {mapActions, mapGetters} from "vuex";
+import CustomDateFilter from "@/components/CustomDateFilter.vue";
+import NumberInput from "@/components/NumberInput.vue";
 import SearchSelect from "@/components/SearchSelect.vue";
 
 export default {
   name: "FiltersPanel",
   components: {CustomDateFilter, SearchSelect, NumberInput},
   methods: {
-    ...mapActions(["loadParameters"]),
-    ...mapGetters(["getParameters"]),
-
+    ...mapActions(["loadAttributes"]),
+    ...mapGetters(["getAttributes"]),
   },
   mounted() {
-    this.loadParameters();
+    this.loadAttributes();
   }
 }
 </script>

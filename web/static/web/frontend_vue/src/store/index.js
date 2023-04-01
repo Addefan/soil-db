@@ -4,13 +4,13 @@ import axios from "axios";
 const store = createStore({
     state() {
         return {
-            parameters: [],
+            attributes: [],
             plants: []
         }
     },
     getters: {
-        getParameters(state) {
-            return state.parameters;
+        getAttributes(state) {
+            return state.attributes;
         },
         getPlants(state) {
             return state.plants;
@@ -21,14 +21,14 @@ const store = createStore({
             const response = await axios.get("/api/plants/");
             commit("SET_PLANTS", response.data);
         },
-        loadParameters: async function ({commit}) {
+        loadAttributes: async function ({commit}) {
             const response = await axios.get("/api/attributes/");
-            commit("SET_PARAMETERS", response.data);
+            commit("SET_ATTRIBUTES", response.data);
         },
     },
     mutations: {
-        SET_PARAMETERS(state, new_parameters) {
-            state.parameters = new_parameters;
+        SET_ATTRIBUTES(state, new_attributes) {
+            state.attributes = new_attributes;
         },
         SET_PLANTS(state, new_plants) {
             state.plants = new_plants;

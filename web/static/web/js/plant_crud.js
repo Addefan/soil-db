@@ -16,7 +16,7 @@ function make_custom_attribute(name_attribute, type_attr, slug_name) {
     const type_attributes = {
         int: 'number',
         float: 'number',
-        string: 'text'
+        text: 'text'
     }
 
     let field_form_last_div = $('#plant_form div.input-group').last()
