@@ -20,7 +20,7 @@ def attributes_default_choices() -> list:
             "english_name": "organization",
             "russian_name": "Организация",
             "type": Attribute.TYPE_TEXT,
-            "values": [{"english_name": "organization", "name": organization.name} for organization in organizations],
+            "values": [organization.name for organization in organizations],
         }
     ]
 
@@ -40,7 +40,7 @@ def attributes_custom_choices() -> list:
             attr = f"value_{field.attribute.datatype}"
             attr_type = field.attribute.datatype
             if field.attribute.datatype == Attribute.TYPE_TEXT:
-                values = [{"english_name": field.attribute.slug, "name": getattr(f, attr)} for f in filtered_table]
+                values = [getattr(f, attr) for f in filtered_table]
                 custom_attributes.append(
                     {
                         "english_name": field.attribute.slug,
@@ -86,7 +86,7 @@ def attribute_taxon_choices() -> list:
                 "english_name": choice[0],
                 "russian_name": choice[1],
                 "type": Attribute.TYPE_TEXT,
-                "values": [{"english_name": choice[0], "name": field.title} for field in filtered_qs],
+                "values": [field.title for field in filtered_qs],
             }
         )
     return taxon_attributes
