@@ -14,11 +14,11 @@ $('#add_button').on('click', function () {
 
 function make_custom_attribute(name_attribute, type_attr, slug_name) {
     const type_attributes = {
-        integer: 'number',
+        int: 'number',
         float: 'number',
         string: 'text'
     }
-    console.log(name_attribute, type_attr)
+
     let field_form_last_div = $('#plant_form div.input-group').last()
     let last_field = $('<div>', {
         class: 'input-group has-validation'
