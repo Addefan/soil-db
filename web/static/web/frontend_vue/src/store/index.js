@@ -5,7 +5,8 @@ const store = createStore({
     state() {
         return {
             attributes: [],
-            plants: []
+            plants: [],
+            parameters: {},
         }
     },
     getters: {
@@ -31,8 +32,12 @@ const store = createStore({
             state.attributes = new_attributes;
         },
         SET_PLANTS(state, new_plants) {
+            console.log(new_plants, typeof new_plants)
             state.plants = new_plants;
-        }
+        },
+        SET_PARAMETER(state, { param, values }) {
+            state.parameters[param] = values;
+        },
     }
 })
 
