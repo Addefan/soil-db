@@ -62,7 +62,6 @@ def attributes_custom_choices() -> list:
                     }
                 )
             elif attr_type == Attribute.TYPE_DATE:
-                values = [f"{getattr(f, attr)}" for f in filtered_table]
                 custom_attributes.append(
                     {
                         "english_name": field.attribute.slug,
