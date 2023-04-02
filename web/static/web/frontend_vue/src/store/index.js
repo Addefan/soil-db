@@ -18,8 +18,8 @@ const store = createStore({
         }
     },
     actions: {
-        loadPlants: async function ({commit}) {
-            const response = await axios.get("/api/plants/");
+        loadPlants: async function ({state, commit}) {
+            const response = await axios.get("/api/plants/", {params: state.parameters});
             commit("SET_PLANTS", response.data);
         },
         loadAttributes: async function ({commit}) {
@@ -34,7 +34,7 @@ const store = createStore({
         SET_PLANTS(state, new_plants) {
             state.plants = new_plants;
         },
-        SET_PARAMETER(state, { param, values }) {
+        SET_PARAMETER(state, {param, values}) {
             state.parameters[param] = values;
         },
     }

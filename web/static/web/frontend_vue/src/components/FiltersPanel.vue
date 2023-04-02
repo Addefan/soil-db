@@ -1,6 +1,6 @@
 <template>
   <div class="rounded-4 h-100 mh-50 table-color">
-    <form class="pt-2">
+    <form class="pt-2" @submit.prevent="this.loadPlants">
       <div v-for="param in this.getAttributes()" :key="param" class="mb-2">
         <div class="px-2">{{ param.russian_name }}</div>
         <div v-if="param.type === 'text'">
@@ -37,11 +37,10 @@ export default {
   name: "FiltersPanel",
   components: {CustomDateFilter, SearchSelect, NumberInput},
   methods: {
-    ...mapActions(["loadAttributes"]),
+    ...mapActions(["loadAttributes", "loadPlants"]),
     ...mapGetters(["getAttributes"]),
     ...mapMutations(["SET_PARAMETER"]),
     handleFilter(param, values) {
-      console.log(values);
       this.$store.commit('SET_PARAMETER', { param, values });
     },
   },
