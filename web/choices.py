@@ -17,7 +17,7 @@ def attributes_default_choices() -> list:
     organizations = Organization.objects.all()
     return [
         {
-            "english_name": "organization",
+            "english_name": "organization__name",
             "russian_name": "Организация",
             "type": Attribute.TYPE_TEXT,
             "values": [organization.name for organization in organizations],

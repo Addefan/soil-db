@@ -32,25 +32,26 @@ class PlantAPIView(generics.ListAPIView):
             return utc.localize(dt_naive)
 
         def filtering_text_types(plant):
-            return plant[obj.name] == request.GET[variable]
+            return plant[obj.name] in parameters
 
         def filtering_int_float_types(plant):
-            return request.GET[variable][0] <= plant[obj.name] <= request.GET[variable][1]
+            return parameters[0] <= plant[obj.name] <= parameters[1]
 
         def filtering_date_types(plant):
             # if plant instance doesn't have required attribute, throw it out!
             if plant[obj.name] is None:
                 return False
 
-            parameters = request.query_params.getlist(variable)
             floor_value = convert_string_to_datetime(parameters[0])
             ceiling_value = convert_string_to_datetime(parameters[1])
 
             return floor_value <= plant[obj.name] <= ceiling_value
 
         def filtering_taxon_organization_types(plant):
-            return plant[translate[variable]] == request.GET[variable]
 
+            return plant[translate[variable]] in parameters
+
+        parameters = request.query_params.getlist(variable)
         translate = xlsx_columns_choices_dict()
         if type_attr == "custom":
             obj = Attribute.objects.get(slug=variable)
