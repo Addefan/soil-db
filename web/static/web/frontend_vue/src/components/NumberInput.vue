@@ -1,7 +1,8 @@
 <template>
   <div class="text-center">
     <div class="mb-2">
-      <slider v-model="value" :min="this.min" :max="this.max" @update="$emit('change', value)" />
+      <slider v-model="value" :min="this.min" :max="this.max" :tooltips="false" @update="$emit('change', value)"
+              @slide="changeValues"/>
     </div>
     <div class="row">
       <div class="col-6 px-2">
@@ -36,6 +37,11 @@ export default {
   props: {
     min: {type: Number, default: 0},
     max: {type: Number, default: 100},
+  },
+  methods: {
+    changeValues(new_val) {
+      this.value = new_val
+    },
   },
   watch: {
     value: {
