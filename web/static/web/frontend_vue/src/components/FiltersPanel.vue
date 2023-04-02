@@ -1,10 +1,10 @@
 <template>
   <div class="rounded-4 h-100 mh-50 table-color">
-    <form>
-      <div v-for="param in this.getAttributes()" :key="param" class="mt-2 pt-1 px-2">
-        {{ param.russian_name }}
+    <form class="pt-2">
+      <div v-for="param in this.getAttributes()" :key="param" class="mb-2">
+        <div class="px-2">{{ param.russian_name }}</div>
         <div v-if="param.type === 'text'">
-          <SearchSelect :variants="param.values"
+          <SearchSelect :variants="param.values" class="px-2"
                         @change="(data) => handleFilter(param.english_name, data)"></SearchSelect>
         </div>
         <div v-else-if="param.type === 'date'">
@@ -12,7 +12,8 @@
                             @change="(data) => handleFilter(param.english_name, data)"></CustomDateFilter>
         </div>
         <number-input v-else-if="param.type === 'float' || param.type === 'int'" :min="param.values[0]"
-                      :max="param.values[1]" @change="(data) => handleFilter(param.english_name, data)"/>
+                      :max="param.values[1]" @change="(data) => handleFilter(param.english_name, data)"
+                      class="py-2 px-3"/>
       </div>
       <div class="text-center buttons position-sticky top-100 mb-1">
         <button class="btn btn-success btn-sm me-1">
