@@ -17,7 +17,7 @@ def attributes_default_choices() -> list:
     organizations = Organization.objects.all()
     return [
         {
-            "english_name": "organization",
+            "english_name": "organization__name",
             "russian_name": "Организация",
             "type": Attribute.TYPE_TEXT,
             "values": [organization.name for organization in organizations],
@@ -62,7 +62,6 @@ def attributes_custom_choices() -> list:
                     }
                 )
             elif attr_type == Attribute.TYPE_DATE:
-                values = [f"{getattr(f, attr)}" for f in filtered_table]
                 custom_attributes.append(
                     {
                         "english_name": field.attribute.slug,
