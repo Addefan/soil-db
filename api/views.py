@@ -35,7 +35,7 @@ class PlantAPIView(generics.ListAPIView):
             return plant[obj.name] in parameters
 
         def filtering_int_float_types(plant):
-            return parameters[0] <= plant[obj.name] <= parameters[1]
+            return float(parameters[0]) <= plant[obj.name] <= float(parameters[1])
 
         def filtering_date_types(plant):
             # if plant instance doesn't have required attribute, throw it out!
