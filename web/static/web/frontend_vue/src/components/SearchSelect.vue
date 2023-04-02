@@ -1,8 +1,8 @@
 <template>
   <div>
-    <Multiselect v-model="value" :options="variants" :multiple="true" :close-on-select="false" :clear-on-select="false"
-                 :preserve-search="true" placeholder="Pick some" label="name" track-by="name" :preselect-first="false"
-                 @select="$emit('change', value)" @remove="$emit('change', value)">
+    <Multiselect v-model="value" :options="variants" :multiple="true" :close-on-select="false"
+                 :clear-on-select="false" :preserve-search="true" placeholder="Pick some"
+                 :select-label="''" :deselect-label="''" @update:model-value="$emit('change', value)">
     </Multiselect>
   </div>
 </template>

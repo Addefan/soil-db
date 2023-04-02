@@ -1,15 +1,19 @@
 <template>
   <div class="rounded-4 h-100 mh-50 table-color">
-    <form>
-      <div v-for="param in this.getParameters()" :key="param" class="pt-1 px-2">
-        {{ param.russian_name }}
+    <form class="pt-2" @submit.prevent="this.loadPlants">
+      <div v-for="param in this.getAttributes()" :key="param" class="mb-2">
+        <div class="px-2">{{ param.russian_name }}</div>
         <div v-if="param.type === 'text'">
-          <SearchSelect :variants="param.values"></SearchSelect>
+          <SearchSelect :variants="param.values" class="px-2"
+                        @change="(data) => handleFilter(param.english_name, data)"></SearchSelect>
         </div>
         <div v-else-if="param.type === 'date'">
-          <CustomDateFilter v-model="date"></CustomDateFilter>
+          <CustomDateFilter class="px-2"
+              @change="(data) => handleFilter(param.english_name, data)"></CustomDateFilter>
         </div>
-        <number-input v-else-if="param.type === 'float' || param.type === 'int'" :min="param.values[0]" :max="param.values[1]" />
+        <number-input v-else-if="param.type === 'float' || param.type === 'int'" :min="param.values[0]"
+                      :max="param.values[1]" @change="(data) => handleFilter(param.english_name, data)"
+                      class="py-2 px-3"/>
       </div>
       <div class="text-center buttons position-sticky top-100 mb-1">
         <button class="btn btn-success btn-sm me-1">
@@ -24,21 +28,24 @@
 </template>
 
 <script>
-import {mapActions, mapGetters, mapState} from "vuex";
-import CustomDateFilter from "./CustomDateFilter.vue";
-import NumberInput from "./NumberInput.vue";
+import {mapActions, mapGetters, mapMutations} from "vuex";
+import CustomDateFilter from "@/components/CustomDateFilter.vue";
+import NumberInput from "@/components/NumberInput.vue";
 import SearchSelect from "@/components/SearchSelect.vue";
 
 export default {
   name: "FiltersPanel",
   components: {CustomDateFilter, SearchSelect, NumberInput},
   methods: {
-    ...mapActions(["loadParameters"]),
-    ...mapGetters(["getParameters"]),
-
+    ...mapActions(["loadAttributes", "loadPlants"]),
+    ...mapGetters(["getAttributes"]),
+    ...mapMutations(["SET_PARAMETER"]),
+    handleFilter(param, values) {
+      this.$store.commit('SET_PARAMETER', { param, values });
+    },
   },
   mounted() {
-    this.loadParameters();
+    this.loadAttributes();
   }
 }
 </script>
@@ -46,9 +53,5 @@ export default {
 <style scoped>
 .buttons {
   position: relative
-}
-
-.filters {
-
 }
 </style>

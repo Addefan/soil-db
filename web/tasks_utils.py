@@ -57,6 +57,7 @@ class QuerySetToListConverter:
             genus = obj.pop("Род")
             obj |= self.taxon_columns[genus]
         custom_columns_pseudo_queryset = self.custom_columns
+        custom_columns_pseudo_queryset.sort(key=lambda x: x["id"])
         # Two pointers method
         # combine plant's default and custom columns
         i, j = 0, 0

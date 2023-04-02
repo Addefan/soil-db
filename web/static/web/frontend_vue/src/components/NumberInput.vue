@@ -1,17 +1,18 @@
 <template>
-  <div class="row text-center">
-    <div class="row mb-2">
-      <slider v-model="value" :min="this.min" :max="this.max" @change="$emit('change', value)" />
+  <div class="text-center">
+    <div class="mb-2">
+      <slider v-model="value" :min="this.min" :max="this.max" :tooltips="false" @update="$emit('change', value)"
+              @slide="changeValues"/>
     </div>
     <div class="row">
       <div class="col-6 px-2">
-      <div class="input-group input-group-sm mb-3">
+      <div class="input-group input-group-sm">
         <span class="input-group-text px-1" id="from">От</span>
         <input type="number" v-model="value[0]" class="form-control px-1" aria-describedby="from">
       </div>
       </div>
       <div class="col-6 px-2">
-      <div class="col-6 input-group input-group-sm mb-3">
+      <div class="col-6 input-group input-group-sm">
         <span class="input-group-text px-1" id="to">До</span>
         <input type="number" v-model="value[1]" class="form-control px-1" aria-describedby="to">
       </div>
@@ -36,6 +37,11 @@ export default {
   props: {
     min: {type: Number, default: 0},
     max: {type: Number, default: 100},
+  },
+  methods: {
+    changeValues(new_val) {
+      this.value = new_val
+    },
   },
   watch: {
     value: {

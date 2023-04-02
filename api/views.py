@@ -27,15 +27,13 @@ class PlantAPIView(generics.ListAPIView):
     def filtering_attr(request, variable, data, type_attr):
         def convert_string_to_datetime(string: str) -> datetime:
             dt_naive = parse(string)
-            utc = pytz.utc
-            # convert datetime instance to a specific timezone
-            return utc.localize(dt_naive)
+            return dt_naive
 
         def filtering_text_types(plant):
             return plant[obj.name] in parameters
 
         def filtering_int_float_types(plant):
-            return parameters[0] <= plant[obj.name] <= parameters[1]
+            return float(parameters[0]) <= plant[obj.name] <= float(parameters[1])
 
         def filtering_date_types(plant):
             # if plant instance doesn't have required attribute, throw it out!
