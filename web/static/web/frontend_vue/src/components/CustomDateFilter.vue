@@ -1,6 +1,6 @@
 <template>
   <VueDatePicker v-model="date" range locale="ru" cancelText="Закрыть" selectText="Выбрать"
-                 :enable-time-picker="false" @update:model-value="$emit('change', date)"></VueDatePicker>
+                 :enable-time-picker="false" @update:model-value="$emit('change', date ?? [])"></VueDatePicker>
 </template>
 
 <script>
