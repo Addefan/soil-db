@@ -69,7 +69,7 @@ class PlantAPIView(generics.ListAPIView):
         for variable in filters:
             if variable in custom_attr:
                 data = self.filtering_attr(request, variable, data, "custom")
-            elif variable == "offset" or variable == "limit":
+            elif variable == "page":
                 continue
             elif variable != "organization":
                 data = self.filtering_attr(request, variable, data, "taxon")
