@@ -1,6 +1,5 @@
 import {createStore} from "vuex";
 import axios from "axios";
-import {stringify} from 'qs'
 
 const store = createStore({
     state() {
@@ -16,17 +15,14 @@ const store = createStore({
         },
         getPlants(state) {
             return state.plants;
-        }
+        },
+        getParameters(state) {
+            return state.parameters;
+        },
     },
     actions: {
-        loadPlants: async function ({state, commit}) {
-            const response = await axios.get("/api/plants/", {
-                params: state.parameters,
-                paramsSerializer: {
-                    serialize: stringify,
-                    indices: false,
-                }
-            });
+        loadPlants: async function ({commit}, query_params = "") {
+            const response = await axios.get(`/api/plants/${query_params}`);
             commit("SET_PLANTS", response.data);
         },
         loadAttributes: async function ({commit}) {
