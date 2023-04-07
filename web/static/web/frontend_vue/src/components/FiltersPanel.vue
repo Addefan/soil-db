@@ -13,7 +13,7 @@
         </div>
         <number-input v-else-if="param.type === 'float' || param.type === 'int'" :min="param.values[0]"
                       :max="param.values[1]" @change="(data) => handleFilter(param.english_name, data)"
-                      class="py-2 px-3"/>
+                      class="py-2 px-3" />
       </div>
       <div class="text-center buttons position-sticky top-100 mb-1">
         <button class="btn btn-success btn-sm me-1">
@@ -28,25 +28,24 @@
 </template>
 
 <script>
-import {mapActions, mapGetters, mapMutations} from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
 import CustomDateFilter from "@/components/CustomDateFilter.vue";
 import NumberInput from "@/components/NumberInput.vue";
 import SearchSelect from "@/components/SearchSelect.vue";
-import {stringify} from "qs";
+import router from "@/router";
 
 export default {
   name: "FiltersPanel",
-  components: {CustomDateFilter, SearchSelect, NumberInput},
+  components: { CustomDateFilter, SearchSelect, NumberInput },
   methods: {
     ...mapActions(["loadAttributes", "loadPlants"]),
     ...mapGetters(["getAttributes", "getParameters"]),
     ...mapMutations(["SET_PARAMETER"]),
     handleFilter(param, values) {
-      this.$store.commit("SET_PARAMETER", {param, values});
+      this.$store.commit("SET_PARAMETER", { param, values });
     },
     serializeParams() {
-      const query = `?${stringify(this.getParameters(), {indices: false})}`;
-      history.pushState({}, "", query);
+      router.push({ path: "", query: this.getParameters() });
     }
   },
   mounted() {
