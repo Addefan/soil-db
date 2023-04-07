@@ -32,9 +32,11 @@ export default {
     ...mapActions(["loadPlants"]),
     ...mapGetters(["getPlants"])
   },
-  mounted() {
-    this.loadPlants();
-  }
+  watch: {
+    $route(to) {
+      this.loadPlants(to.href);
+    },
+  },
 }
 </script>
 
