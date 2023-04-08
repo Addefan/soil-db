@@ -40,6 +40,9 @@ const store = createStore({
         SET_PARAMETER(state, {param, values}) {
             state.parameters[param] = values;
         },
+        SET_PARAMETERS(state, {parameters}) {
+            state.parameters = parameters;
+        }
     }
 })
 

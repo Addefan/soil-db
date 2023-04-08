@@ -11,33 +11,35 @@
       </tr>
       </thead>
       <tbody>
-        <tr class="content-align" v-for="plant in this.getPlants()" :key="plant">
-          <td><a :href="`/plants/${plant.number}`">{{ plant.number }}</a></td>
-          <td>{{ plant.name }}</td>
-          <td>{{ plant.latin_name }}</td>
-          <td>{{ plant.genus }}</td>
-          <td>{{ plant.organization }}</td>
-        </tr>
+      <tr class="content-align" v-for="plant in this.getPlants()" :key="plant">
+        <td><a :href="`/plants/${plant.number}`">{{ plant.number }}</a></td>
+        <td>{{ plant.name }}</td>
+        <td>{{ plant.latin_name }}</td>
+        <td>{{ plant.genus }}</td>
+        <td>{{ plant.organization }}</td>
+      </tr>
       </tbody>
     </table>
   </div>
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
 
 export default {
   name: "PlantsTable",
   methods: {
     ...mapActions(["loadPlants"]),
-    ...mapGetters(["getPlants"])
+    ...mapGetters(["getPlants"]),
+    ...mapMutations(["SET_PARAMETERS"])
   },
   watch: {
     $route(to) {
+      this.$store.commit("SET_PARAMETERS", { parameters: to.query });
       this.loadPlants(to.href);
-    },
-  },
-}
+    }
+  }
+};
 </script>
 
 <style scoped>
