@@ -23,8 +23,7 @@ export default {
     return {
       date: [],
       format(date) {
-        date = date.map(elem => beautifyDate(elem));
-        return date.join(" — ");
+        return this.previewFormat(date).join(" — ");
       },
       previewFormat(date) {
         return date.map(elem => beautifyDate(elem));
