@@ -4,8 +4,7 @@
       <div v-for="(param, index) in this.getAttributes()" :key="index" class="mb-2">
         <div class="px-2">{{ param.russian_name }}</div>
         <div v-if="param.type === 'text'">
-          <SearchSelect :variants="param.values" class="px-2"
-                        @change="(data) => handleFilter(param.english_name, data)"></SearchSelect>
+          <SearchSelect :variants="param.values" class="px-2" :attrName="param.english_name"></SearchSelect>
         </div>
         <div v-else-if="param.type === 'date'">
           <CustomDateFilter class="px-2" :attrName="param.english_name"></CustomDateFilter>
@@ -35,17 +34,13 @@ export default {
   name: "FiltersPanel",
   components: { CustomDateFilter, SearchSelect, NumberInput },
   methods: {
-    ...mapActions(["loadAttributes", "loadPlants"]),
+    ...mapActions(["loadAttributes"]),
     ...mapGetters(["getAttributes", "getParameters"]),
-    ...mapMutations(["SET_PARAMETER"]),
-    handleFilter(param, values) {
-      this.$store.commit("SET_PARAMETER", { param, values });
-    },
     serializeParams() {
       this.$router.push({ query: this.getParameters() });
     }
   },
-  mounted() {
+  created() {
     this.loadAttributes();
   }
 };
