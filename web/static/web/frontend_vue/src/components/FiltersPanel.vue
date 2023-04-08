@@ -8,8 +8,7 @@
                         @change="(data) => handleFilter(param.english_name, data)"></SearchSelect>
         </div>
         <div v-else-if="param.type === 'date'">
-          <CustomDateFilter class="px-2"
-                            @change="(data) => handleFilter(param.english_name, data)"></CustomDateFilter>
+          <CustomDateFilter class="px-2" :attrName="param.english_name"></CustomDateFilter>
         </div>
         <number-input v-else-if="param.type === 'float' || param.type === 'int'" :min="param.values[0]"
                       :max="param.values[1]" @change="(data) => handleFilter(param.english_name, data)"
@@ -45,13 +44,13 @@ export default {
       this.$store.commit("SET_PARAMETER", { param, values });
     },
     serializeParams() {
-      router.push({ path: "", query: this.getParameters() });
+      router.push({ query: this.getParameters() });
     }
   },
   mounted() {
     this.loadAttributes();
   }
-}
+};
 </script>
 
 <style scoped>
