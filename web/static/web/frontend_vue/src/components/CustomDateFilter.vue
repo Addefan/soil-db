@@ -36,6 +36,10 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+  @import "@vuepic/vue-datepicker/dist/main.css";
+  input.dp__pointer.dp__input_readonly.dp__input.dp__input_icon_pad.dp__input_reg {
+    font-size: 14px;
+  }
 
 </style>
