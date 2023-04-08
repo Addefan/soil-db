@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-4 h-100 mh-50 table-color">
     <form class="pt-2" @submit.prevent="serializeParams">
-      <div v-for="param in this.getAttributes()" :key="param" class="mb-2">
+      <div v-for="(param, index) in this.getAttributes()" :key="index" class="mb-2">
         <div class="px-2">{{ param.russian_name }}</div>
         <div v-if="param.type === 'text'">
           <SearchSelect :variants="param.values" class="px-2"
@@ -11,8 +11,7 @@
           <CustomDateFilter class="px-2" :attrName="param.english_name"></CustomDateFilter>
         </div>
         <number-input v-else-if="param.type === 'float' || param.type === 'int'" :min="param.values[0]"
-                      :max="param.values[1]" @change="(data) => handleFilter(param.english_name, data)"
-                      class="py-2 px-3" />
+                      :max="param.values[1]" :attrName="param.english_name" class="py-2 px-3" />
       </div>
       <div class="text-center buttons position-sticky top-100 mb-1">
         <button class="btn btn-success btn-sm me-1">
@@ -31,7 +30,6 @@ import { mapActions, mapGetters, mapMutations } from "vuex";
 import CustomDateFilter from "@/components/CustomDateFilter.vue";
 import NumberInput from "@/components/NumberInput.vue";
 import SearchSelect from "@/components/SearchSelect.vue";
-import router from "@/router";
 
 export default {
   name: "FiltersPanel",
@@ -44,7 +42,7 @@ export default {
       this.$store.commit("SET_PARAMETER", { param, values });
     },
     serializeParams() {
-      router.push({ query: this.getParameters() });
+      this.$router.push({ query: this.getParameters() });
     }
   },
   mounted() {
