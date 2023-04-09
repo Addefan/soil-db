@@ -10,7 +10,6 @@ const store = createStore({
             parameters: {
                 page: 1,
             },
-            isMorePlants: true,
         }
     },
     getters: {
