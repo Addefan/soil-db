@@ -11,7 +11,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr class="content-align" v-for="plant in this.getPlants()" :key="plant">
+      <tr class="content-align" v-for="plant in this.getPlants()" :key="plant.number">
         <td><a :href="`/plants/${plant.number}`">{{ plant.number }}</a></td>
         <td>{{ plant.name }}</td>
         <td>{{ plant.latin_name }}</td>

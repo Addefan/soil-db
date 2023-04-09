@@ -16,7 +16,7 @@ from web.views import (
 )
 
 urlpatterns = [
-    path("", RedirectView.as_view(pattern_name="plants"), name="mail"),
+    path("", RedirectView.as_view(pattern_name="plants"), name="main"),
     path("plants/", PlantsListView.as_view(), name="plants"),
     path("profile/", ProfileFormView.as_view(), name="profile"),
     path("profile/change_password/", ChangePasswordView.as_view(), name="change_password"),
