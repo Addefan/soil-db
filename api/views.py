@@ -46,7 +46,6 @@ class PlantAPIView(generics.ListAPIView):
             return floor_value <= plant[obj.name] <= ceiling_value
 
         def filtering_taxon_organization_types(plant):
-
             return plant[translate[variable]] in parameters
 
         parameters = request.query_params.getlist(variable)
@@ -70,6 +69,8 @@ class PlantAPIView(generics.ListAPIView):
         for variable in filters:
             if variable in custom_attr:
                 data = self.filtering_attr(request, variable, data, "custom")
+            elif variable == "page":
+                continue
             elif variable != "organization":
                 data = self.filtering_attr(request, variable, data, "taxon")
             elif variable == "organization":
@@ -89,7 +90,7 @@ class PlantAPIView(generics.ListAPIView):
         if request.GET:
             data = self.filter_data(request, data)
         numbers = [instance.get("Уникальный номер") for instance in data]
-        filtered_qs = self.get_queryset(True, numbers)
+        filtered_qs = self.paginate_queryset(self.get_queryset(True, numbers))
         serializer = PlantSerializer(filtered_qs, many=True)
         return Response(serializer.data)
 

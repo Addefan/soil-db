@@ -1,4 +1,6 @@
+import html
 from functools import cache
+from typing import Callable
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -49,6 +51,15 @@ def get_all_taxa(genus):
     return taxa
 
 
+def escape(func: Callable) -> Callable:
+    # decorator escapes text to prevent XSS attack
+    def wrapper(self, cleaned_data: dict) -> str:
+        cleaned_data["name"] = html.escape(cleaned_data["name"])
+        return func(self, cleaned_data)
+
+    return wrapper
+
+
 class PlantMixin:
     slug_field = "number"
     slug_url_kwarg = "number"
@@ -93,8 +104,9 @@ class PlantMixin:
 class PlantCreateView(PlantMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
     form_class = PlantForm
 
+    @escape
     def get_success_message(self, cleaned_data):
-        return f"Вы успешно добавили растение <strong>{self.object.name}</strong>"
+        return f"Вы успешно добавили растение <strong>{cleaned_data['name']}</strong>"
 
 
 class PlantUpdateView(PlantMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
@@ -117,5 +129,6 @@ class PlantUpdateView(PlantMixin, SuccessMessageMixin, LoginRequiredMixin, Updat
             "number": self.kwargs[self.slug_url_kwarg],
         }
 
+    @escape
     def get_success_message(self, cleaned_data):
-        return f"Вы успешно изменили растение <strong>{self.object.name}</strong>"
+        return f"Вы успешно изменили растение <strong>{cleaned_data['name']}</strong>"
