@@ -1,6 +1,5 @@
 import {createStore} from "vuex";
 import axios from "axios";
-import {stringify} from 'qs'
 
 const store = createStore({
     state() {
@@ -18,18 +17,15 @@ const store = createStore({
         },
         getPlants(state) {
             return state.plants;
-        }
+        },
+        getParameters(state) {
+            return state.parameters;
+        },
     },
     actions: {
-        loadPlants: async function ({state, commit}) {
+        loadPlants: async function ({state, commit}, apiPath = "/plants") {
             try {
-                const response = await axios.get("/api/plants/", {
-                    params: state.parameters,
-                    paramsSerializer: {
-                        serialize: stringify,
-                        indices: false,
-                    }
-                });
+                const response = await axios.get(`/api${apiPath}`);
                 commit("SET_PLANTS", response.data);
                 commit("INCREASE_PAGE");
             } catch (e) {
@@ -50,6 +46,9 @@ const store = createStore({
         },
         SET_PARAMETER(state, {param, values}) {
             state.parameters[param] = values;
+        },
+        SET_PARAMETERS(state, {parameters}) {
+            state.parameters = parameters;
         },
         INCREASE_PAGE(state) {
             state.parameters.page++;

@@ -1,8 +1,7 @@
 <template>
   <div class="text-center">
     <div class="mb-2">
-      <slider v-model="value" :min="this.min" :max="this.max" :tooltips="false" @update="$emit('change', value)"
-              @slide="changeValues"/>
+      <slider v-model="value" :min="this.min" :max="this.max" :tooltips="false" @slide="this.value = $event"/>
     </div>
     <div class="row">
       <div class="col-6 px-2">
@@ -23,25 +22,31 @@
 
 <script>
 import Slider from '@vueform/slider';
+import { mapGetters, mapMutations } from "vuex";
 
 export default {
   name: "NumberInput",
   components: {
     Slider,
   },
-  data() {
-    return {
-      value: [this.min, this.max]
+  computed: {
+    value: {
+      set(newValue) {
+        this.$store.commit("SET_PARAMETER", { param: this.attrName, values: newValue });
+      },
+      get() {
+        return this.getParameters()[this.attrName] ?? [this.min, this.max];
+      }
     }
   },
   props: {
     min: {type: Number, default: 0},
     max: {type: Number, default: 100},
+    attrName: {type: String, required: true}
   },
   methods: {
-    changeValues(new_val) {
-      this.value = new_val
-    },
+    ...mapGetters(["getParameters"]),
+    ...mapMutations(["SET_PARAMETER"])
   },
   watch: {
     value: {

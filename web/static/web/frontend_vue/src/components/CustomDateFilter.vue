@@ -2,14 +2,22 @@
   <VueDatePicker v-model="date" range locale="ru" cancelText="Закрыть" selectText="Выбрать"
                  :enable-time-picker="false" :preview-format="previewFormat"
                  partial-range :partial-range="false" placeholder="Pick some"
-                 :format="format" @update:model-value="$emit('change', date ?? [])">
+                 :format="format">
   </VueDatePicker>
 </template>
 
 <script>
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css'
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
+import { mapGetters, mapMutations } from "vuex";
+
 export default {
+  components: { VueDatePicker },
+  name: "CustomDateFilter",
+  props: {
+    attrName: {
+      type: String,
+      required: true
   data() {
     const convertDateComponent = (component) => {
       return +component < 10 ? `0${component}` : component;
@@ -21,7 +29,6 @@ export default {
       return `${startDay}.${startMonth}.${startYear}`
     }
     return {
-      date: [],
       format(date) {
         return this.previewFormat(date).join(" — ");
       },
@@ -30,9 +37,21 @@ export default {
       }
     }
   },
-  components: {VueDatePicker},
-  name: "CustomDateFilter"
-}
+  methods: {
+    ...mapGetters(["getParameters"]),
+    ...mapMutations(["SET_PARAMETER"])
+  },
+  computed: {
+    date: {
+      set(value) {
+        this.$store.commit("SET_PARAMETER", { param: this.attrName, values: value ?? [] });
+      },
+      get() {
+        return this.getParameters()[this.attrName];
+      }
+    }
+  }
+};
 </script>
 
 <style>

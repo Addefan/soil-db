@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import RedirectView
 
 from web.views import (
     ProfileFormView,
@@ -15,7 +16,7 @@ from web.views import (
 )
 
 urlpatterns = [
-    path("", PlantsListView.as_view(), name="plants"),
+    path("", RedirectView.as_view(pattern_name="plants"), name="main"),
     path("plants/", PlantsListView.as_view(), name="plants"),
     path("profile/", ProfileFormView.as_view(), name="profile"),
     path("profile/change_password/", ChangePasswordView.as_view(), name="change_password"),
