@@ -31,15 +31,15 @@ export default {
   name: "PlantsTable",
   methods: {
     ...mapActions(["loadPlants"]),
-    ...mapGetters(["getPlants"]),
+    ...mapGetters(["getPlants", "getParameters"]),
     ...mapMutations(["SET_PARAMETERS"])
   },
-  watch: {
-    $route(to) {
-      this.$store.commit("SET_PARAMETERS", { parameters: to.query });
-      this.loadPlants(to.href);
-    }
-  },
+  // watch: {
+  //   $route(to) {
+  //     this.$store.commit("SET_PARAMETERS", { parameters: to.query });
+  //     this.loadPlants(to.href);
+  //   }
+  // },
   mounted() {
     this.$store.commit("SET_PARAMETER", { param: "page", values: 1 });
     const observer_options = {
@@ -48,7 +48,7 @@ export default {
     };
     const dynamicLoad = (entries, observer) => {
       if (entries[0].isIntersecting) {
-        this.loadPlants();
+        this.loadPlants(`/plants/?page=${this.getParameters()['page']}`);
       }
     };
     const observer = new IntersectionObserver(dynamicLoad, observer_options);

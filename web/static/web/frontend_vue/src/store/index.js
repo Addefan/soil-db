@@ -23,7 +23,7 @@ const store = createStore({
         },
     },
     actions: {
-        loadPlants: async function ({state, commit}, apiPath = "/plants") {
+        loadPlants: async function ({ commit }, apiPath = "/plants") {
             try {
                 const response = await axios.get(`/api${apiPath}`);
                 commit("SET_PLANTS", response.data);

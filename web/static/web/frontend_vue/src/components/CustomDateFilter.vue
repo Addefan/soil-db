@@ -17,7 +17,9 @@ export default {
   props: {
     attrName: {
       type: String,
-      required: true
+      required: true,
+    }
+  },
   data() {
     const convertDateComponent = (component) => {
       return +component < 10 ? `0${component}` : component;

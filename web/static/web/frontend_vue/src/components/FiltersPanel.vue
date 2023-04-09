@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
 import CustomDateFilter from "@/components/CustomDateFilter.vue";
 import NumberInput from "@/components/NumberInput.vue";
 import SearchSelect from "@/components/SearchSelect.vue";
@@ -36,7 +36,7 @@ export default {
   methods: {
     ...mapActions(["loadAttributes"]),
     ...mapGetters(["getAttributes", "getParameters"]),
-    ...mapMutations(["SET_PARAMETER"])
+    ...mapMutations(["SET_PARAMETER"]),
     serializeParams() {
       this.$store.commit("SET_PARAMETER", { param: "page", values: 1 })
       this.$router.push({ query: this.getParameters() });
