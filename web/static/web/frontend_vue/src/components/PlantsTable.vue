@@ -41,6 +41,7 @@ export default {
     }
   },
   mounted() {
+    this.$store.commit("SET_PARAMETER", { param: "page", values: 1 });
     const observer_options = {
       rootMargin: '0px',
       threshold: 1.0
