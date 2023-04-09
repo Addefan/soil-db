@@ -36,7 +36,9 @@ export default {
   methods: {
     ...mapActions(["loadAttributes"]),
     ...mapGetters(["getAttributes", "getParameters"]),
+    ...mapMutations(["SET_PARAMETER"])
     serializeParams() {
+      this.$store.commit("SET_PARAMETER", { param: "page", values: 1 })
       this.$router.push({ query: this.getParameters() });
     }
   },
