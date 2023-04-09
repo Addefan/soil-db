@@ -7,7 +7,9 @@ const store = createStore({
         return {
             attributes: [],
             plants: [],
-            parameters: {},
+            parameters: {
+                page: 1,
+            },
         }
     },
     getters: {
@@ -20,14 +22,19 @@ const store = createStore({
     },
     actions: {
         loadPlants: async function ({state, commit}) {
-            const response = await axios.get("/api/plants/", {
-                params: state.parameters,
-                paramsSerializer: {
-                    serialize: stringify,
-                    indices: false,
-                }
-            });
-            commit("SET_PLANTS", response.data);
+            try {
+                const response = await axios.get("/api/plants/", {
+                    params: state.parameters,
+                    paramsSerializer: {
+                        serialize: stringify,
+                        indices: false,
+                    }
+                });
+                commit("SET_PLANTS", response.data);
+                commit("INCREASE_PAGE");
+            } catch (e) {
+                console.log("No more plants to load");
+            }
         },
         loadAttributes: async function ({commit}) {
             const response = await axios.get("/api/attributes/");
@@ -39,11 +46,14 @@ const store = createStore({
             state.attributes = new_attributes;
         },
         SET_PLANTS(state, new_plants) {
-            state.plants = new_plants;
+            state.plants = [...state.plants, ...new_plants];
         },
         SET_PARAMETER(state, {param, values}) {
             state.parameters[param] = values;
         },
+        INCREASE_PAGE(state) {
+            state.parameters.page++;
+        }
     }
 })
 

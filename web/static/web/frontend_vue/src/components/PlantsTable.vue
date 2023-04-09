@@ -19,6 +19,7 @@
           <td>{{ plant.organization }}</td>
         </tr>
       </tbody>
+      <div ref="load-observer"></div>
     </table>
   </div>
 </template>
@@ -33,7 +34,17 @@ export default {
     ...mapGetters(["getPlants"])
   },
   mounted() {
-    this.loadPlants();
+    const observer_options = {
+      rootMargin: '0px',
+      threshold: 1.0
+    };
+    const dynamicLoad = (entries, observer) => {
+      if (entries[0].isIntersecting) {
+        this.loadPlants();
+      }
+    };
+    const observer = new IntersectionObserver(dynamicLoad, observer_options);
+    observer.observe(this.$refs["load-observer"]);
   }
 }
 </script>
