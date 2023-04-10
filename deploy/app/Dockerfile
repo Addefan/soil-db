@@ -14,6 +14,5 @@ COPY . .
 RUN python manage.py collectstatic --noinput
 
 
-CMD python manage.py migrate && \
-    python manage.py createprimarytaxon && \
+CMD python manage.py createprimarytaxon && \
     uwsgi --ini deploy/app/uwsgi.ini --http-socket :$PORT --static-map /static=/app/static

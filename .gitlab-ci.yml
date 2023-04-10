@@ -1,0 +1,48 @@
+stages:
+  - deploy
+
+deploy_cloud:
+  image: atnartur/yc:latest
+  stage: deploy
+  script:
+    # устанавливаем ключ сервисного аккаунта
+    - yc config set service-account-key $(echo $YANDEX_CLOUD_KEY)
+    # устанавливаем ID каталога
+    - yc config set folder-id $YANDEX_CLOUD_FOLDER_ID
+    # настраиваем подключение к Yandex Cloud Registry
+    - yc container registry configure-docker
+    # собираем образ
+    # (поменяйте путь до докерфайла после флага -f, если это необходимо)
+    - docker build -t $YANDEX_CLOUD_REGISTRY/app:latest -f Dockerfile .
+    # отправляем образ в registry
+    - docker push $YANDEX_CLOUD_REGISTRY/app:latest
+    # вытаскиваем service account id из ключа
+    - export SERVICE_ACCOUNT_ID=$(yc config get service-account-key | grep service_account_id | awk '{print $2}')
+    # запускаем миграции, чтобы не запускать их при старте контейнера
+    - >
+      docker run --rm 
+      --env DB_NAME=$DB_NAME
+      --env DB_USER=$DB_USER
+      --env DB_HOST=$DB_HOST
+      --env DB_PASSWORD=$DB_PASSWORD
+      $YANDEX_CLOUD_REGISTRY/app:latest 
+      python manage.py migrate
+    # обновляем контейнер и прокидываем переменные окружения с параметрами подключения к БД
+    # (они должны быть также установлены в Gitlab CI Variables)
+    - >
+        yc serverless container revision deploy 
+        --image $YANDEX_CLOUD_REGISTRY/app:latest 
+        --container-name $YANDEX_CONTAINER_NAME
+        --service-account-id $SERVICE_ACCOUNT_ID
+        --core-fraction 5
+        --execution-timeout 30s
+        --environment DB_NAME=$DB_NAME
+        --environment DB_USER=$DB_USER
+        --environment DB_HOST=$DB_HOST
+        --environment DB_PASSWORD=$DB_PASSWORD
+        > /dev/null
+    # если в приложении есть еще какие-нибудь переменные окружения, прокиньте их здесь
+  tags:
+    # тег раннера, где будут запускаться сборки
+    # (обычно менять не нужно, но если что, он находится здесь)
+    - unienv_shared
