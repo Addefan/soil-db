@@ -13,7 +13,7 @@ deploy_cloud:
     - yc container registry configure-docker
     # собираем образ
     # (поменяйте путь до докерфайла после флага -f, если это необходимо)
-    - docker build -t $YANDEX_CLOUD_REGISTRY/app:latest -f Dockerfile .
+    - docker build -t $YANDEX_CLOUD_REGISTRY/app:latest -f deploy/app/Dockerfile .
     # отправляем образ в registry
     - docker push $YANDEX_CLOUD_REGISTRY/app:latest
     # вытаскиваем service account id из ключа
