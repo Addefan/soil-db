@@ -25,8 +25,7 @@ deploy_cloud:
       --env DB_USER=$DB_USER
       --env DB_HOST=$DB_HOST
       --env DB_PASSWORD=$DB_PASSWORD
-      --env DB_PASSWORD=$DB_PORT
-      
+      --env DB_PORT=$DB_PORT
       $YANDEX_CLOUD_REGISTRY/app:latest 
       python manage.py migrate
     # обновляем контейнер и прокидываем переменные окружения с параметрами подключения к БД
@@ -43,8 +42,7 @@ deploy_cloud:
         --environment DB_HOST=$DB_HOST
         --environment DB_PASSWORD=$DB_PASSWORD
         --environment DB_PORT=$DB_PORT
-      
-      > /dev/null
+        > /dev/null
     # если в приложении есть еще какие-нибудь переменные окружения, прокиньте их здесь
   tags:
     # тег раннера, где будут запускаться сборки
