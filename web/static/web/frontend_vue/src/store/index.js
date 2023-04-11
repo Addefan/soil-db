@@ -36,9 +36,6 @@ const store = createStore({
             const response = await axios.get("/api/attributes/");
             commit("SET_ATTRIBUTES", response.data);
         },
-        setParam({ commit }, param, new_value) {
-            commit("SET_PARAMETER", {param, new_value});
-        },
     },
     mutations: {
         SET_ATTRIBUTES(state, new_attributes) {
