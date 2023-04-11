@@ -7,13 +7,13 @@
       <div class="col-6 px-2">
       <div class="input-group input-group-sm">
         <span class="input-group-text px-1" id="from">От</span>
-        <input type="number" step="any" v-model="leftBorder" class="form-control px-1" aria-describedby="from" @focusout="correctFraction">
+        <input type="number" :step="stepType" v-model="leftBorder" class="form-control px-1" aria-describedby="from" @focusout="correctFraction">
       </div>
       </div>
       <div class="col-6 px-2">
       <div class="col-6 input-group input-group-sm">
         <span class="input-group-text px-1" id="to">До</span>
-        <input type="number" step="any" :max="this.max" v-model="rightBorder" class="form-control px-1" aria-describedby="to" @focusout="correctFraction">
+        <input type="number" :step="stepType" :max="this.max" v-model="rightBorder" class="form-control px-1" aria-describedby="to" @focusout="correctFraction">
       </div>
       </div>
     </div>
@@ -40,6 +40,9 @@ export default {
     },
     leftBorder: {
       set(newValue) {
+        if (!this.float) {
+          newValue = Math.round(newValue);
+        }
         if (newValue < this.min) {
           this.value = [this.min, this.value[1]];
         } else if (newValue <= this.value[1]) {
@@ -54,6 +57,9 @@ export default {
     },
     rightBorder: {
       set(newValue) {
+        if (!this.float) {
+          newValue = Math.round(newValue);
+        }
         if (newValue > this.max) {
           this.value = [this.value[0], this.max];
         } else if (newValue >= this.value[0]) {
@@ -65,12 +71,16 @@ export default {
       get() {
         return this.value[1];
       }
-    }
+    },
+    stepType() {
+      return this.float ? 'any' : 1;
+    },
   },
   props: {
     min: {type: Number, default: 0},
     max: {type: Number, default: 100},
-    attrName: {type: String, required: true}
+    attrName: {type: String, required: true},
+    float: {type: Boolean, required: true},
   },
   methods: {
     ...mapGetters(["getParameters"]),
