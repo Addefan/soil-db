@@ -7,13 +7,13 @@
       <div class="col-6 px-2">
       <div class="input-group input-group-sm">
         <span class="input-group-text px-1" id="from">От</span>
-        <input type="number" v-model="leftBorder" class="form-control px-1" aria-describedby="from" @focusout="correctFraction">
+        <input type="number" step="any" v-model="leftBorder" class="form-control px-1" aria-describedby="from" @focusout="correctFraction">
       </div>
       </div>
       <div class="col-6 px-2">
       <div class="col-6 input-group input-group-sm">
         <span class="input-group-text px-1" id="to">До</span>
-        <input type="number" :max="this.max" v-model="rightBorder" class="form-control px-1" aria-describedby="to" @focusout="correctFraction">
+        <input type="number" step="any" :max="this.max" v-model="rightBorder" class="form-control px-1" aria-describedby="to" @focusout="correctFraction">
       </div>
       </div>
     </div>
@@ -57,7 +57,7 @@ export default {
         if (newValue > this.max) {
           this.value = [this.value[0], this.max];
         } else if (newValue >= this.value[0]) {
-          this.value = [this.value[0], newValue];
+          this.value = [this.value[0], parseFloat(newValue)];
         } else {
           this.value = [this.value[0], this.value[0]];
         }
