@@ -143,7 +143,9 @@ MEDIA_ROOT = "media"
 
 MEDIA_URL = "/media/"
 
+# Celery configuration
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
+CELERY_BROKER_TRANSPORT_OPTIONS = {"is_secure": os.environ.get("CELERY_BROKER_IS_SECURE", "false").lower() == "true"}
 
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
