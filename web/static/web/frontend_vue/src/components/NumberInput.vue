@@ -1,19 +1,19 @@
 <template>
   <div class="text-center">
     <div class="mb-2">
-      <slider v-model="value" :min="this.min" :max="this.max" :tooltips="false" @slide="this.value = $event"/>
+      <slider :model-value="value" :min="this.min" :max="this.max" :tooltips="false" @slide="this.value = $event" />
     </div>
     <div class="row">
       <div class="col-6 px-2">
       <div class="input-group input-group-sm">
         <span class="input-group-text px-1" id="from">От</span>
-        <input type="number" v-model="value[0]" class="form-control px-1" aria-describedby="from">
+        <input type="number" v-model="value[0]" class="form-control px-1" aria-describedby="from" @focusout="correctFraction">
       </div>
       </div>
       <div class="col-6 px-2">
       <div class="col-6 input-group input-group-sm">
         <span class="input-group-text px-1" id="to">До</span>
-        <input type="number" v-model="value[1]" class="form-control px-1" aria-describedby="to">
+        <input type="number" v-model="value[1]" class="form-control px-1" aria-describedby="to" @focusout="correctFraction">
       </div>
       </div>
     </div>
@@ -22,21 +22,16 @@
 
 <script>
 import Slider from '@vueform/slider';
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "NumberInput",
   components: {
     Slider,
   },
-  computed: {
-    value: {
-      set(newValue) {
-        this.$store.commit("SET_PARAMETER", { param: this.attrName, values: newValue });
-      },
-      get() {
-        return this.getParameters()[this.attrName] ?? [this.min, this.max];
-      }
+  data() {
+    return {
+      value: [this.min, this.max]
     }
   },
   props: {
@@ -46,7 +41,10 @@ export default {
   },
   methods: {
     ...mapGetters(["getParameters"]),
-    ...mapMutations(["SET_PARAMETER"])
+    ...mapActions(["setParam"]),
+    correctFraction(event) {
+      event.target.value = parseFloat(event.target.value);
+    },
   },
   watch: {
     value: {
@@ -66,6 +64,9 @@ export default {
         if (new_val[0] > new_val[1]) {
           this.value[0] = this.value[1];
         }
+
+        this.setParam(this.attrName, this.value);
+        this.getParameters();
       },
       deep: true
     },

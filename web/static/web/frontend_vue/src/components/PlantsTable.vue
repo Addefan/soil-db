@@ -48,7 +48,8 @@ export default {
     };
     const dynamicLoad = (entries, observer) => {
       if (entries[0].isIntersecting) {
-        this.loadPlants(`/plants/?page=${this.getParameters()['page']}`);
+        // this.loadPlants(`/plants/?page=${this.getParameters()['page']}`);
+        console.log("Loading plants after router corrections")
       }
     };
     const observer = new IntersectionObserver(dynamicLoad, observer_options);
