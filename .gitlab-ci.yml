@@ -52,14 +52,14 @@ deploy_cloud:
     - yc serverless trigger delete --name celery > /dev/null || echo
     - >
         yc serverless trigger create message-queue
-      --name celery
-      --queue $YANDEX_MESSAGE_QUEUE_ARN
-      --queue-service-account-id $SERVICE_ACCOUNT_ID
-      --invoke-container-name $YANDEX_CONTAINER_NAME
-      --invoke-container-service-account-id $SERVICE_ACCOUNT_ID
-      --invoke-container-path /worker/$CELERY_YANDEX_SERVERLESS_KEY
-      --batch-size 1
-      --batch-cutoff 10s
+        --name celery
+        --queue $YANDEX_MESSAGE_QUEUE_ARN
+        --queue-service-account-id $SERVICE_ACCOUNT_ID
+        --invoke-container-name $YANDEX_CONTAINER_NAME
+        --invoke-container-service-account-id $SERVICE_ACCOUNT_ID
+        --invoke-container-path /worker/$CELERY_YANDEX_SERVERLESS_KEY
+        --batch-size 1
+        --batch-cutoff 10s
     # если в приложении есть еще какие-нибудь переменные окружения, прокиньте их здесь
   tags:
     # тег раннера, где будут запускаться сборки
