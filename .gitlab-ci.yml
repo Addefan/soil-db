@@ -30,7 +30,6 @@ deploy_cloud:
       python manage.py migrate
     # обновляем контейнер и прокидываем переменные окружения с параметрами подключения к БД
     # (они должны быть также установлены в Gitlab CI Variables)
-    - yc serverless trigger delete --name celery > /dev/null || echo
     - >
         yc serverless container revision deploy 
         --image $YANDEX_CLOUD_REGISTRY/app:latest 
@@ -50,6 +49,7 @@ deploy_cloud:
         --environment CELERY_BROKER_IS_SECURE=True
         --environment CELERY_YANDEX_SERVERLESS_KEY=$CELERY_YANDEX_SERVERLESS_KEY
         > /dev/null
+    - yc serverless trigger delete --name celery > /dev/null || echo
     - >
         yc serverless trigger create message-queue
       --name celery
