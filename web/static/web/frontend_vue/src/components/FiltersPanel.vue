@@ -36,9 +36,10 @@ export default {
   methods: {
     ...mapActions(["loadAttributes"]),
     ...mapGetters(["getAttributes", "getParameters"]),
-    ...mapMutations(["SET_PARAMETER"]),
+    ...mapMutations(["SET_PARAMETER", "SET_PLANTS"]),
     serializeParams() {
-      this.$store.commit("SET_PARAMETER", { param: "page", values: 1 })
+      this.$store.commit("SET_PLANTS", { new_plants: [], reset: true });
+      this.$store.commit("SET_PARAMETER", { param: "page", values: 1 });
       this.$router.push({ query: this.getParameters() });
     }
   },

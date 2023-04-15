@@ -23,10 +23,10 @@ const store = createStore({
         },
     },
     actions: {
-        loadPlants: async function ({ commit }, apiPath = "/plants") {
+        loadPlants: async function ({ commit }, queryParams = "") {
             try {
-                const response = await axios.get(`/api${apiPath}`);
-                commit("SET_PLANTS", response.data);
+                const response = await axios.get(`/api/plants${queryParams}`);
+                commit("SET_PLANTS", { new_plants: response.data });
                 commit("INCREASE_PAGE");
             } catch (e) {
                 console.log("No more plants to load");
@@ -41,8 +41,13 @@ const store = createStore({
         SET_ATTRIBUTES(state, new_attributes) {
             state.attributes = new_attributes;
         },
-        SET_PLANTS(state, new_plants) {
-            state.plants = [...state.plants, ...new_plants];
+        SET_PLANTS(state, {new_plants, reset = false}) {
+            if (reset) {
+                state.plants = new_plants;
+            }
+            else {
+                state.plants = [...state.plants, ...new_plants];
+            }
         },
         SET_PARAMETER(state, {param, values}) {
             state.parameters[param] = values;
