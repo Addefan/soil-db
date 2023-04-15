@@ -11,17 +11,6 @@ const store = createStore({
             },
         }
     },
-    getters: {
-        getAttributes(state) {
-            return state.attributes;
-        },
-        getPlants(state) {
-            return state.plants;
-        },
-        getParameters(state) {
-            return state.parameters;
-        },
-    },
     actions: {
         loadPlants: async function ({ commit }, queryParams = "") {
             try {
