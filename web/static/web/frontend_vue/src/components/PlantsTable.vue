@@ -19,8 +19,8 @@
         <td>{{ plant.organization }}</td>
       </tr>
       </tbody>
-      <div ref="load-observer"></div>
     </table>
+    <div ref="load-observer"></div>
   </div>
 </template>
 
@@ -44,19 +44,18 @@ export default {
       this.loadPlants(`?${qs.stringify(params, { indices: false })}`);
     }
   },
-  created() {
-    // this.$store.commit("SET_PARAMETER", { param: "page", values: 1 });
-    // const observer_options = {
-    //   rootMargin: '0px',
-    //   threshold: 1.0
-    // };
-    //   const dynamicLoad = (entries, observer) => {
-    //     if (entries[0].isIntersecting) {
-    //       this.loadPlants(`/plants/?page=${this.getParameters()['page']}`);
-    //     }
-    //   };
-    //   const observer = new IntersectionObserver(dynamicLoad, observer_options);
-    //   observer.observe(this.$refs["load-observer"]);
+  mounted() {
+    const observer_options = {
+      rootMargin: '0px',
+      threshold: 1.0
+    };
+      const dynamicLoad = (entries, observer) => {
+        if (entries[0].isIntersecting) {
+          this.loadPlants(`?${qs.stringify(this.parameters, { indices: false })}`);
+        }
+      };
+      const observer = new IntersectionObserver(dynamicLoad, observer_options);
+      observer.observe(this.$refs["load-observer"]);
   }
 };
 </script>

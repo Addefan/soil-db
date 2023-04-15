@@ -14,9 +14,9 @@ const store = createStore({
     actions: {
         loadPlants: async function ({ commit }, queryParams = "") {
             try {
+                commit("INCREASE_PAGE");
                 const response = await axios.get(`/api/plants${queryParams}`);
                 commit("SET_PLANTS", { new_plants: response.data });
-                commit("INCREASE_PAGE");
             } catch (e) {
                 console.log("No more plants to load");
             }
