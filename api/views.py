@@ -1,7 +1,7 @@
 from datetime import datetime
 
-import pytz
 from dateutil.parser import parse
+from django.db.models import Q
 from eav.models import Attribute
 from rest_framework import generics, views
 from rest_framework.response import Response
@@ -71,26 +71,40 @@ class PlantAPIView(generics.ListAPIView):
                 data = self.filtering_attr(request, variable, data, "custom")
             elif variable == "page":
                 continue
+            elif variable == "search":
+                continue
             elif variable != "organization":
                 data = self.filtering_attr(request, variable, data, "taxon")
             elif variable == "organization":
                 data = self.filtering_attr(request, variable, data, "organization")
         return data
 
-    def get_queryset(self, filtering=False, numbers=None):
+    def get_queryset(self, filtering=False, numbers=None, search_string=None):
         plants = Plant.objects.prefetch_related("organization")
         if not filtering:
             return plants
         else:
-            return Plant.objects.filter(number__in=numbers)
+            if numbers:
+                return Plant.objects.filter(number__in=numbers)
+            elif search_string:
+                return Plant.objects.filter(
+                    Q(number__icontains=search_string)
+                    | Q(name__icontains=search_string)
+                    | Q(latin_name__icontains=search_string)
+                )
 
     def get(self, request, *args, **kwargs):
-        qs = self.get_queryset()
+        filtering_flag = True if "search" in request.GET.keys() else False
+        if filtering_flag:
+            qs = self.get_queryset(filtering=True, search_string=request.GET["search"])
+        else:
+            qs = self.get_queryset()
         data = prepare_queryset(columns=[choice[0] for choice in xlsx_columns_choices()], qs=qs)
         if request.GET:
             data = self.filter_data(request, data)
         numbers = [instance.get("Уникальный номер") for instance in data]
-        filtered_qs = self.paginate_queryset(self.get_queryset(True, numbers))
+        # filtered_qs = self.paginate_queryset(self.get_queryset(True, numbers))
+        filtered_qs = self.get_queryset(True, numbers)
         serializer = PlantSerializer(filtered_qs, many=True)
         return Response(serializer.data)
 
