@@ -18,7 +18,12 @@ const store = createStore({
                 const response = await axios.get(`/api/plants${queryParams}`);
                 commit("SET_PLANTS", { new_plants: response.data });
             } catch (e) {
-                console.log("No more plants to load");
+                if (e.response.data === "Неправильная страница") {
+                    console.log("No more plants to load");
+                }
+                else {
+                    commit("DECREASE_PAGE");
+                }
             }
         },
         loadAttributes: async function ({commit}) {
@@ -46,6 +51,9 @@ const store = createStore({
         },
         INCREASE_PAGE(state) {
             state.parameters.page++;
+        },
+        DECREASE_PAGE(state) {
+            state.parameters.page--;
         }
     }
 })
