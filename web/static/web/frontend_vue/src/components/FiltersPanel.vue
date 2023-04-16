@@ -10,7 +10,8 @@
           <CustomDateFilter class="px-2" :attrName="param.english_name"></CustomDateFilter>
         </div>
         <number-input v-else-if="param.type === 'float' || param.type === 'int'" :min="param.values[0]"
-                      :max="param.values[1]" :attrName="param.english_name" class="py-2 px-3" />
+                      :max="param.values[1]" :attrName="param.english_name" class="py-2 px-3"
+                      :float="param.type === 'float'" />
       </div>
       <div class="text-center buttons position-sticky top-100 mb-1">
         <button class="btn btn-success btn-sm me-1">
