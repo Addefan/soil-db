@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-4 h-100 mh-50 table-color">
-    <form class="pt-2" @submit.prevent="serializeParams">
-      <div v-for="(param, index) in this.getAttributes()" :key="index" class="mb-2">
+    <form class="pt-2" @submit.prevent="submitFilters">
+      <div v-for="(param, index) in this.attributes" :key="index" class="mb-2">
         <div class="px-2">{{ param.russian_name }}</div>
         <div v-if="param.type === 'text'">
           <SearchSelect :variants="param.values" class="px-2" :attrName="param.english_name"></SearchSelect>
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 import CustomDateFilter from "@/components/CustomDateFilter.vue";
 import NumberInput from "@/components/NumberInput.vue";
 import SearchSelect from "@/components/SearchSelect.vue";
@@ -36,14 +36,15 @@ export default {
   components: { CustomDateFilter, SearchSelect, NumberInput },
   methods: {
     ...mapActions(["loadAttributes"]),
-    ...mapGetters(["getAttributes", "getParameters"]),
-    ...mapMutations(["SET_PARAMETER"]),
-    serializeParams() {
-      console.log("It's from serializing")
-      console.log(this.getParameters());
-      this.$store.commit("SET_PARAMETER", { param: "page", values: 1 })
-      this.$router.push({ query: this.getParameters() });
+    ...mapMutations(["SET_PARAMETER", "SET_PLANTS"]),
+    submitFilters() {
+      this.$store.commit("SET_PLANTS", { new_plants: [], reset: true });
+      this.$store.commit("SET_PARAMETER", { param: "page", values: 1 });
+      this.$router.push({ query: this.parameters });
     }
+  },
+  computed: {
+    ...mapState(["attributes", "parameters"])
   },
   created() {
     this.loadAttributes();

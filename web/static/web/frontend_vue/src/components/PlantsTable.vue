@@ -11,7 +11,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr class="content-align" v-for="plant in this.getPlants()" :key="plant.number">
+      <tr class="content-align" v-for="plant in this.plants" :key="plant.number">
         <td><a :href="`/plants/${plant.number}`">{{ plant.number }}</a></td>
         <td>{{ plant.name }}</td>
         <td>{{ plant.latin_name }}</td>
@@ -19,41 +19,43 @@
         <td>{{ plant.organization }}</td>
       </tr>
       </tbody>
-      <div ref="load-observer"></div>
     </table>
+    <div ref="load-observer"></div>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
+import qs from "qs";
 
 export default {
   name: "PlantsTable",
   methods: {
     ...mapActions(["loadPlants"]),
-    ...mapGetters(["getPlants", "getParameters"]),
     ...mapMutations(["SET_PARAMETERS"])
   },
-  // watch: {
-  //   $route(to) {
-  //     this.$store.commit("SET_PARAMETERS", { parameters: to.query });
-  //     this.loadPlants(to.href);
-  //   }
-  // },
+  computed: {
+    ...mapState(["plants", "parameters"])
+  },
+  watch: {
+    $route(to) {
+      const params = { ...to.query, "page": this.parameters.page };
+      this.$store.commit("SET_PARAMETERS", { parameters: params });
+      this.loadPlants(`?${qs.stringify(params, { indices: false })}`);
+    }
+  },
   mounted() {
-    this.$store.commit("SET_PARAMETER", { param: "page", values: 1 });
     const observer_options = {
       rootMargin: '0px',
       threshold: 1.0
     };
-    const dynamicLoad = (entries, observer) => {
-      if (entries[0].isIntersecting) {
-        // this.loadPlants(`/plants/?page=${this.getParameters()['page']}`);
-        console.log("Loading plants after router corrections")
-      }
-    };
-    const observer = new IntersectionObserver(dynamicLoad, observer_options);
-    observer.observe(this.$refs["load-observer"]);
+      const dynamicLoad = (entries, observer) => {
+        if (entries[0].isIntersecting) {
+          this.loadPlants(`?${qs.stringify(this.parameters, { indices: false })}`);
+        }
+      };
+      const observer = new IntersectionObserver(dynamicLoad, observer_options);
+      observer.observe(this.$refs["load-observer"]);
   }
 };
 </script>

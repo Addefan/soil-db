@@ -11,25 +11,19 @@ const store = createStore({
             },
         }
     },
-    getters: {
-        getAttributes(state) {
-            return state.attributes;
-        },
-        getPlants(state) {
-            return state.plants;
-        },
-        getParameters(state) {
-            return state.parameters;
-        },
-    },
     actions: {
-        loadPlants: async function ({ commit }, apiPath = "/plants") {
+        loadPlants: async function ({ commit }, queryParams = "") {
             try {
-                const response = await axios.get(`/api${apiPath}`);
-                commit("SET_PLANTS", response.data);
                 commit("INCREASE_PAGE");
+                const response = await axios.get(`/api/plants${queryParams}`);
+                commit("SET_PLANTS", { new_plants: response.data });
             } catch (e) {
-                console.log("No more plants to load");
+                if (e.response.data === "Неправильная страница") {
+                    console.log("No more plants to load");
+                }
+                else {
+                    commit("DECREASE_PAGE");
+                }
             }
         },
         loadAttributes: async function ({commit}) {
@@ -41,8 +35,13 @@ const store = createStore({
         SET_ATTRIBUTES(state, new_attributes) {
             state.attributes = new_attributes;
         },
-        SET_PLANTS(state, new_plants) {
-            state.plants = [...state.plants, ...new_plants];
+        SET_PLANTS(state, {new_plants, reset = false}) {
+            if (reset) {
+                state.plants = new_plants;
+            }
+            else {
+                state.plants = [...state.plants, ...new_plants];
+            }
         },
         SET_PARAMETER(state, {param, values}) {
             state.parameters[param] = values;
@@ -52,6 +51,9 @@ const store = createStore({
         },
         INCREASE_PAGE(state) {
             state.parameters.page++;
+        },
+        DECREASE_PAGE(state) {
+            state.parameters.page--;
         }
     }
 })

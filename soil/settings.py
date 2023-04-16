@@ -143,7 +143,9 @@ MEDIA_ROOT = "media"
 
 MEDIA_URL = "/media/"
 
+# Celery configuration
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
+CELERY_BROKER_TRANSPORT_OPTIONS = {"is_secure": os.environ.get("CELERY_BROKER_IS_SECURE", "false").lower() == "true"}
 
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
@@ -152,3 +154,14 @@ EMAIL_PORT = os.environ.get("EMAIL_PORT")
 EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
 REST_FRAMEWORK = {"DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination", "PAGE_SIZE": 25}
+
+# logging configuration
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "loggers": {
+        "celery_yandex_serverless.django": {
+            "level": "INFO",
+        },
+    },
+}
