@@ -22,7 +22,7 @@
 
 <script>
 import Slider from '@vueform/slider';
-import { mapGetters, mapMutations } from "vuex";
+import { mapMutations, mapState } from "vuex";
 
 export default {
   name: "NumberInput",
@@ -31,13 +31,14 @@ export default {
   },
   computed: {
     value: {
-      set(newValue) {
-        this.$store.commit("SET_PARAMETER", { param: this.attrName, values: newValue });
+      set(value) {
+        this.$store.commit("SET_PARAMETER", { param: this.attrName, values: value });
       },
       get() {
-        return this.getParameters()[this.attrName] ?? [this.min, this.max];
+        return this.parameters[this.attrName] ?? [this.min, this.max];
       }
-    }
+    },
+    ...mapState(["parameters"])
   },
   props: {
     min: {type: Number, default: 0},
@@ -45,7 +46,6 @@ export default {
     attrName: {type: String, required: true}
   },
   methods: {
-    ...mapGetters(["getParameters"]),
     ...mapMutations(["SET_PARAMETER"])
   },
   watch: {
