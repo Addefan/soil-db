@@ -9,7 +9,7 @@
 
 <script>
 import Multiselect from "vue-multiselect";
-import { mapGetters, mapMutations } from "vuex";
+import { mapMutations, mapState } from "vuex";
 
 export default {
   name: "SearchSelect",
@@ -22,16 +22,16 @@ export default {
         this.$store.commit("SET_PARAMETER", { param: this.attrName, values: value });
       },
       get() {
-        return this.getParameters()[this.attrName] ?? [];
+        return this.parameters[this.attrName] ?? [];
       }
-    }
+    },
+    ...mapState(["parameters"])
   },
   props: {
     variants: Array,
     attrName: { type: String, required: true }
   },
   methods: {
-    ...mapGetters(["getParameters"]),
     ...mapMutations(["SET_PARAMETER"])
   }
 };

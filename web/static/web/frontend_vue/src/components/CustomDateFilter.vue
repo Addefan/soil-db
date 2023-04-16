@@ -9,7 +9,7 @@
 <script>
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
-import { mapGetters, mapMutations } from "vuex";
+import { mapMutations, mapState } from "vuex";
 
 export default {
   components: { VueDatePicker },
@@ -40,7 +40,6 @@ export default {
     }
   },
   methods: {
-    ...mapGetters(["getParameters"]),
     ...mapMutations(["SET_PARAMETER"])
   },
   computed: {
@@ -49,9 +48,10 @@ export default {
         this.$store.commit("SET_PARAMETER", { param: this.attrName, values: value ?? [] });
       },
       get() {
-        return this.getParameters()[this.attrName];
+        return this.parameters[this.attrName];
       }
-    }
+    },
+    ...mapState(["parameters"])
   }
 };
 </script>
