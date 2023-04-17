@@ -10,6 +10,9 @@ class PlantsListView(TemplateView, FormView):
     template_name = "web/plants.html"
     form_class = XlsxColumnsForm
 
+    def get_context_data(self, **kwargs):
+        return {**super().get_context_data(), "search": self.request.GET.get("search", None)}
+
 
 class XlsxColumnsView(RedirectView):
     """use RedirectView to define only 'get' request method
