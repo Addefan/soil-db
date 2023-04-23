@@ -1,6 +1,6 @@
 <template>
   <div class="flex-wrapper m-0">
-    <table class="table table-hover table-bordered border-light table-color rounded-4 h-100">
+    <table class="table table-hover table-bordered border-light table-color rounded-4 m-0">
       <thead class="thead-dark rounded-4">
       <tr class="content-align">
         <th scope="col">Уникальный номер</th>

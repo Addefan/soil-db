@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-4 h-100 mh-50 table-color">
+  <div class="rounded-4 mh-50 table-color">
     <form class="pt-2" @submit.prevent="submitFilters">
       <div v-for="(param, index) in this.attributes" :key="index" class="mb-2">
         <div class="px-2">{{ param.russian_name }}</div>
