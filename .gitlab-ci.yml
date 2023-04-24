@@ -48,7 +48,12 @@ deploy_cloud:
         --environment CELERY_BROKER_URL=sqs://message-queue.api.cloud.yandex.net:443
         --environment CELERY_BROKER_IS_SECURE=True
         --environment CELERY_YANDEX_SERVERLESS_KEY=$CELERY_YANDEX_SERVERLESS_KEY
-        > /dev/null
+        --environment EMAIL_HOST = $EMAIL_HOST
+        --environment EMAIL_HOST_USER = $EMAIL_HOST_USER
+        --environment EMAIL_HOST_PASSWORD = $EMAIL_HOST_PASSWORD
+        --environment EMAIL_PORT = $EMAIL_PORT
+      
+      > /dev/null
     - yc serverless trigger delete --name celery > /dev/null || echo
     - >
         yc serverless trigger create message-queue

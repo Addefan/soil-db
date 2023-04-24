@@ -22,7 +22,7 @@ RUN poetry config virtualenvs.create false && poetry install --only main --no-ro
 
 COPY . .
 
-COPY --from=node /app/web/static/web/frontend_vue/dist /app/web/static/web/fontend_vue/dist
+COPY --from=node /app/web/static/web/frontend_vue/dist /app/web/static/web/frontend_vue/dist
 
 RUN python manage.py collectstatic --noinput
 
