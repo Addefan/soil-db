@@ -52,7 +52,7 @@ deploy_cloud:
         --environment EMAIL_HOST_USER = $EMAIL_HOST_USER
         --environment EMAIL_HOST_PASSWORD = $EMAIL_HOST_PASSWORD
         --environment EMAIL_PORT = $EMAIL_PORT
-      > /dev/null
+        > /dev/null
     - yc serverless trigger delete --name celery > /dev/null || echo
     - >
         yc serverless trigger create message-queue
