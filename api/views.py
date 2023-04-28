@@ -104,7 +104,6 @@ class PlantAPIView(generics.ListAPIView):
             data = self.filter_data(request, data)
         numbers = [instance.get("Уникальный номер") for instance in data]
         filtered_qs = self.paginate_queryset(self.get_queryset(True, numbers))
-        # filtered_qs = self.get_queryset(True, numbers)
         serializer = PlantSerializer(filtered_qs, many=True)
         return Response(serializer.data)
 

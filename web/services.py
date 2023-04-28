@@ -1,9 +1,4 @@
-import os
-import django
 from django.utils.timezone import now
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "soil.settings")
-django.setup()
 
 from web.models import Plant
 
@@ -20,7 +15,3 @@ def create_plant_number() -> int:
     number = int(f"{number}{serial_number}")
 
     return number
-
-
-if __name__ == "__main__":
-    print(create_plant_number())

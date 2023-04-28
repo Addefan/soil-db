@@ -26,6 +26,7 @@ class XlsxColumnsView(RedirectView):
         if form.is_valid():
             data = dict(request.POST)
             export_to_excel.delay(
+                request=request,
                 receiver=request.user.email,
                 columns=data.get("columns"),
                 user_id=request.user.id,

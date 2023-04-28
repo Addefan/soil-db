@@ -4,6 +4,7 @@ from http import HTTPStatus
 from uuid import uuid4
 
 import redis
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.hashers import make_password
@@ -74,7 +75,7 @@ class ChangePasswordView(RedirectView):
         token = uuid4().hex
         user_id = self.request.user.id
         data = {"user_id": user_id, "password": new_password}
-        r = redis.Redis(host="localhost", port=6379, db=0)
+        r = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
         r.psetex(token, timedelta(hours=1), json.dumps(data))
-        send_password_changing_email.delay(user_id, token)
+        send_password_changing_email.delay(request, user_id, token)
         return JsonResponse({"success": True})

@@ -12,12 +12,13 @@ from web.transitions import queryset_to_xlsx
 
 
 @app.task
-def export_to_excel(receiver, columns, user_id, qs=Plant.objects.prefetch_related("organization").all()):
+def export_to_excel(request, receiver, columns, user_id, qs=Plant.objects.prefetch_related("organization").all()):
     prepared_qs = prepare_queryset(columns, qs)
     path = queryset_to_xlsx(prepared_qs)
     user = Staff.objects.get(id=user_id)
+    protocol = "https" if request.is_secure() else "http"
     context = {
-        "origin": "http://127.0.0.1:8000",
+        "origin": f"{protocol}://{request.get_host()}",
         "full_name": f"{user.name} {user.surname}",
         "path_to_file": os.path.basename(path),
     }
@@ -33,12 +34,13 @@ def export_to_excel(receiver, columns, user_id, qs=Plant.objects.prefetch_relate
 
 
 @app.task
-def send_password_changing_email(user_id, token):
+def send_password_changing_email(request, user_id, token):
     user = Staff.objects.get(id=user_id)
     subject = "Смена пароля Soil DB"
+    protocol = "https" if request.is_secure() else "http"
     html_context = {
         "subject": subject,
-        "origin": "http://127.0.0.1:8000",
+        "origin": f"{protocol}://{request.get_host()}",
         "full_name": f"{user.name} {user.surname}",
         "token": token,
     }
