@@ -27,6 +27,7 @@ export default {
     const beautifyDate = (date) => {
       const startDay = convertDateComponent(date.getDate());
       const startMonth = convertDateComponent(date.getMonth() + 1);
+      // TODO convertDateComponent для года не нужна
       const startYear = convertDateComponent(date.getFullYear());
       return `${startDay}.${startMonth}.${startYear}`
     }
@@ -45,6 +46,7 @@ export default {
   computed: {
     date: {
       set(value) {
+        // TODO уберите commit отсюда
         this.$store.commit("SET_PARAMETER", { param: this.attrName, values: value ?? [] });
       },
       get() {

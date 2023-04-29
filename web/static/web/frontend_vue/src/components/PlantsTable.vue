@@ -40,7 +40,9 @@ export default {
   watch: {
     $route(to) {
       const params = { ...to.query, "page": this.parameters.page };
+      // TODO нельзя использовать commit напрямую
       this.$store.commit("SET_PARAMETERS", { parameters: params });
+      // TODO параметры проще формировать сразу в сторе, чем выносить их формирование сюда
       this.loadPlants(`?${qs.stringify(params, { indices: false })}`);
     }
   },

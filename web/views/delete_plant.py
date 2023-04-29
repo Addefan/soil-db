@@ -6,7 +6,7 @@ from django.views.generic import DeleteView
 
 from web.models import Plant
 
-
+# TODO перетащить в crud
 class PlantDeleteView(SuccessMessageMixin, DeleteView):
     model = Plant
     slug_field = "number"

@@ -21,6 +21,7 @@ from web.models import Taxon, Plant
 
 @cache
 def get_taxa():
+    # TODO запросить всю таблицу, и в коде сдлеать эту группировку. Куча SQL запросов здесь не нужна
     return {
         "phylum": Taxon.objects.filter(level=TaxonLevel.phylum),
         "class": Taxon.objects.filter(level=TaxonLevel.klass),
@@ -29,9 +30,12 @@ def get_taxa():
         "genus": Taxon.objects.filter(level=TaxonLevel.genus),
     }
 
-
+# TODO функции должны называться как глаголы. Название функции слишком общее, хотя видимо оно работает с созданием
+#  атрибута. Значит, это вообще не response, а save_attribute(). И вообще это view, хорошей практикой является
+#  заканчивать название view-функций на _view
 def ajax_response(request):
     response_data = {}
+    # TODO нужен сериализатор
     name = request.POST.get("name_attr")
     type_attr = request.POST.get("type_attr")
     response_data["name_attr"] = name
@@ -52,6 +56,7 @@ def get_all_taxa(genus):
 
 
 def escape(func: Callable) -> Callable:
+    # TODO комментарий к функции должен быть в """ """
     # decorator escapes text to prevent XSS attack
     def wrapper(self, cleaned_data: dict) -> str:
         cleaned_data["name"] = html.escape(cleaned_data["name"])
@@ -69,9 +74,11 @@ class PlantMixin:
     def get_context_data(self, **kwargs):
         return {
             **super().get_context_data(**kwargs),
+            # TODO вынести в переменную, чтобы строчка не уходила в закат
             "form_classification": kwargs["form_classification"]
             if "form_classification" in kwargs.keys()
             else TaxonForm(),
+            # TODO вынести в переменную, чтобы строчка не уходила в закат
             "attr_form_view": kwargs["attr_form_view"] if "attr_form_view" in kwargs.keys() else AttributeMainForm(),
             "attr_form": AttributeForm(),
             "taxon_name": get_taxa(),

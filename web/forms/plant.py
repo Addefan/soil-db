@@ -150,6 +150,7 @@ class PlantForm(forms.ModelForm):
 
 
 class TaxonForm(forms.Form):
+    # TODO эти словари уже где-то были. Непонятно, зачем код дублируется
     suffixes = {"title": "", "latin_title": " (лат.)"}
     taxa = {"phylum": "Отдел", "class": "Класс", "order": "Порядок", "family": "Семейство", "genus": "Род"}
 

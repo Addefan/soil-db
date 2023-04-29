@@ -38,7 +38,9 @@ export default {
     ...mapActions(["loadAttributes"]),
     ...mapMutations(["SET_PARAMETER", "SET_PLANTS"]),
     submitFilters() {
+      // TODO нельзя использовать commit напрямую
       this.$store.commit("SET_PLANTS", { new_plants: [], reset: true });
+      // TODO нельзя использовать commit напрямую
       this.$store.commit("SET_PARAMETER", { param: "page", values: 1 });
       this.$router.push({ query: this.parameters });
     }

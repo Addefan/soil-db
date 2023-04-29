@@ -11,7 +11,7 @@ $('#add_button').on('click', function () {
         },
     })
 })
-
+// TODO переписать на vue
 function make_custom_attribute(name_attribute, type_attr, slug_name) {
     const type_attributes = {
         int: 'number',

@@ -20,11 +20,13 @@ from web.tasks_utils import prepare_queryset
 
 class PlantAPIView(generics.ListAPIView):
     serializer_class = PlantSerializer
+    # TODO сделать через django-filters
 
     # if type float or int in request, variable need to be tuple (min_val, max_val)
     # slug because from front we send slug english name
     @staticmethod
     def filtering_attr(request, variable, data, type_attr):
+        # TODO почему функции внутри функции находятся?
         def convert_string_to_datetime(string: str) -> datetime:
             dt_naive = parse(string)
             return dt_naive

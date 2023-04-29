@@ -19,12 +19,15 @@ class QuerySetToListConverter:
             choice[0] for choice in xlsx_columns_default_choices() if choice[0] in self.columns or choice[0] == "genus"
         ]
         return [
+            # TODO instance - слишком общее название переменной. Переименовать в column
             {self.translation[key]: val for key, val in instance.items()}
             for instance in self.qs.values("id", *default_columns).order_by("id")
         ]
 
     @cached_property
     def taxon_columns(self):
+        # TODO с точки зрения кол-ва запросов работает оптимально, но вроде бы в библиотеке уже есть метод,
+        #  который выдает что-то подобное. Перепроверить и убрать лишний код.
         taxon_columns_queryset = {instance.id: instance for instance in Taxon.objects.all()}
         self.xlsx_taxon_columns = {}
         for obj in taxon_columns_queryset.values():
@@ -42,6 +45,8 @@ class QuerySetToListConverter:
 
     @cached_property
     def custom_columns(self):
+        # TODO лучше вытащить из базы сразу все, а потом в памяти разобрать объекты по нужным местам,
+        #  как это сделано выше
         return [
             {self.translation[model.attribute.name]: model.value, "id": model.entity_id}
             for model in Value.objects.prefetch_related("attribute")
@@ -51,6 +56,7 @@ class QuerySetToListConverter:
         ]
 
     def get_all_columns(self):
+        # TODO почему колонки стали queryset?
         prepared_pseudo_queryset = self.default_columns
         # combine plant's default and taxon columns
         for obj in prepared_pseudo_queryset:
@@ -62,6 +68,7 @@ class QuerySetToListConverter:
         # combine plant's default and custom columns
         i, j = 0, 0
         while i < len(prepared_pseudo_queryset) and j < len(custom_columns_pseudo_queryset):
+            # TODO сделать словари и соединить через словари
             if prepared_pseudo_queryset[i]["id"] == custom_columns_pseudo_queryset[j]["id"]:
                 prepared_pseudo_queryset[i] |= custom_columns_pseudo_queryset[j]
                 j += 1

@@ -13,11 +13,14 @@ const store = createStore({
     },
     actions: {
         loadPlants: async function ({ commit }, queryParams = "") {
+            // TODO сделайте функцию load, которая будет грузить страницу, указанную в сторе
+            //  затем сделайте функцию loadMore, которая будет делать page++ и дергать load()
             try {
                 commit("INCREASE_PAGE");
                 const response = await axios.get(`/api/plants${queryParams}`);
                 commit("SET_PLANTS", { new_plants: response.data });
             } catch (e) {
+                // TODO убрать костыль
                 if (e.response.data === "Неправильная страница") {
                     console.log("No more plants to load");
                 }
@@ -26,7 +29,9 @@ const store = createStore({
                 }
             }
         },
-        loadAttributes: async function ({commit}) {
+        // TODO писать функции короче:
+        async loadAttributes({commit}) {
+            // TODO нужен индикатор загрузки
             const response = await axios.get("/api/attributes/");
             commit("SET_ATTRIBUTES", response.data);
         },

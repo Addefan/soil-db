@@ -50,6 +50,10 @@ class ChangePasswordView(RedirectView):
         token = request.GET.get("token", None)
         if not token:
             raise Http404
+        # TODO не говоря о том, что редис для этой задачи вообще не нужен, подключение к нему надо объявлять
+        #  в отдельном файле, чтобы его можно было легко переопределить через этот файл. А сами параметры
+        #  подключения должны быь в настройках
+        # TODO сервисная логика должна быть в сервисах, а не во view
         r = redis.Redis(host="localhost", port=6379, db=0)
         data = r.getdel(token)
         if not data:
@@ -65,10 +69,12 @@ class ChangePasswordView(RedirectView):
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
+        # TODO сервисная логика должна быть в сервисах, а не во view
         new_password = request.POST.get("password")
         try:
             validate_password(new_password)
         except ValidationError as error:
+            # TODO нужны сериализаторы
             errors = {"password": error.messages}
             return JsonResponse(errors, status=HTTPStatus.NOT_FOUND)
         new_password = make_password(new_password)

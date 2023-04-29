@@ -11,8 +11,10 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "soil.settings")
 django.setup()
 NoneType = type(None)
 
+# TODO переименовать в converter
 
 def create_media_xlsx_directory() -> None:
+    # TODO запрещено ходить в систему в обход джанговских абстракций по файлам
     os.makedirs(f"{settings.BASE_DIR}/media/xlsx", exist_ok=True)
 
 
@@ -30,7 +32,9 @@ def queryset_to_xlsx(qs: list[dict]) -> str:
     create_media_xlsx_directory()
 
     file_uuid = uuid.uuid4()
+    # TODO запрещено ходить в систему в обход джанговских абстракций по файлам
     path = f"{settings.BASE_DIR}/media/xlsx/{file_uuid}.xlsx"
+    # TODO workbook лучше открывать через контекстный менеджер, чтобы при исключениях объект автоматически закрывался
     workbook = xlsxwriter.Workbook(path, {"remove_timezone": True})
     sheet = workbook.add_worksheet("result")
 
@@ -61,6 +65,7 @@ def queryset_to_xlsx(qs: list[dict]) -> str:
             if obj_type in type_mapping:
                 type_mapping[obj_type](x, y, obj[column], simple_format if obj_type != datetime else date_format)
             else:
+                # TODO unmapped, а не ...
                 raise TypeError(f"Uncultivited type: {type(obj[column])}")
 
     sheet.autofit()

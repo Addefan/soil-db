@@ -20,6 +20,7 @@ def attributes_default_choices() -> list:
             "english_name": "organization__name",
             "russian_name": "Организация",
             "type": Attribute.TYPE_TEXT,
+            # TODO values_list('name', flat=true) грустит, потому что про него забыли
             "values": [organization.name for organization in organizations],
         }
     ]

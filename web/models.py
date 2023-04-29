@@ -70,6 +70,7 @@ class PlantModelMixin:
         plant_taxon: Taxon = Taxon.objects.get(id=self.genus_id)
         plant_classification_tree = plant_taxon.ancestors(include_self=True).reverse()
         for taxon in plant_classification_tree:
+            # TODO почему enum не используется?
             if taxon.level == "kingdom":
                 continue
             for title in self._suffix:
@@ -87,11 +88,13 @@ class Plant(models.Model, PlantModelMixin):
 
     def to_dict(self):
         obj: dict = {
+            # TODO не "Не указано", а None. "Не указано" - часть презентационной логики и должна быть в другом слое
             self._translate[key]: value or "Не указано"
             for key, value in model_to_dict(self).items()
             if key not in ("id", "organization", "genus")
         }
         obj |= self._get_plant_classification()
+        # TODO "Организация" - часть презентационной логики и должна быть в другом слое
         obj["Организация"] = self._get_organization_name()
         obj |= self._get_eav_fields()
         return obj
@@ -111,6 +114,7 @@ class UserManager(DjangoUserManager):
         return self._create_user(email, password, **extra_fields)
 
     def create_superuser(self, email=None, password=None, **extra_fields):
+        # TODO у superuser и так будет true, зачем брать во внимание значение из kwargs - непонятно
         extra_fields.setdefault("is_superuser", True)
         organization, _ = Organization.objects.get_or_create(name="Superuser Organization", address="")
         extra_fields.setdefault("organization_id", organization.id)

@@ -32,6 +32,7 @@ export default {
   computed: {
     value: {
       set(newValue) {
+        // TODO нельзя использовать commit напрямую
         this.$store.commit("SET_PARAMETER", { param: this.attrName, values: newValue});
       },
       get() {
@@ -81,6 +82,7 @@ export default {
     min: {type: Number, default: 0},
     max: {type: Number, default: 100},
     attrName: {type: String, required: true},
+    // TODO bool параметры должны называться is... (isFloat)
     float: {type: Boolean, required: true},
   },
   methods: {
