@@ -25,25 +25,24 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from "vuex";
+import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 import qs from "qs";
 
 export default {
   name: "PlantsTable",
   methods: {
     ...mapActions(["loadPlants"]),
-    ...mapMutations(["SET_PARAMETERS"])
+    ...mapMutations({setParameters: "SET_PARAMETERS"}),
   },
   computed: {
-    ...mapState(["plants", "parameters"])
+    ...mapState(["plants", "parameters"]),
+    ...mapGetters(["getQueryParams"])
   },
   watch: {
     $route(to) {
       const params = { ...to.query, "page": this.parameters.page };
-      // TODO нельзя использовать commit напрямую
-      this.$store.commit("SET_PARAMETERS", { parameters: params });
-      // TODO параметры проще формировать сразу в сторе, чем выносить их формирование сюда
-      this.loadPlants(`?${qs.stringify(params, { indices: false })}`);
+      this.setParameters({ parameters: params });
+      this.loadPlants(this.getQueryParams);
     }
   },
   mounted() {

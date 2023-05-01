@@ -19,9 +19,8 @@ class QuerySetToListConverter:
             choice[0] for choice in xlsx_columns_default_choices() if choice[0] in self.columns or choice[0] == "genus"
         ]
         return [
-            # TODO instance - слишком общее название переменной. Переименовать в column
-            {self.translation[key]: val for key, val in instance.items()}
-            for instance in self.qs.values("id", *default_columns).order_by("id")
+            {self.translation[key]: val for key, val in column.items()}
+            for column in self.qs.values("id", *default_columns).order_by("id")
         ]
 
     @cached_property
@@ -68,7 +67,6 @@ class QuerySetToListConverter:
         # combine plant's default and custom columns
         i, j = 0, 0
         while i < len(prepared_pseudo_queryset) and j < len(custom_columns_pseudo_queryset):
-            # TODO сделать словари и соединить через словари
             if prepared_pseudo_queryset[i]["id"] == custom_columns_pseudo_queryset[j]["id"]:
                 prepared_pseudo_queryset[i] |= custom_columns_pseudo_queryset[j]
                 j += 1

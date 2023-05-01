@@ -8,7 +8,7 @@ from django.utils.html import strip_tags
 from soil.celery import app
 from web.models import Plant, Staff
 from web.tasks_utils import prepare_queryset
-from web.transitions import queryset_to_xlsx
+from web.services import queryset_to_xlsx
 
 # TODO celery task принимает только сериализуемые переменные (из них здесь только user_id, columns).
 #  Видно, что эта функция в celery воркере никогда не запускалась.

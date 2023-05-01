@@ -27,8 +27,7 @@ export default {
     const beautifyDate = (date) => {
       const startDay = convertDateComponent(date.getDate());
       const startMonth = convertDateComponent(date.getMonth() + 1);
-      // TODO convertDateComponent для года не нужна
-      const startYear = convertDateComponent(date.getFullYear());
+      const startYear = date.getFullYear();
       return `${startDay}.${startMonth}.${startYear}`
     }
     return {
@@ -41,13 +40,12 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(["SET_PARAMETER"])
+    ...mapMutations({setParameter: "SET_PARAMETER"})
   },
   computed: {
     date: {
       set(value) {
-        // TODO уберите commit отсюда
-        this.$store.commit("SET_PARAMETER", { param: this.attrName, values: value ?? [] });
+        this.setParameter({ param: this.attrName, values: value ?? [] });
       },
       get() {
         return this.parameters[this.attrName];

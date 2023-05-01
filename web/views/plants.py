@@ -24,12 +24,10 @@ class XlsxColumnsView(RedirectView):
     def post(self, request, *args, **kwargs):
         form = XlsxColumnsForm(request.POST)
         if form.is_valid():
-            # TODO почему form.cleaned_data?
-            data = dict(request.POST)
             export_to_excel.delay(
                 request=request,
                 receiver=request.user.email,
-                columns=data.get("columns"),
+                columns=form.cleaned_data.get("columns"),
                 user_id=request.user.id,
             )
         return redirect("plants")

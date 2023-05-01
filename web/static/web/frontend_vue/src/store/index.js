@@ -1,5 +1,6 @@
 import {createStore} from "vuex";
 import axios from "axios";
+import qs from "qs";
 
 const store = createStore({
     state() {
@@ -9,10 +10,16 @@ const store = createStore({
             parameters: {
                 page: 1,
             },
+            isLoadingAttributes: false,
+        }
+    },
+    getters: {
+        getQueryParams: (state) => {
+            return `?${qs.stringify(state.parameters, { indices: false })}`
         }
     },
     actions: {
-        loadPlants: async function ({ commit }, queryParams = "") {
+        async loadPlants({ commit }, queryParams = "") {
             // TODO сделайте функцию load, которая будет грузить страницу, указанную в сторе
             //  затем сделайте функцию loadMore, которая будет делать page++ и дергать load()
             try {
@@ -29,11 +36,11 @@ const store = createStore({
                 }
             }
         },
-        // TODO писать функции короче:
         async loadAttributes({commit}) {
-            // TODO нужен индикатор загрузки
+            commit("SWITCH_ATTRIBUTES_LOADING");
             const response = await axios.get("/api/attributes/");
             commit("SET_ATTRIBUTES", response.data);
+            commit("SWITCH_ATTRIBUTES_LOADING");
         },
     },
     mutations: {
@@ -59,6 +66,9 @@ const store = createStore({
         },
         DECREASE_PAGE(state) {
             state.parameters.page--;
+        },
+        SWITCH_ATTRIBUTES_LOADING(state) {
+            state.isLoadingAttributes = !state.isLoadingAttributes;
         }
     }
 })

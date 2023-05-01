@@ -5,6 +5,7 @@ from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 from eav.models import Entity, Value
 
+from web.mappings import taxa, suffixes
 from web.models import Taxon, Plant
 from web.services import create_plant_number
 
@@ -150,9 +151,8 @@ class PlantForm(forms.ModelForm):
 
 
 class TaxonForm(forms.Form):
-    # TODO эти словари уже где-то были. Непонятно, зачем код дублируется
-    suffixes = {"title": "", "latin_title": " (лат.)"}
-    taxa = {"phylum": "Отдел", "class": "Класс", "order": "Порядок", "family": "Семейство", "genus": "Род"}
+    _suffixes = suffixes
+    _taxa = taxa
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -160,6 +160,6 @@ class TaxonForm(forms.Form):
         for attr, value in self.fields.items():
             self.fields[attr].widget.attrs.update({"class": "form-control", "placeholder": "smt", "list": f"{attr}"})
 
-    for taxon in taxa:
-        for key, value in suffixes.items():
-            locals()[taxon + "_" + key] = forms.CharField(label=taxa[taxon] + value)
+    for taxon in _taxa:
+        for key, value in _suffixes.items():
+            locals()[taxon + "_" + key] = forms.CharField(label=_taxa[taxon] + value)

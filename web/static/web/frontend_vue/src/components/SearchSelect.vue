@@ -1,10 +1,8 @@
 <template>
   <div>
-    <!--TODO у лейблов bind не нужен, можно просто пустую строку вписать-->
-    <!--TODO пишите все интерфейсные сообщения на русском-->
     <Multiselect v-model="value" :options="variants" :multiple="true" :close-on-select="false"
-                 :clear-on-select="false" :preserve-search="true" placeholder="Pick some"
-                 :select-label="''" :deselect-label="''">
+                 :clear-on-select="false" :preserve-search="true" placeholder="Выберите"
+                 select-label="" deselect-label="">
     </Multiselect>
   </div>
 </template>
@@ -21,9 +19,7 @@ export default {
   computed: {
     value: {
       set(value) {
-        // TODO нельзя использовать commit напрямую
-
-        this.$store.commit("SET_PARAMETER", { param: this.attrName, values: value });
+        this.setParameter({ param: this.attrName, values: value });
       },
       get() {
         return this.parameters[this.attrName] ?? [];
@@ -36,9 +32,7 @@ export default {
     attrName: { type: String, required: true }
   },
   methods: {
-    // TODO не говоря о том, что мутации нельзя использовать напрямую, если уж вы маппите что-то, то исползуйте из
-    //  this, а не через $store
-    ...mapMutations(["SET_PARAMETER"])
+    ...mapMutations({setParameter: "SET_PARAMETER"})
   }
 };
 </script>

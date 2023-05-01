@@ -1,17 +1,9 @@
 <script setup>
-  import FiltersPanel from "@/components/FiltersPanel.vue";
-  import PlantsTable from "@/components/PlantsTable.vue";
+import PlantsView from "@/pages/PlantsView.vue";
 </script>
 
 <template>
-  <div class="row">
-    <div class="col mb-3 mt-3 pe-1 ms-1">
-        <filters-panel></filters-panel>
-    </div>
-    <div class="col-10 mb-3 mt-3">
-        <plants-table></plants-table>
-    </div>
-  </div>
+  <plants-view />
 </template>
 
 <style scoped>

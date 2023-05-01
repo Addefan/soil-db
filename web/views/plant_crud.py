@@ -4,9 +4,13 @@ from typing import Callable
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.http import Http404
 from django.http import JsonResponse
+from django.shortcuts import redirect
 from django.urls import reverse
+from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView
+from django.views.generic import DeleteView
 from eav.models import Attribute, Entity
 
 from web.enums import TaxonLevel
@@ -16,7 +20,8 @@ from web.forms import (
     AttributeMainForm,
     TaxonForm,
 )
-from web.models import Taxon, Plant
+from web.models import Plant
+from web.models import Taxon
 
 
 @cache
@@ -29,6 +34,7 @@ def get_taxa():
         "family": Taxon.objects.filter(level=TaxonLevel.family),
         "genus": Taxon.objects.filter(level=TaxonLevel.genus),
     }
+
 
 # TODO функции должны называться как глаголы. Название функции слишком общее, хотя видимо оно работает с созданием
 #  атрибута. Значит, это вообще не response, а save_attribute(). И вообще это view, хорошей практикой является
@@ -56,8 +62,10 @@ def get_all_taxa(genus):
 
 
 def escape(func: Callable) -> Callable:
-    # TODO комментарий к функции должен быть в """ """
-    # decorator escapes text to prevent XSS attack
+    """
+    decorator escapes text to prevent XSS attack
+    """
+
     def wrapper(self, cleaned_data: dict) -> str:
         cleaned_data["name"] = html.escape(cleaned_data["name"])
         return func(self, cleaned_data)
@@ -72,14 +80,12 @@ class PlantMixin:
     context_object_name = "plant_form"
 
     def get_context_data(self, **kwargs):
+        form_classification = kwargs["form_classification"] if "form_classification" in kwargs.keys() else TaxonForm()
+        attr_form_view = kwargs["attr_form_view"] if "attr_form_view" in kwargs.keys() else AttributeMainForm()
         return {
             **super().get_context_data(**kwargs),
-            # TODO вынести в переменную, чтобы строчка не уходила в закат
-            "form_classification": kwargs["form_classification"]
-            if "form_classification" in kwargs.keys()
-            else TaxonForm(),
-            # TODO вынести в переменную, чтобы строчка не уходила в закат
-            "attr_form_view": kwargs["attr_form_view"] if "attr_form_view" in kwargs.keys() else AttributeMainForm(),
+            "form_classification": form_classification,
+            "attr_form_view": attr_form_view,
             "attr_form": AttributeForm(),
             "taxon_name": get_taxa(),
         }
@@ -139,3 +145,21 @@ class PlantUpdateView(PlantMixin, SuccessMessageMixin, LoginRequiredMixin, Updat
     @escape
     def get_success_message(self, cleaned_data):
         return f"Вы успешно изменили растение <strong>{cleaned_data['name']}</strong>"
+
+
+class PlantDeleteView(SuccessMessageMixin, DeleteView):
+    model = Plant
+    slug_field = "number"
+    slug_url_kwarg = "number"
+    success_url = reverse_lazy("plants")
+
+    def get_success_message(self, cleaned_data):
+        return f"Растение <strong>{self.object.name}</strong> успешно удалено"
+
+    def get(self, request, *args, **kwargs):
+        raise Http404
+
+    def form_valid(self, form):
+        if self.request.user.organization != self.object.organization:
+            return redirect("plants")
+        return super().form_valid(form)
