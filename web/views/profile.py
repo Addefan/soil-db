@@ -2,16 +2,13 @@ from http import HTTPStatus
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ValidationError
 from django.http import JsonResponse, Http404
 from django.urls import reverse_lazy
 from django.views.generic import UpdateView, RedirectView
 
 from web.forms import ProfileForm
 from web.models import Staff
-from web.services.password import create_password_change_request, process_password_change_request
-from web.services.url import build_origin_from_request
+from web.services.password import process_password_change_request
 
 
 class ProfileFormView(LoginRequiredMixin, UpdateView):
@@ -48,19 +45,3 @@ class ChangePasswordView(RedirectView):
 
         messages.success(request, "Вы успешно изменили пароль")
         return super().get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        new_password = request.POST.get("password")
-        user_id = request.user.id
-
-        try:
-            validate_password(new_password)
-        except ValidationError as error:
-            # TODO нужны сериализаторы
-            errors = {"password": error.messages}
-            return JsonResponse(errors, status=HTTPStatus.NOT_FOUND)
-
-        origin = build_origin_from_request(request)
-        create_password_change_request(new_password, user_id, origin)
-
-        return JsonResponse({"success": True})
