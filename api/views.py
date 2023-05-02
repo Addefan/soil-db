@@ -4,9 +4,10 @@ from dateutil.parser import parse
 from django.db.models import Q
 from eav.models import Attribute
 from rest_framework import generics, views
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
-from api.serializers import PlantSerializer
+from api.serializers import PlantSerializer, FullPlantModelSerializer
 from web.choices import (
     xlsx_columns_choices,
     attributes_default_choices,
@@ -116,3 +117,13 @@ class AttributesAPIView(views.APIView):
         attribute_list.extend(attributes_custom_choices())
         attribute_list.extend(attribute_taxon_choices())
         return Response(attribute_list)
+
+
+class FullPlantModelAPIView(GenericAPIView):
+    serializer_class = FullPlantModelSerializer
+
+    def get_queryset(self):
+        return Plant.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        return Response(self.serializer_class(self.get_queryset(), many=True).data)
