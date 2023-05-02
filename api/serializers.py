@@ -1,7 +1,7 @@
 from eav.models import Value, Attribute
 from rest_framework import serializers
 
-from web.models import Plant
+from web.models import Plant, Taxon
 
 
 class PlantSerializer(serializers.ModelSerializer):
@@ -48,14 +48,46 @@ class ValueSerializer(serializers.ModelSerializer):
         return instance
 
 
+class TaxonSerializer(serializers.ModelSerializer):
+    parent = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Taxon
+        exclude = ("id",)
+
+    def to_representation(self, instance):
+        instance = super(TaxonSerializer, self).to_representation(instance)
+        level = instance.pop("level")
+        instance[f"{level}_title"] = instance.pop("title")
+        instance[f"{level}_latin_title"] = instance.pop("latin_title")
+        return instance
+
+    def get_parent(self, obj):
+        parent = obj.parent
+        if parent is None:
+            return
+        return TaxonSerializer(parent).data
+
+
 class FullPlantModelSerializer(PlantSerializer):
+    genus = TaxonSerializer(read_only=True)
     eav_values = ValueSerializer(read_only=True, many=True)
+
+    @staticmethod
+    def taxa_hierarchy_to_representation(taxon):
+        taxa_hierarchy = {}
+        while taxon is not None:
+            parent = taxon.pop("parent")
+            taxa_hierarchy.update(taxon)
+            taxon = parent
+        return taxa_hierarchy
 
     def to_representation(self, instance):
         instance = super(FullPlantModelSerializer, self).to_representation(instance)
         eav_values = instance.pop("eav_values")
         for eav_value in eav_values:
             instance.update(eav_value)
+        instance.update(**self.taxa_hierarchy_to_representation(instance.pop("genus")))
         return instance
 
     class Meta(PlantSerializer.Meta):
