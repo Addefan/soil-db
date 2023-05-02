@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.hashers import make_password
@@ -19,7 +19,7 @@ def create_password_change_request(request):
     token = password_change.id
 
     send_password_changing_email.delay(origin, user_id, token)
-    delete_change_password_request.apply_async(eta=timedelta(hours=1), args=(token,))
+    delete_change_password_request.apply_async((token,), eta=datetime.now() + timedelta(hours=1))
 
 
 def process_password_change_request(request):
@@ -27,7 +27,7 @@ def process_password_change_request(request):
     if token is None:
         return False
 
-    password_change = PasswordChange.objects.filter(pk=token).first
+    password_change = PasswordChange.objects.filter(pk=token).first()
     user_id = request.user.id
 
     # checking whether the link has expired
