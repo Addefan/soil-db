@@ -7,7 +7,7 @@ from rest_framework import generics, views
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
-from api.serializers import PlantSerializer, FullPlantModelSerializer
+from api.serializers import PlantPartialSerializer, PlantSerializer
 from web.choices import (
     xlsx_columns_choices,
     attributes_default_choices,
@@ -20,7 +20,7 @@ from web.tasks_utils import prepare_queryset
 
 
 class PlantAPIView(generics.ListAPIView):
-    serializer_class = PlantSerializer
+    serializer_class = PlantPartialSerializer
     # TODO сделать через django-filters
 
     # if type float or int in request, variable need to be tuple (min_val, max_val)
@@ -107,7 +107,7 @@ class PlantAPIView(generics.ListAPIView):
             data = self.filter_data(request, data)
         numbers = [instance.get("Уникальный номер") for instance in data]
         filtered_qs = self.paginate_queryset(self.get_queryset(True, numbers))
-        serializer = PlantSerializer(filtered_qs, many=True)
+        serializer = PlantPartialSerializer(filtered_qs, many=True)
         return Response(serializer.data)
 
 
@@ -120,10 +120,10 @@ class AttributesAPIView(views.APIView):
 
 
 class FullPlantModelAPIView(GenericAPIView):
-    serializer_class = FullPlantModelSerializer
+    serializer_class = PlantSerializer
 
     def get_queryset(self):
-        return Plant.objects.all()
+        return Plant.objects.optimized_all()
 
     def get(self, request, *args, **kwargs):
         return Response(self.serializer_class(self.get_queryset(), many=True).data)

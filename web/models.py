@@ -1,11 +1,12 @@
-import eav
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import UserManager as DjangoUserManager, PermissionsMixin
 from django.db import models
 from django.forms import model_to_dict
 from eav.models import Value
+from eav.queryset import EavQuerySet
 from tree_queries.models import TreeNode
 
+from web.eav import custom_register
 from web.enums import TaxonLevel
 from web.mappings import translate, taxa, suffixes
 
@@ -59,6 +60,24 @@ class PlantModelMixin:
             for title in self._suffix:
                 dct[self._taxa[taxon.level] + self._suffix[title]] = getattr(taxon, title, None)
         return dct
+
+
+class PlantQuerySet(EavQuerySet):
+    def optimized_all(self):
+        queryset = (
+            Plant.objects.prefetch_related("eav_values")
+            .prefetch_related("organization")
+            .prefetch_related("eav_values__attribute")
+        )
+
+        recursion_depth = len(TaxonLevel.choices)
+        prefetch_attribute = "genus"
+
+        for i in range(recursion_depth):
+            queryset = queryset.prefetch_related(prefetch_attribute)
+            prefetch_attribute += "__parent"
+
+        return queryset.all()
 
 
 class Plant(models.Model, PlantModelMixin):
@@ -115,4 +134,4 @@ class Staff(AbstractBaseUser, PermissionsMixin):
         return self.is_superuser
 
 
-eav.register(Plant)
+custom_register(Plant)

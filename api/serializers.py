@@ -4,7 +4,7 @@ from rest_framework import serializers
 from web.models import Plant, Taxon
 
 
-class PlantSerializer(serializers.ModelSerializer):
+class PlantPartialSerializer(serializers.ModelSerializer):
     organization = serializers.StringRelatedField()
     genus = serializers.StringRelatedField()
 
@@ -16,12 +16,13 @@ class PlantSerializer(serializers.ModelSerializer):
 class AttributeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attribute
-        fields = ("datatype", "name")
+        fields = ("name",)
 
 
 class ValueSerializer(serializers.ModelSerializer):
     attribute = AttributeSerializer(read_only=True)
     _datatypes = ("bool", "csv", "date", "float", "int", "json", "text")
+    _null_values = (None, {}, "['']")
 
     class Meta:
         model = Value
@@ -39,12 +40,16 @@ class ValueSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         instance = super(ValueSerializer, self).to_representation(instance)
-        for datatype in self._datatypes:
-            if instance["attribute"]["datatype"] == datatype:
-                continue
-            instance.pop(f"value_{datatype}")
+        value = None
+
+        for candidate_datatype in self._datatypes:
+            candidate_value = f"value_{candidate_datatype}"
+            if instance[candidate_value] in self._null_values:
+                instance.pop(candidate_value)
+            else:
+                value = candidate_value
         attribute = instance.pop("attribute")
-        instance.setdefault(attribute["name"], instance.pop(f"value_{attribute['datatype']}"))
+        instance.setdefault(attribute["name"], instance.pop(value))
         return instance
 
 
@@ -69,7 +74,7 @@ class TaxonSerializer(serializers.ModelSerializer):
         return TaxonSerializer(parent).data
 
 
-class FullPlantModelSerializer(PlantSerializer):
+class PlantSerializer(PlantPartialSerializer):
     genus = TaxonSerializer(read_only=True)
     eav_values = ValueSerializer(read_only=True, many=True)
 
@@ -83,12 +88,12 @@ class FullPlantModelSerializer(PlantSerializer):
         return taxa_hierarchy
 
     def to_representation(self, instance):
-        instance = super(FullPlantModelSerializer, self).to_representation(instance)
+        instance = super(PlantSerializer, self).to_representation(instance)
         eav_values = instance.pop("eav_values")
         for eav_value in eav_values:
             instance.update(eav_value)
-        instance.update(**self.taxa_hierarchy_to_representation(instance.pop("genus")))
+        instance.update(self.taxa_hierarchy_to_representation(instance.pop("genus")))
         return instance
 
-    class Meta(PlantSerializer.Meta):
+    class Meta(PlantPartialSerializer.Meta):
         exclude = []
