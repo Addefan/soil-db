@@ -88,10 +88,13 @@ class PlantSerializer(PlantPartialSerializer):
         return taxa_hierarchy
 
     @staticmethod
-    def filter_attributes(instance, columns):
-        for key in instance:
-            if key not in columns:
-                instance.pop(key)
+    def add_missing_fields(instance, columns):
+        """
+        All serializers must have the same structure
+        so missing fields must be presented in each serializer
+        """
+        for column in columns:
+            instance.setdefault(column, None)
         return instance
 
     def to_representation(self, instance):
@@ -100,8 +103,8 @@ class PlantSerializer(PlantPartialSerializer):
         for eav_value in eav_values:
             instance.update(eav_value)
         instance.update(self.taxa_hierarchy_to_representation(instance.pop("genus")))
-        instance = self.filter_attributes(instance, self.context["columns"])
+        instance = self.add_missing_fields(instance, self.context["columns"])
         return instance
 
     class Meta(PlantPartialSerializer.Meta):
-        exclude = []
+        exclude = ["id"]

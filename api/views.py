@@ -102,10 +102,12 @@ class PlantAPIView(generics.ListAPIView):
             qs = self.get_queryset(filtering=True, search_string=request.GET["search"])
         else:
             qs = self.get_queryset()
-        data = prepare_queryset(columns=[choice[0] for choice in xlsx_columns_choices()], qs=qs)
+        data = PlantSerializer(
+            qs, context={"columns": [choice[0] for choice in xlsx_columns_choices()]}, many=True
+        ).data
         if request.GET:
             data = self.filter_data(request, data)
-        numbers = [instance.get("Уникальный номер") for instance in data]
+        numbers = [instance.get("number") for instance in data]
         filtered_qs = self.paginate_queryset(self.get_queryset(True, numbers))
         serializer = PlantPartialSerializer(filtered_qs, many=True)
         return Response(serializer.data)
@@ -123,7 +125,7 @@ class FullPlantModelAPIView(GenericAPIView):
     serializer_class = PlantSerializer
 
     def get_queryset(self):
-        return Plant.objects.optimized_all()
+        return Plant.objects.optimize_queries()
 
     def get(self, request, *args, **kwargs):
         return Response(self.serializer_class(self.get_queryset(), many=True).data)

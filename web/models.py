@@ -63,7 +63,7 @@ class PlantModelMixin:
 
 
 class PlantQuerySet(EavQuerySet):
-    def optimized_all(self):
+    def optimize_queries(self):
         queryset = (
             Plant.objects.prefetch_related("eav_values")
             .prefetch_related("organization")
@@ -77,7 +77,7 @@ class PlantQuerySet(EavQuerySet):
             queryset = queryset.prefetch_related(prefetch_attribute)
             prefetch_attribute += "__parent"
 
-        return queryset.all()
+        return queryset
 
 
 class Plant(models.Model, PlantModelMixin):
@@ -98,6 +98,9 @@ class Plant(models.Model, PlantModelMixin):
         obj["Организация"] = self._get_organization_name()
         obj |= self._get_eav_fields()
         return obj
+
+    class Meta:
+        ordering = ("-number",)
 
 
 class UserManager(DjangoUserManager):
