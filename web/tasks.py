@@ -14,7 +14,6 @@ from web.services import queryset_to_xlsx
 #  Видно, что эта функция в celery воркере никогда не запускалась.
 @app.task
 def export_to_excel(request, receiver, columns, user_id, qs=Plant.objects.optimize_queries()):
-    # column titles should be named in english
     prepared_qs = PlantSerializer(qs, context={"columns": columns}, many=True).data
     path = queryset_to_xlsx(prepared_qs)
     user = Staff.objects.get(id=user_id)

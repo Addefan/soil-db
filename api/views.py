@@ -16,7 +16,6 @@ from web.choices import (
     xlsx_columns_choices_dict,
 )
 from web.models import Plant
-from web.tasks_utils import prepare_queryset
 
 
 class PlantAPIView(generics.ListAPIView):
