@@ -5,6 +5,7 @@ from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
+from api.serializers import PlantSerializer
 from soil.celery import app
 from web.models import Plant, Staff
 from web.tasks_utils import prepare_queryset
@@ -14,7 +15,7 @@ from web.services import queryset_to_xlsx
 #  Видно, что эта функция в celery воркере никогда не запускалась.
 @app.task
 def export_to_excel(request, receiver, columns, user_id, qs=Plant.objects.prefetch_related("organization").all()):
-    prepared_qs = prepare_queryset(columns, qs)
+    prepared_qs = PlantSerializer(qs, context=columns).data
     path = queryset_to_xlsx(prepared_qs)
     user = Staff.objects.get(id=user_id)
     protocol = "https" if request.is_secure() else "http"

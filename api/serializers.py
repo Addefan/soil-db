@@ -87,12 +87,20 @@ class PlantSerializer(PlantPartialSerializer):
             taxon = parent
         return taxa_hierarchy
 
+    @staticmethod
+    def filter_attributes(instance, columns):
+        for key in instance:
+            if key not in columns:
+                instance.pop(key)
+        return instance
+
     def to_representation(self, instance):
         instance = super(PlantSerializer, self).to_representation(instance)
         eav_values = instance.pop("eav_values")
         for eav_value in eav_values:
             instance.update(eav_value)
         instance.update(self.taxa_hierarchy_to_representation(instance.pop("genus")))
+        instance = self.filter_attributes(instance, self.context["columns"])
         return instance
 
     class Meta(PlantPartialSerializer.Meta):
