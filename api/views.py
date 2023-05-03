@@ -4,7 +4,6 @@ from dateutil.parser import parse
 from django.db.models import Q
 from eav.models import Attribute
 from rest_framework import generics, views
-from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
 from api.serializers import PlantPartialSerializer, PlantSerializer
@@ -118,13 +117,3 @@ class AttributesAPIView(views.APIView):
         attribute_list.extend(attributes_custom_choices())
         attribute_list.extend(attribute_taxon_choices())
         return Response(attribute_list)
-
-
-class FullPlantModelAPIView(GenericAPIView):
-    serializer_class = PlantSerializer
-
-    def get_queryset(self):
-        return Plant.objects.optimize_queries()
-
-    def get(self, request, *args, **kwargs):
-        return Response(self.serializer_class(self.get_queryset(), many=True).data)
