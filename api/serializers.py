@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from eav.models import Value, Attribute
 from rest_framework import serializers
 
@@ -88,11 +90,14 @@ class PlantSerializer(PlantPartialSerializer):
         return taxa_hierarchy
 
     @staticmethod
-    def add_missing_fields(instance, columns):
+    def clean_serializer(instance, columns):
         """
         All serializers must have the same structure
-        so missing fields must be presented in each serializer
+        so missing fields must be presented and redundant field must be removed in each serializer
         """
+        # remove redundant fields
+        instance = OrderedDict({key: val for key, val in instance.items() if key in columns})
+        # add missing fields
         for column in columns:
             instance.setdefault(column, None)
         return instance
@@ -103,7 +108,7 @@ class PlantSerializer(PlantPartialSerializer):
         for eav_value in eav_values:
             instance.update(eav_value)
         instance.update(self.taxa_hierarchy_to_representation(instance.pop("genus")))
-        instance = self.add_missing_fields(instance, self.context["columns"])
+        instance = self.clean_serializer(instance, self.context["columns"])
         return instance
 
     class Meta(PlantPartialSerializer.Meta):
