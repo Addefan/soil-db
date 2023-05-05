@@ -36,21 +36,6 @@ def get_taxa():
     }
 
 
-# TODO функции должны называться как глаголы. Название функции слишком общее, хотя видимо оно работает с созданием
-#  атрибута. Значит, это вообще не response, а save_attribute(). И вообще это view, хорошей практикой является
-#  заканчивать название view-функций на _view
-def ajax_response(request):
-    response_data = {}
-    # TODO нужен сериализатор
-    name = request.POST.get("name_attr")
-    type_attr = request.POST.get("type_attr")
-    response_data["name_attr"] = name
-    response_data["type_attr"] = type_attr
-    attr = Attribute.objects.create(name=name, datatype=type_attr)
-    response_data["slug_name"] = attr.slug
-    return JsonResponse(response_data)
-
-
 def get_all_taxa(genus):
     """A function returning dictionary with data based on hierarchy of given genus"""
     taxa = {}

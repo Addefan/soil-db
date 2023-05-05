@@ -3,10 +3,9 @@ $('#add_button').on('click', function () {
     $.ajax({
         url: path_ajax,
         method: 'post',
-        dataType: 'html',
+        dataType: 'json',
         data: $('#attr_form').serialize(),
-        success: function (smt) {
-            let new_obj = JSON.parse(smt)
+        success: function (new_obj) {
             make_custom_attribute(new_obj.name_attr, new_obj.type_attr, new_obj.slug_name)
         },
     })

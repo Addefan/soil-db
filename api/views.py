@@ -6,7 +6,7 @@ from eav.models import Attribute
 from rest_framework import generics, views
 from rest_framework.response import Response
 
-from api.serializers import PlantSerializer
+from api.serializers import PlantSerializer, CustomAttributeSerializer
 from web.choices import (
     xlsx_columns_choices,
     attributes_default_choices,
@@ -18,8 +18,18 @@ from web.models import Plant
 from web.tasks_utils import prepare_queryset
 
 
+class CustomAttributeView(views.APIView):
+    def post(self, request):
+        serializer = CustomAttributeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        print(serializer.data)
+        return Response(serializer.data)
+
+
 class PlantAPIView(generics.ListAPIView):
     serializer_class = PlantSerializer
+
     # TODO сделать через django-filters
 
     # if type float or int in request, variable need to be tuple (min_val, max_val)
