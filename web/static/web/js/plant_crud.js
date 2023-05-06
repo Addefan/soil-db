@@ -1,7 +1,7 @@
 // adding custom attributes
 $('#add_button').on('click', function () {
     $.ajax({
-        url: path_ajax,
+        url: attrCreatePath,
         method: 'post',
         dataType: 'html',
         data: $('#attr_form').serialize(),

@@ -1,4 +1,5 @@
 import html
+import json
 from functools import cache
 from typing import Callable
 
@@ -42,8 +43,9 @@ def get_taxa():
 def ajax_response(request):
     response_data = {}
     # TODO нужен сериализатор
-    name = request.POST.get("name_attr")
-    type_attr = request.POST.get("type_attr")
+    post_data = json.loads(request.body.decode("utf-8"))
+    name = post_data.get("name_attr")
+    type_attr = post_data.get("type_attr")
     response_data["name_attr"] = name
     response_data["type_attr"] = type_attr
     attr = Attribute.objects.create(name=name, datatype=type_attr)

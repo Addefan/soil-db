@@ -35,24 +35,43 @@
             </div>
         </div>
 
-
         <!-- Модальное окно -->
-        <div class="modal fade" id="attribute_modal_window" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Добавление атрибута</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                    </div>
-                    <div class="modal-body pt-0">
-                        <form action="" method="post" id="attr_form">
-                            {% csrf_token %}
-                            {% include 'web/form/form_with_errors.html' with form=attr_form %}
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button id="add_button" type="button" class="btn btn-success">Добавить</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+        <div id="app">
+            <div class="modal fade" id="attribute_modal_window" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Добавление атрибута</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                        </div>
+                        <div class="modal-body pt-0">
+                            <form action="" method="post" id="attr_form">
+                                {% csrf_token %}
+                                <div class="input-group has-validation name-attr">
+                                    <div class="form-floating mt-3">
+                                        <input v-model="form.name_attr" type="text" class="form-control" placeholder="smt" required id="attr_name_id">
+                                        <label for="attr_name_id">Название</label>
+                                    </div>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                                <div class="input-group has-validation type-attr">
+                                    <div class="form-floating mt-3">
+                                        <select v-model="form.type_attr" id="type_attr_id" class="form-select">
+                                            <option value="text">Текст</option>
+                                            <option value="date">Дата</option>
+                                            <option value="float">Число с плавающей запятой</option>
+                                            <option value="int">Целое число</option>
+                                        </select>
+                                        <label for="type_attr_id">Тип данных</label>
+                                    </div>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" @click="createAttr">Добавить</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -63,8 +82,45 @@
 {% endblock %}
 {% block scripts %}
     {{ block.super }}
+{#    <script src="{% static 'web/js/vue.js' %}"></script>#}
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script>
-        let path_ajax = "{% url 'ajax_response' %}"
+        const { createApp } = Vue
+
+        createApp({
+            data() {
+                return {
+                    isAttrFormVisible: false,
+                    form: {
+                        name_attr: "",
+                        type_attr: "text",
+                    }
+                }
+            },
+            methods: {
+                async createAttr() {
+                    let attrCreatePath = "{% url 'ajax_response' %}"
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                    try {
+                        const response = await fetch(attrCreatePath, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrfToken
+                            },
+                            body: JSON.stringify({
+                                name_attr: this.form.name_attr,
+                                type_attr: this.form.type_attr
+                            }),
+                        });
+                        const data = await response.json();
+                        console.log(data);
+                    } catch (e) {
+                        console.log(e);
+                    }
+                }
+            }
+        }).mount('#app')
     </script>
-    <script src="{% static 'web/js/plant_crud.js' %}"></script>
 {% endblock %}
+
