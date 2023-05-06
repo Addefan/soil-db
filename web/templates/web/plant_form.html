@@ -10,33 +10,40 @@
 {% endblock %}
 {% block body %}
     {% if not is_success %}
-        <div class="container d-flex justify-content-center align-items-center">
-            <div class="card w-75 my-4">
-                <div class="card-body">
-                    <h5 class="card-title">{% if number %}Редактирование{% else %}
-                        Новое растение{% endif %}
-                    </h5>
-                    <form action="" method="post" id="plant_form">
-                        {% csrf_token %}
-                        {% suggestions form_classification taxon_name %}
-                        {% include 'web/form/form_with_errors.html' %}
-                        {% include 'web/form/form_with_errors.html' with form=attr_form_view %}
-                        <button type="button" class="btn btn-outline-success mt-3" data-bs-toggle="modal"
-                                data-bs-target="#attribute_modal_window">
-                            Добавить атрибут
-                        </button>
+        <div id="app">
+            <div class="container d-flex justify-content-center align-items-center">
+                <div class="card w-75 my-4">
+                    <div class="card-body">
+                        <h5 class="card-title">{% if number %}Редактирование{% else %}
+                            Новое растение{% endif %}
+                        </h5>
+                        <form action="" method="post" id="plant_form">
+                            {% csrf_token %}
+                            {% suggestions form_classification taxon_name %}
+                            {% include 'web/form/form_with_errors.html' %}
+                            {% include 'web/form/form_with_errors.html' with form=attr_form_view %}
+                            <div class="input-group has-validation" v-for="attr in newAttrs">
+                                <div class="form-floating mt-3">
+                                    <input :type="attr.type_attr" :name="attr.slug_name" class="form-control" placeholder="smt" :id="`id_${attr.slug_name}`">
+                                    <label :for="`id_${attr.slug_name}`">[[ attr.name_attr ]]</label>
+                                </div>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <button type="button" class="btn btn-outline-success mt-3" data-bs-toggle="modal"
+                                    data-bs-target="#attribute_modal_window">
+                                Добавить атрибут
+                            </button>
+                            <br>
+                            <button type="submit" class="btn btn-success mt-3">{% if number %}Сохранить{% else %}
+                                Добавить{% endif %}
+                            </button>
+                        </form>
                         <br>
-                        <button type="submit" class="btn btn-success mt-3">{% if number %}Сохранить{% else %}
-                            Добавить{% endif %}
-                        </button>
-                    </form>
-                    <br>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Модальное окно -->
-        <div id="app">
+            <!-- Модальное окно -->
             <div class="modal fade" id="attribute_modal_window" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -82,19 +89,20 @@
 {% endblock %}
 {% block scripts %}
     {{ block.super }}
-{#    <script src="{% static 'web/js/vue.js' %}"></script>#}
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="{% static 'web/js/vue.js' %}"></script>
     <script>
         const { createApp } = Vue
 
         createApp({
+            delimiters: ['[[', ']]'],
             data() {
                 return {
                     isAttrFormVisible: false,
                     form: {
                         name_attr: "",
                         type_attr: "text",
-                    }
+                    },
+                    newAttrs: [],
                 }
             },
             methods: {
@@ -114,9 +122,10 @@
                             }),
                         });
                         const data = await response.json();
-                        console.log(data);
+                        this.newAttrs.push(data);
+                        this.form.reset();
                     } catch (e) {
-                        console.log(e);
+                        console.error(e);
                     }
                 }
             }
