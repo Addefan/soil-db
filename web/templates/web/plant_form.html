@@ -123,10 +123,15 @@
                         });
                         const data = await response.json();
                         this.newAttrs.push(data);
-                        this.form.reset();
+                        this.resetAttrForm();
                     } catch (e) {
                         console.error(e);
                     }
+                },
+                resetAttrForm() {
+                    this.form.name_attr = "";
+                    this.form.type_attr = "text";
+                    $('#attribute_modal_window').modal('hide');
                 }
             }
         }).mount('#app')
