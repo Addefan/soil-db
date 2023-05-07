@@ -5,8 +5,8 @@ from django.db.models import Q
 from eav.models import Attribute
 from rest_framework import generics, views, status
 from rest_framework.response import Response
-
-from api.serializers import PlantSerializer, PasswordSerializer
+from web.services.password import create_password_change_request
+from api.serializers import PlantPartialSerializer, PlantSerializer, PasswordSerializer
 from web.choices import (
     xlsx_columns_choices,
     attributes_default_choices,
@@ -15,13 +15,10 @@ from web.choices import (
     xlsx_columns_choices_dict,
 )
 from web.models import Plant
-from web.services.password import create_password_change_request
-from web.tasks_utils import prepare_queryset
 
 
 class PlantAPIView(generics.ListAPIView):
     serializer_class = PlantSerializer
-
     # TODO сделать через django-filters
 
     # if type float or int in request, variable need to be tuple (min_val, max_val)
@@ -103,12 +100,14 @@ class PlantAPIView(generics.ListAPIView):
             qs = self.get_queryset(filtering=True, search_string=request.GET["search"])
         else:
             qs = self.get_queryset()
-        data = prepare_queryset(columns=[choice[0] for choice in xlsx_columns_choices()], qs=qs)
+        data = PlantSerializer(
+            qs, context={"columns": [choice[0] for choice in xlsx_columns_choices()]}, many=True
+        ).data
         if request.GET:
             data = self.filter_data(request, data)
-        numbers = [instance.get("Уникальный номер") for instance in data]
+        numbers = [instance.get("number") for instance in data]
         filtered_qs = self.paginate_queryset(self.get_queryset(True, numbers))
-        serializer = PlantSerializer(filtered_qs, many=True)
+        serializer = PlantPartialSerializer(filtered_qs, many=True)
         return Response(serializer.data)
 
 
