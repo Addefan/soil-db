@@ -1,11 +1,13 @@
-import eav
+import uuid
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import UserManager as DjangoUserManager, PermissionsMixin
 from django.db import models
 from django.forms import model_to_dict
 from eav.models import Value
+from eav.queryset import EavQuerySet
 from tree_queries.models import TreeNode
 
+from web.eav import custom_register
 from web.enums import TaxonLevel
 from web.mappings import translate, taxa, suffixes
 
@@ -61,6 +63,24 @@ class PlantModelMixin:
         return dct
 
 
+class PlantQuerySet(EavQuerySet):
+    def optimize_queries(self):
+        queryset = (
+            Plant.objects.prefetch_related("eav_values")
+            .prefetch_related("organization")
+            .prefetch_related("eav_values__attribute")
+        )
+
+        recursion_depth = len(TaxonLevel.choices)
+        prefetch_attribute = "genus"
+
+        for i in range(recursion_depth):
+            queryset = queryset.prefetch_related(prefetch_attribute)
+            prefetch_attribute += "__parent"
+
+        return queryset
+
+
 class Plant(models.Model, PlantModelMixin):
     number = models.IntegerField(unique=True)
     organization = models.ForeignKey(Organization, on_delete=models.SET_NULL, null=True)
@@ -79,6 +99,9 @@ class Plant(models.Model, PlantModelMixin):
         obj["Организация"] = self._get_organization_name()
         obj |= self._get_eav_fields()
         return obj
+
+    class Meta:
+        ordering = ("-number",)
 
 
 class UserManager(DjangoUserManager):
@@ -115,4 +138,10 @@ class Staff(AbstractBaseUser, PermissionsMixin):
         return self.is_superuser
 
 
-eav.register(Plant)
+class PasswordChange(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    password = models.CharField(max_length=128)
+    user = models.ForeignKey(Staff, on_delete=models.CASCADE)
+
+
+custom_register(Plant)
