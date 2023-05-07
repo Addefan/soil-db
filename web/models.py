@@ -1,3 +1,4 @@
+import uuid
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import UserManager as DjangoUserManager, PermissionsMixin
 from django.db import models
@@ -135,6 +136,12 @@ class Staff(AbstractBaseUser, PermissionsMixin):
     @property
     def is_staff(self):
         return self.is_superuser
+
+
+class PasswordChange(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    password = models.CharField(max_length=128)
+    user = models.ForeignKey(Staff, on_delete=models.CASCADE)
 
 
 custom_register(Plant)

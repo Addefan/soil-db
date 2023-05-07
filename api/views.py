@@ -3,10 +3,10 @@ from datetime import datetime
 from dateutil.parser import parse
 from django.db.models import Q
 from eav.models import Attribute
-from rest_framework import generics, views
+from rest_framework import generics, views, status
 from rest_framework.response import Response
-
-from api.serializers import PlantPartialSerializer, PlantSerializer
+from web.services.password import create_password_change_request
+from api.serializers import PlantPartialSerializer, PlantSerializer, PasswordSerializer
 from web.choices import (
     xlsx_columns_choices,
     attributes_default_choices,
@@ -18,7 +18,7 @@ from web.models import Plant
 
 
 class PlantAPIView(generics.ListAPIView):
-    serializer_class = PlantPartialSerializer
+    serializer_class = PlantSerializer
     # TODO сделать через django-filters
 
     # if type float or int in request, variable need to be tuple (min_val, max_val)
@@ -117,3 +117,14 @@ class AttributesAPIView(views.APIView):
         attribute_list.extend(attributes_custom_choices())
         attribute_list.extend(attribute_taxon_choices())
         return Response(attribute_list)
+
+
+class ChangePasswordAPIView(views.APIView):
+    def post(self, request):
+        serializer = PasswordSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        create_password_change_request(request)
+        return Response({"success": True})

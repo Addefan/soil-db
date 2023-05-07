@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 from django.views.generic import FormView, RedirectView, TemplateView
 
 from web.forms import XlsxColumnsForm
+from web.services.url import build_origin_from_request
 from web.tasks import export_to_excel
 
 
@@ -24,8 +25,9 @@ class XlsxColumnsView(RedirectView):
     def post(self, request, *args, **kwargs):
         form = XlsxColumnsForm(request.POST)
         if form.is_valid():
+            origin = build_origin_from_request(request)
             export_to_excel.delay(
-                request=request,
+                origin=origin,
                 receiver=request.user.email,
                 columns=form.cleaned_data.get("columns"),
                 user_id=request.user.id,

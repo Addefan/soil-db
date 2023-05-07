@@ -67,7 +67,7 @@
     {{ block.super }}
     <script>
         let profile_url = "{% url 'profile' %}";
-        let password_url = "{% url 'change_password' %}";
+        let password_url = "{% url 'api:change_password' %}";
     </script>
     <script src="{% static 'web/js/profile.js' %}?">
     </script>
