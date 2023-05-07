@@ -20,9 +20,9 @@ from web.models import Plant
 class CustomAttributeView(views.APIView):
     def post(self, request):
         serializer = CustomAttributeSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        if not serializer.is_valid():
+            return Response({"error": "error with CustomAttributeView"})
         serializer.save()
-        print(serializer.data)
         return Response(serializer.data)
 
 

@@ -1,4 +1,4 @@
-# from celery_yandex_serverless.django import worker_view_factory
+from celery_yandex_serverless.django import worker_view_factory
 from django.conf import urls
 from django.contrib import admin
 from django.urls import path, include
@@ -10,7 +10,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("web.urls")),
     path("api/", include("api.urls")),
-    # path("worker/<str:key>/", worker_view_factory(app)),
+    path("worker/<str:key>/", worker_view_factory(app)),
 ]
 
 # requires DEBUG = False

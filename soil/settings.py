@@ -55,8 +55,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-# if DEBUG:
-#     MIDDLEWARE.append("soil.debug.SqlPrintingMiddleware")
+if DEBUG:
+    MIDDLEWARE.append("soil.debug.SqlPrintingMiddleware")
 
 ROOT_URLCONF = "soil.urls"
 
