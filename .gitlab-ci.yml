@@ -64,7 +64,7 @@ deploy_cloud:
         --invoke-container-path /worker/$CELERY_YANDEX_SERVERLESS_KEY/
         --batch-size 1
         --batch-cutoff 10s
-      > /dev/null
+        > /dev/null
     # если в приложении есть еще какие-нибудь переменные окружения, прокиньте их здесь
   tags:
     # тег раннера, где будут запускаться сборки
