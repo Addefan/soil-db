@@ -1,19 +1,17 @@
 import html
-from functools import cache
 from typing import Callable
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.postgres.aggregates import ArrayAgg
 from django.http import Http404
-from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView
 from django.views.generic import DeleteView
-from eav.models import Attribute, Entity
+from eav.models import Entity
 
-from web.enums import TaxonLevel
 from web.forms import (
     PlantForm,
     AttributeForm,
@@ -24,16 +22,10 @@ from web.models import Plant
 from web.models import Taxon
 
 
-@cache
+# don't use '@cache' to avoid not reloading suggestions
 def get_taxa():
-    # TODO запросить всю таблицу, и в коде сдлеать эту группировку. Куча SQL запросов здесь не нужна
-    return {
-        "phylum": Taxon.objects.filter(level=TaxonLevel.phylum),
-        "class": Taxon.objects.filter(level=TaxonLevel.klass),
-        "order": Taxon.objects.filter(level=TaxonLevel.order),
-        "family": Taxon.objects.filter(level=TaxonLevel.family),
-        "genus": Taxon.objects.filter(level=TaxonLevel.genus),
-    }
+    taxa = Taxon.objects.values("level").annotate(titles=ArrayAgg("title"), latin_titles=ArrayAgg("latin_title"))
+    return taxa
 
 
 def get_all_taxa(genus):
@@ -72,7 +64,7 @@ class PlantMixin:
             "form_classification": form_classification,
             "attr_form_view": attr_form_view,
             "attr_form": AttributeForm(),
-            "taxon_name": get_taxa(),
+            "taxon_levels": get_taxa(),
         }
 
     def get_initial(self):
@@ -123,7 +115,7 @@ class PlantUpdateView(PlantMixin, SuccessMessageMixin, LoginRequiredMixin, Updat
             "form_classification": form_classification,
             "attr_form_view": attr_form_view,
             "attr_form": AttributeForm(),
-            "taxon_name": get_taxa(),
+            "taxon_levels": get_taxa(),
             "number": self.kwargs[self.slug_url_kwarg],
         }
 

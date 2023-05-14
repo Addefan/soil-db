@@ -19,7 +19,7 @@
                         </h5>
                         <form action="" method="post" id="plant_form">
                             {% csrf_token %}
-                            {% suggestions form_classification taxon_name %}
+                            {% suggestions form_classification taxon_levels %}
                             {% include 'web/form/form_with_errors.html' %}
                             {% include 'web/form/form_with_errors.html' with form=attr_form_view %}
                             <div class="input-group has-validation" v-for="attr in newAttrs">
@@ -106,7 +106,7 @@
             },
             methods: {
                 async createAttr() {
-                    const attrCreatePath = "{% url 'custom_attributes' %}";
+                    const attrCreatePath = "{% url 'api:custom_attributes' %}";
                     try {
                         const response = await fetch(attrCreatePath, {
                             method: 'POST',
@@ -134,5 +134,4 @@
             }
         }).mount('#app')
     </script>
-    <script src="{% static 'web/js/plant_crud.js' %}"></script>
 {% endblock %}

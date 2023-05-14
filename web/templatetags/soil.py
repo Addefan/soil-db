@@ -5,19 +5,12 @@ from django import template
 register = template.Library()
 
 
-def queryset_names(names_to_select, var):
-    ans = []
-    for obj in names_to_select:
-        ans.append(getattr(obj, var))
-    return ans
-
-
 @register.inclusion_tag(Path("web") / "form" / "form-in-view.html")
-def suggestions(stage_form, names_to_select):
+def suggestions(stage_form, taxon_levels):
     taxonomy = {}
-    for level in ("phylum", "class", "order", "family", "genus"):
-        for attr in ("title", "latin_title"):
-            taxonomy[f"{level}_{attr}"] = queryset_names(names_to_select[level], attr)
+    for taxon_level in taxon_levels:
+        taxonomy[f"{taxon_level['level']}_title"] = taxon_level["titles"]
+        taxonomy[f"{taxon_level['level']}_latin_title"] = taxon_level["latin_titles"]
     return {"form": stage_form, "taxonomy": taxonomy}
 
 
