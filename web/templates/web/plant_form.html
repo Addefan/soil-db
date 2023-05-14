@@ -24,7 +24,9 @@
                             {% include 'web/form/form_with_errors.html' with form=attr_form_view %}
                             <div class="input-group has-validation" v-for="attr in newAttrs">
                                 <div class="form-floating mt-3">
-                                    <input :type="attr.type_attr" :name="attr.slug_name" class="form-control" placeholder="smt" :id="`id_${attr.slug_name}`">
+                                    <input :type="typeMapping[attr.type_attr]" :name="attr.slug_name" class="form-control"
+                                            :step="attr.type_attr === 'float' ? 'any' : 1"
+                                           placeholder="smt" :id="`id_${attr.slug_name}`">
                                     <label :for="`id_${attr.slug_name}`">[[ attr.name_attr ]]</label>
                                 </div>
                                 <div class="invalid-feedback"></div>
@@ -102,6 +104,12 @@
                         type_attr: "text",
                     },
                     newAttrs: [],
+                    typeMapping: {
+                        int: "number",
+                        float: "number",
+                        text: "text",
+                        date: "date",
+                    }
                 }
             },
             methods: {
@@ -112,7 +120,7 @@
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-CSRFToken': {{ csrf_token }}
+                                'X-CSRFToken': '{{ csrf_token }}'
                             },
                             body: JSON.stringify({
                                 name_attr: this.form.name_attr,
@@ -122,6 +130,7 @@
                         const data = await response.json();
                         this.newAttrs.push(data);
                         this.resetAttrForm();
+                        console.log(data)
                     } catch (e) {
                         console.error(e);
                     }

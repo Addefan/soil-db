@@ -32,17 +32,20 @@ export default {
   name: "PlantsTable",
   methods: {
     ...mapActions(["loadPlants", "loadMore"]),
-    ...mapMutations({setParameters: "SET_PARAMETERS"}),
+    ...mapMutations({setParameters: "SET_PARAMETERS", switchIsMorePlants: "SWITCH_IS_MORE_PLANTS"}),
   },
   computed: {
-    ...mapState(["plants", "parameters"]),
+    ...mapState(["plants", "parameters", "isMorePlants"]),
     ...mapGetters(["getQueryParams"])
   },
   watch: {
     $route(to) {
-      const params = { ...to.query, "page": this.parameters.page };
+      const params = { ...to.query, "page": 1 };
+      if (!this.isMorePlants) {
+        this.switchIsMorePlants();
+      }
       this.setParameters({ parameters: params });
-      this.loadPlants();
+      this.loadMore();
     }
   },
   mounted() {
