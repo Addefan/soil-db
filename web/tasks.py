@@ -14,7 +14,9 @@ from web.services import queryset_to_xlsx
 
 
 @app.task
-def export_to_excel(origin, receiver, columns, user_id, qs=Plant.objects.optimize_queries()):
+def export_to_excel(origin, columns, user_id, filters=None):
+    # TODO: apply filters
+    qs = Plant.objects.optimize_queries()
     prepared_qs = PlantSerializer(qs, context={"columns": columns}, many=True).data
     path = queryset_to_xlsx(prepared_qs)
     user = Staff.objects.get(id=user_id)
@@ -26,7 +28,7 @@ def export_to_excel(origin, receiver, columns, user_id, qs=Plant.objects.optimiz
     html_content = render_to_string("emails/export_excel.html", context)
     text_content = strip_tags(html_content)
     email = EmailMultiAlternatives(
-        subject="Экспорт данных в excel", body=text_content, from_email=settings.DEFAULT_FROM_EMAIL, to=[receiver]
+        subject="Экспорт данных в excel", body=text_content, from_email=settings.DEFAULT_FROM_EMAIL, to=[user.email]
     )
     email.attach_alternative(html_content, "text/html")
     email.attach_file(path)

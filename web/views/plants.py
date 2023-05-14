@@ -2,7 +2,9 @@ from django.http import Http404
 from django.shortcuts import redirect
 from django.views.generic import FormView, RedirectView, TemplateView
 
+from api.serializers import PlantSerializer
 from web.forms import XlsxColumnsForm
+from web.models import Plant
 from web.services.url import build_origin_from_request
 from web.tasks import export_to_excel
 
@@ -28,8 +30,7 @@ class XlsxColumnsView(RedirectView):
             origin = build_origin_from_request(request)
             export_to_excel.delay(
                 origin=origin,
-                receiver=request.user.email,
-                columns=form.cleaned_data.get("columns"),
                 user_id=request.user.id,
+                columns=form.cleaned_data.get("columns"),
             )
         return redirect("plants")
