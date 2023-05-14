@@ -1,20 +1,15 @@
-import os
 import uuid
 from datetime import datetime
+from io import BytesIO
+from pathlib import Path
 
-import django
 import xlsxwriter
 from django.conf import settings
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from xlsxwriter import Workbook
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "soil.settings")
-django.setup()
 NoneType = type(None)
-
-
-def create_media_xlsx_directory() -> None:
-    # TODO запрещено ходить в систему в обход джанговских абстракций по файлам
-    os.makedirs(settings.BASE_DIR / "media" / "xlsx", exist_ok=True)
 
 
 def make_cell_format(wb: Workbook, bold=False, font_color="black", bg_color="white", num_format=None):
@@ -24,17 +19,15 @@ def make_cell_format(wb: Workbook, bold=False, font_color="black", bg_color="whi
     return cell_format
 
 
-def queryset_to_xlsx(qs: list[dict]) -> str:
+def queryset_to_xlsx(qs: list[dict]) -> Path:
     """
     A function to make QuerySet transition into .xlsx file
     """
-    create_media_xlsx_directory()
 
     file_uuid = uuid.uuid4()
-    # TODO запрещено ходить в систему в обход джанговских абстракций по файлам
-    path = settings.BASE_DIR / "media" / "xlsx" / f"{file_uuid}.xlsx"
+    buffer_file = BytesIO()
 
-    with xlsxwriter.Workbook(path, {"remove_timezone": True}) as workbook:
+    with xlsxwriter.Workbook(buffer_file, {"remove_timezone": True}) as workbook:
         sheet = workbook.add_worksheet("result")
 
         simple_format = make_cell_format(wb=workbook)
@@ -67,4 +60,6 @@ def queryset_to_xlsx(qs: list[dict]) -> str:
                     raise TypeError(f"Unmapped type: {type(obj[column])}")
 
         sheet.autofit()
-    return path
+
+    path = default_storage.save(Path("xlsx") / f"{file_uuid}.xlsx", buffer_file)
+    return Path(settings.MEDIA_ROOT) / path

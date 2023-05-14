@@ -1,6 +1,8 @@
 import os
+from pathlib import Path
 
 from django.conf import settings
+from django.core.files.storage import default_storage
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -10,8 +12,7 @@ from soil.celery import app
 from web.models import Plant, Staff, PasswordChange
 from web.services import queryset_to_xlsx
 
-# TODO celery task принимает только сериализуемые переменные (из них здесь только user_id, columns).
-#  Видно, что эта функция в celery воркере никогда не запускалась.
+
 @app.task
 def export_to_excel(origin, receiver, columns, user_id, qs=Plant.objects.optimize_queries()):
     prepared_qs = PlantSerializer(qs, context={"columns": columns}, many=True).data
@@ -30,7 +31,7 @@ def export_to_excel(origin, receiver, columns, user_id, qs=Plant.objects.optimiz
     email.attach_alternative(html_content, "text/html")
     email.attach_file(path)
     email.send()
-    # os.remove(path)
+    default_storage.delete(Path(*path.parts[1:]))
 
 
 @app.task
