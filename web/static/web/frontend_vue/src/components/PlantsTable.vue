@@ -25,23 +25,27 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from "vuex";
+import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 import qs from "qs";
 
 export default {
   name: "PlantsTable",
   methods: {
-    ...mapActions(["loadPlants"]),
-    ...mapMutations(["SET_PARAMETERS"])
+    ...mapActions(["loadPlants", "loadMore"]),
+    ...mapMutations({setParameters: "SET_PARAMETERS", switchIsMorePlants: "SWITCH_IS_MORE_PLANTS"}),
   },
   computed: {
-    ...mapState(["plants", "parameters"])
+    ...mapState(["plants", "parameters", "isMorePlants"]),
+    ...mapGetters(["getQueryParams"])
   },
   watch: {
     $route(to) {
-      const params = { ...to.query, "page": this.parameters.page };
-      this.$store.commit("SET_PARAMETERS", { parameters: params });
-      this.loadPlants(`?${qs.stringify(params, { indices: false })}`);
+      const params = { ...to.query, "page": 1 };
+      if (!this.isMorePlants) {
+        this.switchIsMorePlants();
+      }
+      this.setParameters({ parameters: params });
+      this.loadMore();
     }
   },
   mounted() {
@@ -51,7 +55,7 @@ export default {
     };
       const dynamicLoad = (entries, observer) => {
         if (entries[0].isIntersecting) {
-          this.loadPlants(`?${qs.stringify(this.parameters, { indices: false })}`);
+          this.loadMore();
         }
       };
       const observer = new IntersectionObserver(dynamicLoad, observer_options);

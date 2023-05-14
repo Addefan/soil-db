@@ -434,4 +434,5 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/git,pycharm+all,pycharm,macos,windows,django,linux
 
 README.md
-docker-compose.yml*
+docker-compose.ya?ml
+celerybeat-schedule.*

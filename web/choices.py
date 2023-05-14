@@ -20,7 +20,7 @@ def attributes_default_choices() -> list:
             "english_name": "organization__name",
             "russian_name": "Организация",
             "type": Attribute.TYPE_TEXT,
-            "values": [organization.name for organization in organizations],
+            "values": organizations.values_list("name", flat=True),
         }
     ]
 

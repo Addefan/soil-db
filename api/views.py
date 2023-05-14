@@ -3,10 +3,10 @@ from datetime import datetime
 from dateutil.parser import parse
 from django.db.models import Q
 from eav.models import Attribute
-from rest_framework import generics, views
+from rest_framework import generics, views, status
 from rest_framework.response import Response
-
-from api.serializers import PlantSerializer
+from web.services.password import create_password_change_request
+from api.serializers import PlantPartialSerializer, PlantSerializer, PasswordSerializer, CustomAttributeSerializer
 from web.choices import (
     xlsx_columns_choices,
     attributes_default_choices,
@@ -15,16 +15,27 @@ from web.choices import (
     xlsx_columns_choices_dict,
 )
 from web.models import Plant
-from web.tasks_utils import prepare_queryset
+
+
+class CustomAttributeView(views.APIView):
+    def post(self, request):
+        serializer = CustomAttributeSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({"error": "error with CustomAttributeView"})
+        serializer.save()
+        return Response(serializer.data)
 
 
 class PlantAPIView(generics.ListAPIView):
     serializer_class = PlantSerializer
 
+    # TODO сделать через django-filters
+
     # if type float or int in request, variable need to be tuple (min_val, max_val)
     # slug because from front we send slug english name
     @staticmethod
     def filtering_attr(request, variable, data, type_attr):
+        # TODO почему функции внутри функции находятся?
         def convert_string_to_datetime(string: str) -> datetime:
             dt_naive = parse(string)
             return dt_naive
@@ -99,13 +110,15 @@ class PlantAPIView(generics.ListAPIView):
             qs = self.get_queryset(filtering=True, search_string=request.GET["search"])
         else:
             qs = self.get_queryset()
-        data = prepare_queryset(columns=[choice[0] for choice in xlsx_columns_choices()], qs=qs)
+        data = PlantSerializer(
+            qs, context={"columns": [choice[0] for choice in xlsx_columns_choices()]}, many=True
+        ).data
         if request.GET:
             data = self.filter_data(request, data)
-        numbers = [instance.get("Уникальный номер") for instance in data]
+        numbers = [instance.get("number") for instance in data]
         filtered_qs = self.paginate_queryset(self.get_queryset(True, numbers))
-        serializer = PlantSerializer(filtered_qs, many=True)
-        return Response(serializer.data)
+        serializer = PlantPartialSerializer(filtered_qs, many=True)
+        return self.get_paginated_response(serializer.data)
 
 
 class AttributesAPIView(views.APIView):
@@ -114,3 +127,14 @@ class AttributesAPIView(views.APIView):
         attribute_list.extend(attributes_custom_choices())
         attribute_list.extend(attribute_taxon_choices())
         return Response(attribute_list)
+
+
+class ChangePasswordAPIView(views.APIView):
+    def post(self, request):
+        serializer = PasswordSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        create_password_change_request(request)
+        return Response({"success": True})

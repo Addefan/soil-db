@@ -1,5 +1,6 @@
 import {createStore} from "vuex";
 import axios from "axios";
+import qs from "qs";
 
 const store = createStore({
     state() {
@@ -9,31 +10,47 @@ const store = createStore({
             parameters: {
                 page: 1,
             },
+            isMorePlants: true,
+            isLoadingAttributes: false,
+        }
+    },
+    getters: {
+        getQueryParams: (state) => {
+            return `?${qs.stringify(state.parameters, { indices: false })}`
         }
     },
     actions: {
-        loadPlants: async function ({ commit }, queryParams = "") {
+        async loadPlants({ commit, getters }) {
             try {
-                commit("INCREASE_PAGE");
-                const response = await axios.get(`/api/plants${queryParams}`);
-                commit("SET_PLANTS", { new_plants: response.data });
+                commit("SWITCH_IS_MORE_PLANTS");
+                const response = await axios.get(`/api/plants${getters.getQueryParams}`);
+                commit("SET_PLANTS", { new_plants: response.data.results });
+                if (response.data.next) {
+                    commit("SWITCH_IS_MORE_PLANTS");
+                    commit("INCREASE_PAGE");
+                }
             } catch (e) {
-                if (e.response.data === "Неправильная страница") {
-                    console.log("No more plants to load");
-                }
-                else {
-                    commit("DECREASE_PAGE");
-                }
+                console.error(e);
             }
         },
-        loadAttributes: async function ({commit}) {
+        async loadMore({ state, dispatch }) {
+            if (state.isMorePlants) {
+                await dispatch("loadPlants");
+            }
+        },
+        async loadAttributes({commit}) {
+            commit("SWITCH_ATTRIBUTES_LOADING");
             const response = await axios.get("/api/attributes/");
             commit("SET_ATTRIBUTES", response.data);
+            commit("SWITCH_ATTRIBUTES_LOADING");
         },
     },
     mutations: {
         SET_ATTRIBUTES(state, new_attributes) {
             state.attributes = new_attributes;
+        },
+        SWITCH_IS_MORE_PLANTS(state) {
+          state.isMorePlants = !state.isMorePlants;
         },
         SET_PLANTS(state, {new_plants, reset = false}) {
             if (reset) {
@@ -52,8 +69,8 @@ const store = createStore({
         INCREASE_PAGE(state) {
             state.parameters.page++;
         },
-        DECREASE_PAGE(state) {
-            state.parameters.page--;
+        SWITCH_ATTRIBUTES_LOADING(state) {
+            state.isLoadingAttributes = !state.isLoadingAttributes;
         }
     }
 })

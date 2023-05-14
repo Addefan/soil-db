@@ -10,49 +10,76 @@
 {% endblock %}
 {% block body %}
     {% if not is_success %}
-        <div class="container d-flex justify-content-center align-items-center">
-            <div class="card w-75 my-4">
-                <div class="card-body">
-                    <h5 class="card-title">{% if number %}Редактирование{% else %}
-                        Новое растение{% endif %}
-                    </h5>
-                    <form action="" method="post" id="plant_form">
-                        {% csrf_token %}
-                        {% suggestions form_classification taxon_name %}
-                        {% include 'web/form/form_with_errors.html' %}
-                        {% include 'web/form/form_with_errors.html' with form=attr_form_view %}
-                        <button type="button" class="btn btn-outline-success mt-3" data-bs-toggle="modal"
-                                data-bs-target="#attribute_modal_window">
-                            Добавить атрибут
-                        </button>
+        <div id="app">
+            <div class="container d-flex justify-content-center align-items-center">
+                <div class="card w-75 my-4">
+                    <div class="card-body">
+                        <h5 class="card-title">{% if number %}Редактирование{% else %}
+                            Новое растение{% endif %}
+                        </h5>
+                        <form action="" method="post" id="plant_form">
+                            {% csrf_token %}
+                            {% suggestions form_classification taxon_levels %}
+                            {% include 'web/form/form_with_errors.html' %}
+                            {% include 'web/form/form_with_errors.html' with form=attr_form_view %}
+                            <div class="input-group has-validation" v-for="attr in newAttrs">
+                                <div class="form-floating mt-3">
+                                    <input :type="typeMapping[attr.type_attr]" :name="attr.slug_name" class="form-control"
+                                            :step="attr.type_attr === 'float' ? 'any' : 1"
+                                           placeholder="smt" :id="`id_${attr.slug_name}`">
+                                    <label :for="`id_${attr.slug_name}`">[[ attr.name_attr ]]</label>
+                                </div>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <button type="button" class="btn btn-outline-success mt-3" data-bs-toggle="modal"
+                                    data-bs-target="#attribute_modal_window">
+                                Добавить атрибут
+                            </button>
+                            <br>
+                            <button type="submit" class="btn btn-success mt-3">{% if number %}Сохранить{% else %}
+                                Добавить{% endif %}
+                            </button>
+                        </form>
                         <br>
-                        <button type="submit" class="btn btn-success mt-3">{% if number %}Сохранить{% else %}
-                            Добавить{% endif %}
-                        </button>
-                    </form>
-                    <br>
+                    </div>
                 </div>
             </div>
-        </div>
 
-
-        <!-- Модальное окно -->
-        <div class="modal fade" id="attribute_modal_window" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Добавление атрибута</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                    </div>
-                    <div class="modal-body pt-0">
-                        <form action="" method="post" id="attr_form">
-                            {% csrf_token %}
-                            {% include 'web/form/form_with_errors.html' with form=attr_form %}
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button id="add_button" type="button" class="btn btn-success">Добавить</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            <!-- Модальное окно -->
+            <div class="modal fade" id="attribute_modal_window" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Добавление атрибута</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                        </div>
+                        <div class="modal-body pt-0">
+                            <form action="" method="post" id="attr_form">
+                                <div class="input-group has-validation name-attr">
+                                    <div class="form-floating mt-3">
+                                        <input v-model="form.name_attr" type="text" class="form-control" placeholder="smt" required id="attr_name_id">
+                                        <label for="attr_name_id">Название</label>
+                                    </div>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                                <div class="input-group has-validation type-attr">
+                                    <div class="form-floating mt-3">
+                                        <select v-model="form.type_attr" id="type_attr_id" class="form-select">
+                                            <option value="text">Текст</option>
+                                            <option value="date">Дата</option>
+                                            <option value="float">Число с плавающей запятой</option>
+                                            <option value="int">Целое число</option>
+                                        </select>
+                                        <label for="type_attr_id">Тип данных</label>
+                                    </div>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" @click="createAttr">Добавить</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -63,8 +90,57 @@
 {% endblock %}
 {% block scripts %}
     {{ block.super }}
+    <script src="{% static 'web/js/vue.js' %}"></script>
     <script>
-        let path_ajax = "{% url 'ajax_response' %}"
+        const { createApp } = Vue
+
+        createApp({
+            delimiters: ['[[', ']]'],
+            data() {
+                return {
+                    isAttrFormVisible: false,
+                    form: {
+                        name_attr: "",
+                        type_attr: "text",
+                    },
+                    newAttrs: [],
+                    typeMapping: {
+                        int: "number",
+                        float: "number",
+                        text: "text",
+                        date: "date",
+                    }
+                }
+            },
+            methods: {
+                async createAttr() {
+                    const attrCreatePath = "{% url 'api:custom_attributes' %}";
+                    try {
+                        const response = await fetch(attrCreatePath, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            },
+                            body: JSON.stringify({
+                                name_attr: this.form.name_attr,
+                                type_attr: this.form.type_attr
+                            }),
+                        });
+                        const data = await response.json();
+                        this.newAttrs.push(data);
+                        this.resetAttrForm();
+                        console.log(data)
+                    } catch (e) {
+                        console.error(e);
+                    }
+                },
+                resetAttrForm() {
+                    this.form.name_attr = "";
+                    this.form.type_attr = "text";
+                    $('#attribute_modal_window').modal('hide');
+                }
+            }
+        }).mount('#app')
     </script>
-    <script src="{% static 'web/js/plant_crud.js' %}"></script>
 {% endblock %}

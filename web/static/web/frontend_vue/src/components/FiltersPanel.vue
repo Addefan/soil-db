@@ -11,7 +11,7 @@
         </div>
         <number-input v-else-if="param.type === 'float' || param.type === 'int'" :min="param.values[0]"
                       :max="param.values[1]" :attrName="param.english_name" class="py-2 px-3"
-                      :float="param.type === 'float'" />
+                      :isFloat="param.type === 'float'" />
       </div>
       <div class="text-center buttons position-sticky top-100 mb-1">
         <button class="btn btn-success btn-sm me-1">
@@ -36,10 +36,10 @@ export default {
   components: { CustomDateFilter, SearchSelect, NumberInput },
   methods: {
     ...mapActions(["loadAttributes"]),
-    ...mapMutations(["SET_PARAMETER", "SET_PLANTS"]),
+    ...mapMutations({setParameter: "SET_PARAMETER", setPlants: "SET_PLANTS"}),
     submitFilters() {
-      this.$store.commit("SET_PLANTS", { new_plants: [], reset: true });
-      this.$store.commit("SET_PARAMETER", { param: "page", values: 1 });
+      this.setPlants({ new_plants: [], reset: true });
+      this.setParameter({ param: "page", values: 1 });
       this.$router.push({ query: this.parameters });
     }
   },

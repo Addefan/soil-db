@@ -1,14 +1,15 @@
-import eav
-
+import uuid
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import UserManager as DjangoUserManager, PermissionsMixin
 from django.db import models
 from django.forms import model_to_dict
-
-from eav.models import Entity, Value
+from eav.models import Value
+from eav.queryset import EavQuerySet
 from tree_queries.models import TreeNode
 
+from web.eav import custom_register
 from web.enums import TaxonLevel
+from web.mappings import translate, taxa, suffixes
 
 
 class Organization(models.Model):
@@ -32,24 +33,9 @@ class Taxon(TreeNode):
 
 
 class PlantModelMixin:
-    _translate: dict[str, str] = {
-        "latin_name": "Латинское наименование растения",
-        "name": "Наименование растения",
-        "number": "Уникальный номер",
-        "digitized_at": "Дата и время оцифровки",
-    }
-    _taxa: dict[str, str] = {
-        "genus": "Род",
-        "family": "Семейство",
-        "order": "Порядок",
-        "class": "Класс",
-        "phylum": "Отдел",
-    }
-    _suffix: dict[str, str] = {
-        "latin_title": " (лат.)",
-        "title": "",
-    }
-    _stop_list: set = {"_state", "eav", "id"}
+    _translate: dict[str, str] = translate
+    _taxa: dict[str, str] = taxa
+    _suffix: dict[str, str] = suffixes
 
     def _get_organization_name(self):
         if hasattr(self.organization, "name"):
@@ -70,11 +56,29 @@ class PlantModelMixin:
         plant_taxon: Taxon = Taxon.objects.get(id=self.genus_id)
         plant_classification_tree = plant_taxon.ancestors(include_self=True).reverse()
         for taxon in plant_classification_tree:
-            if taxon.level == "kingdom":
+            if taxon.level == TaxonLevel.kingdom:
                 continue
             for title in self._suffix:
                 dct[self._taxa[taxon.level] + self._suffix[title]] = getattr(taxon, title, None)
         return dct
+
+
+class PlantQuerySet(EavQuerySet):
+    def optimize_queries(self):
+        queryset = (
+            Plant.objects.prefetch_related("eav_values")
+            .prefetch_related("organization")
+            .prefetch_related("eav_values__attribute")
+        )
+
+        recursion_depth = len(TaxonLevel.choices)
+        prefetch_attribute = "genus"
+
+        for i in range(recursion_depth):
+            queryset = queryset.prefetch_related(prefetch_attribute)
+            prefetch_attribute += "__parent"
+
+        return queryset
 
 
 class Plant(models.Model, PlantModelMixin):
@@ -95,6 +99,9 @@ class Plant(models.Model, PlantModelMixin):
         obj["Организация"] = self._get_organization_name()
         obj |= self._get_eav_fields()
         return obj
+
+    class Meta:
+        ordering = ("-number",)
 
 
 class UserManager(DjangoUserManager):
@@ -131,4 +138,10 @@ class Staff(AbstractBaseUser, PermissionsMixin):
         return self.is_superuser
 
 
-eav.register(Plant)
+class PasswordChange(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    password = models.CharField(max_length=128)
+    user = models.ForeignKey(Staff, on_delete=models.CASCADE)
+
+
+custom_register(Plant)

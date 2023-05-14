@@ -1,8 +1,8 @@
 <template>
   <div>
     <Multiselect v-model="value" :options="variants" :multiple="true" :close-on-select="false"
-                 :clear-on-select="false" :preserve-search="true" placeholder="Pick some"
-                 :select-label="''" :deselect-label="''">
+                 :clear-on-select="false" :preserve-search="true" placeholder="Выберите"
+                 select-label="" deselect-label="">
     </Multiselect>
   </div>
 </template>
@@ -19,7 +19,7 @@ export default {
   computed: {
     value: {
       set(value) {
-        this.$store.commit("SET_PARAMETER", { param: this.attrName, values: value });
+        this.setParameter({ param: this.attrName, values: value });
       },
       get() {
         return this.parameters[this.attrName] ?? [];
@@ -32,7 +32,7 @@ export default {
     attrName: { type: String, required: true }
   },
   methods: {
-    ...mapMutations(["SET_PARAMETER"])
+    ...mapMutations({setParameter: "SET_PARAMETER"})
   }
 };
 </script>
