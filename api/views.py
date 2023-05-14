@@ -118,7 +118,7 @@ class PlantAPIView(generics.ListAPIView):
         numbers = [instance.get("number") for instance in data]
         filtered_qs = self.paginate_queryset(self.get_queryset(True, numbers))
         serializer = PlantPartialSerializer(filtered_qs, many=True)
-        return Response(serializer.data)
+        return self.get_paginated_response(serializer.data)
 
 
 class AttributesAPIView(views.APIView):

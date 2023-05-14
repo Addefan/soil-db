@@ -31,7 +31,7 @@ import qs from "qs";
 export default {
   name: "PlantsTable",
   methods: {
-    ...mapActions(["loadPlants"]),
+    ...mapActions(["loadPlants", "loadMore"]),
     ...mapMutations({setParameters: "SET_PARAMETERS"}),
   },
   computed: {
@@ -42,7 +42,7 @@ export default {
     $route(to) {
       const params = { ...to.query, "page": this.parameters.page };
       this.setParameters({ parameters: params });
-      this.loadPlants(this.getQueryParams);
+      this.loadPlants();
     }
   },
   mounted() {
@@ -52,7 +52,7 @@ export default {
     };
       const dynamicLoad = (entries, observer) => {
         if (entries[0].isIntersecting) {
-          this.loadPlants(`?${qs.stringify(this.parameters, { indices: false })}`);
+          this.loadMore();
         }
       };
       const observer = new IntersectionObserver(dynamicLoad, observer_options);
