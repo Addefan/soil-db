@@ -207,7 +207,7 @@ pycurl = ">=7.45.2,<8.0.0"
 name = "certifi"
 version = "2023.5.7"
 description = "Python package for providing Mozilla's CA Bundle."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
@@ -805,7 +805,7 @@ crt = ["botocore[crt] (>=1.20.29,<2.0a.0)"]
 name = "sentry-sdk"
 version = "1.23.1"
 description = "Python client for Sentry (https://sentry.io)"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 files = [
@@ -1009,4 +1009,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "1fc2ccfa49f95f419ca12134d0306460b646b578266764b3662f3f7ee1519f7c"
+content-hash = "c60f8a24d63e70c5514ddb715b8e6c5f9d7bda8006645b358f2cca5289ab183d"
