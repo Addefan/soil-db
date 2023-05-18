@@ -12,7 +12,9 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 
+import sentry_sdk
 from dotenv import load_dotenv, find_dotenv
+from sentry_sdk.integrations.django import DjangoIntegration
 
 load_dotenv(find_dotenv())
 
@@ -173,3 +175,5 @@ LOGGING = {
         },
     },
 }
+
+sentry_sdk.init(dsn=os.environ.get("SENTRY_DSN"), integrations=[DjangoIntegration()])
