@@ -53,6 +53,7 @@ deploy_cloud:
         --environment EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD
         --environment EMAIL_PORT=$EMAIL_PORT
         --environment DEBUG=False
+        --environment SENTRY_DSN=$SENTRY_DSN
         > /dev/null
     - yc serverless trigger delete --name celery > /dev/null || echo
     - >
