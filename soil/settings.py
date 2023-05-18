@@ -30,7 +30,15 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "SECRET")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "true").lower() == "true"
 
-ALLOWED_HOSTS = ["*"] if DEBUG else ["d5dpqvg0ku4tc5dladk9.apigw.yandexcloud.net", "soil-db.ya.uenv.ru"]
+ALLOWED_HOSTS = (
+    ["*"]
+    if DEBUG
+    else [
+        "d5dpqvg0ku4tc5dladk9.apigw.yandexcloud.net",
+        "soil-db.ya.uenv.ru",
+        "bbaom7qjbrlan4hvdi88.containers.yandexcloud.net",
+    ]
+)
 
 # Application definition
 
