@@ -5,7 +5,7 @@ from django.db.models import Q
 from eav.models import Attribute
 from rest_framework import generics, views, status
 from rest_framework.response import Response
-from web.services.password import create_password_change_request
+
 from api.serializers import PlantPartialSerializer, PlantSerializer, PasswordSerializer, CustomAttributeSerializer
 from web.choices import (
     xlsx_columns_choices,
@@ -15,6 +15,7 @@ from web.choices import (
     xlsx_columns_choices_dict,
 )
 from web.models import Plant
+from web.services.password import create_password_change_request
 
 
 class CustomAttributeView(views.APIView):
@@ -35,6 +36,14 @@ class PlantAPIView(generics.ListAPIView):
     # slug because from front we send slug english name
     @staticmethod
     def filtering_attr(request, variable, data, type_attr):
+        def check_plant_attribute(func):
+            def wrapper(plant):
+                if plant[obj.name] is None:
+                    return False
+                return func(plant)
+
+            return wrapper
+
         # TODO почему функции внутри функции находятся?
         def convert_string_to_datetime(string: str) -> datetime:
             dt_naive = parse(string)
@@ -44,12 +53,14 @@ class PlantAPIView(generics.ListAPIView):
             return plant[obj.name] in parameters
 
         def filtering_int_float_types(plant):
+            # if plant[obj.name] is None:
+            #     return False
             return float(parameters[0]) <= plant[obj.name] <= float(parameters[1])
 
         def filtering_date_types(plant):
             # if plant instance doesn't have required attribute, throw it out!
-            if plant[obj.name] is None:
-                return False
+            # if plant[obj.name] is None:
+            #     return False
 
             floor_value = convert_string_to_datetime(parameters[0])
             ceiling_value = convert_string_to_datetime(parameters[1])
@@ -68,9 +79,9 @@ class PlantAPIView(generics.ListAPIView):
                 func = filtering_date_types
             elif obj.datatype == Attribute.TYPE_INT or obj.datatype == Attribute.TYPE_FLOAT:
                 func = filtering_int_float_types
-            data = filter(func, data)
+            data = filter(check_plant_attribute(func), data)
         else:
-            data = filter(filtering_taxon_organization_types, data)
+            data = filter(check_plant_attribute(filtering_taxon_organization_types), data)
         return data
 
     # slug because from front we send slug english name
