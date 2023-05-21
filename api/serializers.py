@@ -78,8 +78,8 @@ class TaxonSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         instance = super(TaxonSerializer, self).to_representation(instance)
         level = instance.pop("level")
-        instance[f"{level}_title"] = instance.pop("title")
-        instance[f"{level}_latin_title"] = instance.pop("latin_title")
+        instance[level] = instance.pop("title")
+        instance[f"latin_{level}"] = instance.pop("latin_title")
         return instance
 
     def get_parent(self, obj):
@@ -121,6 +121,7 @@ class PlantSerializer(PlantPartialSerializer):
         for eav_value in eav_values:
             instance.update(eav_value)
         instance.update(self.taxa_hierarchy_to_representation(instance.pop("genus")))
+        instance["organization__name"] = instance.pop("organization")
         instance = self.clean_serializer(instance, self.context["columns"])
         return instance
 

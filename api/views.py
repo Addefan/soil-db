@@ -68,7 +68,7 @@ class PlantAPIView(generics.ListAPIView):
             return floor_value <= plant[obj.name] <= ceiling_value
 
         def filtering_taxon_organization_types(plant):
-            return plant[translate[variable]] in parameters
+            return plant[variable] in parameters
 
         parameters = request.query_params.getlist(variable)
         translate = xlsx_columns_choices_dict()
@@ -81,7 +81,7 @@ class PlantAPIView(generics.ListAPIView):
                 func = filtering_int_float_types
             data = filter(check_plant_attribute(func), data)
         else:
-            data = filter(check_plant_attribute(filtering_taxon_organization_types), data)
+            data = filter(filtering_taxon_organization_types, data)
         return data
 
     # slug because from front we send slug english name
