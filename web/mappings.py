@@ -1,4 +1,5 @@
 suffixes = {"title": "", "latin_title": " (лат.)"}
+prefixes = {"": "", "latin_": " (лат.)"}
 
 taxa = {"phylum": "Отдел", "class": "Класс", "order": "Порядок", "family": "Семейство", "genus": "Род"}
 
@@ -7,5 +8,11 @@ translate = {
     "name": "Наименование растения",
     "number": "Уникальный номер",
     "digitized_at": "Дата и время оцифровки",
-    "organization": "Организация",
+    "organization__name": "Организация",
 }
+
+overall_translate = translate
+
+for taxon in taxa:
+    for prefix in prefixes:
+        overall_translate[f"{prefix}{taxon}"] = taxa[taxon] + prefixes[prefix]

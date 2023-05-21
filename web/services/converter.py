@@ -5,9 +5,10 @@ from pathlib import Path
 
 import xlsxwriter
 from django.conf import settings
-from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from xlsxwriter import Workbook
+
+from web.mappings import translate
 
 NoneType = type(None)
 
@@ -39,6 +40,7 @@ def queryset_to_xlsx(qs: list[dict]) -> Path:
         # writing headers
         headers = objects[0].keys()
         for x, header in enumerate(headers):
+            header = translate.get(header, header)
             sheet.write_string(0, x, header, cell_format=header_format)
 
         type_mapping = {
