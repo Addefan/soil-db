@@ -19,23 +19,29 @@ def create_password_change_request(request):
     token = password_change.id
 
     send_password_changing_email.delay(origin, user_id, token)
-    delete_change_password_request.apply_async((token,), eta=datetime.now() + timedelta(hours=1))
+    delete_change_password_request.apply_async((token,), eta=datetime.now() + timedelta(seconds=30))
 
 
 def process_password_change_request(request):
     token = request.GET.get("token")
+    print(token)
     if token is None:
+        print("Первое")
         return False
 
     password_change = PasswordChange.objects.filter(pk=token).first()
     user_id = request.user.id
-
+    print(user_id)
+    print(password_change)
     # checking whether the link has expired
     if password_change is None:
+        print("Второе")
         return False
 
     # checking whether who tried to change the password and who clicked the link is the same user
+    print(password_change.user_id)
     if password_change.user_id != user_id:
+        print("Третье")
         return False
 
     user = Staff.objects.get(pk=user_id)
