@@ -5,6 +5,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
+from web.choices import xlsx_columns_choices
 from web.models import Plant, Taxon
 
 
@@ -122,7 +123,9 @@ class PlantSerializer(PlantPartialSerializer):
             instance.update(eav_value)
         instance.update(self.taxa_hierarchy_to_representation(instance.pop("genus")))
         instance["organization__name"] = instance.pop("organization")
-        instance = self.clean_serializer(instance, self.context["columns"])
+        instance = self.clean_serializer(
+            instance, self.context.get("columns", tuple([choice[0] for choice in xlsx_columns_choices()]))
+        )
         return instance
 
     class Meta(PlantPartialSerializer.Meta):
