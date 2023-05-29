@@ -5,19 +5,15 @@ from web.models import Plant, Taxon, Organization
 
 
 def xlsx_columns_default_choices() -> list[tuple[str, str]]:
-    translate = Plant._translate | Plant._taxa | {"organization": "Организация"}
-    return [
-        (field.name + "__name" if field.name == "organization" else field.name, translate[field.name])
-        for field in Plant._meta.fields
-        if translate.get(field.name)
-    ]
+    translate = Plant._translate | Plant._taxa
+    return [(field.name, translate[field.name]) for field in Plant._meta.fields if translate.get(field.name)]
 
 
 def attributes_default_choices() -> list:
     organizations = Organization.objects.all()
     return [
         {
-            "english_name": "organization__name",
+            "english_name": "organization",
             "russian_name": "Организация",
             "type": Attribute.TYPE_TEXT,
             "values": organizations.values_list("name", flat=True),

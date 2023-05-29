@@ -8,7 +8,7 @@ translate = {
     "name": "Наименование растения",
     "number": "Уникальный номер",
     "digitized_at": "Дата и время оцифровки",
-    "organization__name": "Организация",
+    "organization": "Организация",
 }
 
 overall_translate = translate
