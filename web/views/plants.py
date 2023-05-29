@@ -2,9 +2,7 @@ from django.http import Http404
 from django.shortcuts import redirect
 from django.views.generic import FormView, RedirectView, TemplateView
 
-from api.serializers import PlantSerializer
 from web.forms import XlsxColumnsForm
-from web.models import Plant
 from web.services.url import build_origin_from_request
 from web.tasks import export_to_excel
 
@@ -12,9 +10,6 @@ from web.tasks import export_to_excel
 class PlantsListView(TemplateView, FormView):
     template_name = "web/plants.html"
     form_class = XlsxColumnsForm
-
-    def get_context_data(self, **kwargs):
-        return {**super().get_context_data(), "search": self.request.GET.get("search", None)}
 
 
 class XlsxColumnsView(RedirectView):
@@ -32,5 +27,6 @@ class XlsxColumnsView(RedirectView):
                 origin=origin,
                 user_id=request.user.id,
                 columns=form.cleaned_data.get("columns"),
+                filters=request.GET.urlencode(),
             )
         return redirect("plants")
