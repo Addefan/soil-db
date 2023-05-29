@@ -122,6 +122,7 @@ class PlantSerializer(PlantPartialSerializer):
         for eav_value in eav_values:
             instance.update(eav_value)
         instance.update(self.taxa_hierarchy_to_representation(instance.pop("genus")))
+        instance["organization__name"] = instance.pop("organization")
         instance = self.clean_serializer(
             instance, self.context.get("columns", tuple([choice[0] for choice in xlsx_columns_choices()]))
         )

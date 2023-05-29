@@ -16,7 +16,7 @@
         <td>{{ plant.name }}</td>
         <td>{{ plant.latin_name }}</td>
         <td>{{ plant.genus }}</td>
-        <td>{{ plant.organization }}</td>
+        <td>{{ plant.organization__name }}</td>
       </tr>
       </tbody>
     </table>
