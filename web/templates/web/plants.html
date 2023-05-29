@@ -11,6 +11,7 @@
 {% block body %}
     {% include "web/snippets/popup-xlsx-form.html" %}
     <div id="app"></div>
+    <input type="hidden" value="{{ user.is_authenticated }}" id="isAuthenticated">
     <link rel="stylesheet" href="{% static 'web/frontend_vue/dist/assets/index.css' %}?">
     <script type="module" src="{% static 'web/frontend_vue/dist/assets/index.js' %}?"></script>
 {% endblock %}

@@ -2,7 +2,7 @@
   <div>
     <Multiselect v-model="value" :options="variants" :multiple="true" :close-on-select="false"
                  :clear-on-select="false" :preserve-search="true" placeholder="Выберите"
-                 select-label="" deselect-label="">
+                 select-label="" deselect-label="" :hideSelected="true">
     </Multiselect>
   </div>
 </template>

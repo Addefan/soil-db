@@ -11,7 +11,7 @@ const store = createStore({
                 page: 1,
             },
             isMorePlants: true,
-            isLoadingAttributes: false,
+            isLoading: false,
         }
     },
     getters: {
@@ -21,6 +21,7 @@ const store = createStore({
     },
     actions: {
         async loadPlants({ commit, getters }) {
+            commit("SET_IS_LOADING", true);
             try {
                 commit("SWITCH_IS_MORE_PLANTS");
                 const response = await axios.get(`/api/plants${getters.getQueryParams}`);
@@ -32,6 +33,7 @@ const store = createStore({
             } catch (e) {
                 console.error(e);
             }
+            commit("SET_IS_LOADING", false);
         },
         async loadMore({ state, dispatch }) {
             if (state.isMorePlants) {
@@ -39,10 +41,10 @@ const store = createStore({
             }
         },
         async loadAttributes({commit}) {
-            commit("SWITCH_ATTRIBUTES_LOADING");
+            commit("SET_IS_LOADING", true);
             const response = await axios.get("/api/attributes/");
             commit("SET_ATTRIBUTES", response.data);
-            commit("SWITCH_ATTRIBUTES_LOADING");
+            commit("SET_IS_LOADING", false);
         },
     },
     mutations: {
@@ -69,8 +71,8 @@ const store = createStore({
         INCREASE_PAGE(state) {
             state.parameters.page++;
         },
-        SWITCH_ATTRIBUTES_LOADING(state) {
-            state.isLoadingAttributes = !state.isLoadingAttributes;
+        SET_IS_LOADING(state, value) {
+            state.isLoading = value;
         }
     }
 })

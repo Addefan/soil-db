@@ -14,11 +14,12 @@
                       :isFloat="param.type === 'float'" />
       </div>
       <div class="text-center buttons position-sticky top-100 mb-1">
-        <button class="btn btn-success btn-sm me-1">
+        <button class="btn btn-success btn-sm me-1 mb-2 mt-1" :disabled="isLoading">
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" v-if="isLoading"></span>
           Применить
         </button>
-        <button type="button" class="btn btn-outline-success ms-1 btn-sm mx-auto export_to_xlsx__button"
-                data-bs-toggle="modal" data-bs-target="#ModalXlsx">Экспорт
+        <button type="button" class="btn btn-outline-success ms-1 btn-sm mx-auto mb-2 mt-1"
+                data-bs-toggle="modal" data-bs-target="#ModalXlsx" v-if="getIsAuthenticated()" :disabled="isLoading">Экспорт
         </button>
       </div>
     </form>
@@ -41,10 +42,15 @@ export default {
       this.setPlants({ new_plants: [], reset: true });
       this.setParameter({ param: "page", values: 1 });
       this.$router.push({ query: this.parameters });
+    },
+    getIsAuthenticated() {
+      const value = document.querySelector("#isAuthenticated").value;
+      console.log(value);
+      return value === "True";
     }
   },
   computed: {
-    ...mapState(["attributes", "parameters"])
+    ...mapState(["attributes", "parameters", "isLoading"]),
   },
   created() {
     this.loadAttributes();

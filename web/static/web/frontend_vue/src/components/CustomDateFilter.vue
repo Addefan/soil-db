@@ -1,7 +1,7 @@
 <template>
   <VueDatePicker v-model="date" range locale="ru" cancelText="Закрыть" selectText="Выбрать"
                  :enable-time-picker="false" :preview-format="previewFormat"
-                 partial-range :partial-range="false" placeholder="Pick some"
+                 :partial-range="false" placeholder="Выберите"
                  :format="format">
   </VueDatePicker>
 </template>
