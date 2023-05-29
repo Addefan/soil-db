@@ -4,10 +4,14 @@ from pathlib import Path
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.mail import send_mail, EmailMultiAlternatives
+from django.http import QueryDict
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from rest_framework.filters import SearchFilter
 
+from api.filters import PlantFilterBackend
 from api.serializers import PlantSerializer
+from api.services import apply_filters_to_queryset
 from soil.celery import app
 from web.models import Plant, Staff, PasswordChange
 from web.services import queryset_to_xlsx
@@ -15,8 +19,8 @@ from web.services import queryset_to_xlsx
 
 @app.task
 def export_to_excel(origin, columns, user_id, filters=None):
-    # TODO: apply filters
-    qs = Plant.objects.optimize_queries()
+    qs = Plant.objects.optimize_queries().select_related("organization")
+    qs = apply_filters_to_queryset(qs, (SearchFilter, PlantFilterBackend), QueryDict(filters))
     prepared_qs = PlantSerializer(qs, context={"columns": columns}, many=True).data
     path = queryset_to_xlsx(prepared_qs)
     user = Staff.objects.get(id=user_id)
