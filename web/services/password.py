@@ -1,11 +1,11 @@
-from datetime import timedelta, datetime
-
+import pytz
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.hashers import make_password
+from django.utils.datetime_safe import datetime
 
 from web.models import PasswordChange, Staff
 from web.services.url import build_origin_from_request
-from web.tasks import send_password_changing_email, delete_change_password_request
+from web.tasks import send_password_changing_email
 
 
 def create_password_change_request(request):
@@ -18,10 +18,11 @@ def create_password_change_request(request):
     token = password_change.id
 
     send_password_changing_email.delay(origin, user_id, token)
-    delete_change_password_request.apply_async((token,), eta=datetime.now() + timedelta(seconds=30))
 
 
 def process_password_change_request(request):
+    PasswordChange.objects.filter(expired_at__lte=datetime.now(pytz.utc)).delete()
+
     token = request.GET.get("token")
     if token is None:
         return False
@@ -37,4 +38,6 @@ def process_password_change_request(request):
     user.password = password_change.password
     user.save()
     update_session_auth_hash(request, user)
+
+    password_change.delete()
     return True

@@ -1,8 +1,11 @@
 import uuid
+from datetime import timedelta
+
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import UserManager as DjangoUserManager, PermissionsMixin
 from django.db import models
 from django.forms import model_to_dict
+from django.utils.datetime_safe import datetime
 from eav.models import Value
 from eav.queryset import EavQuerySet
 from tree_queries.models import TreeNode
@@ -142,6 +145,7 @@ class PasswordChange(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     password = models.CharField(max_length=128)
     user = models.ForeignKey(Staff, on_delete=models.CASCADE)
+    expired_at = models.DateTimeField(default=datetime.now() + timedelta(hours=1))
 
 
 custom_register(Plant)

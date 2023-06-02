@@ -53,10 +53,3 @@ def send_password_changing_email(origin, user_id, token):
     html_message = render_to_string("emails/password_changing.html", html_context)
     plain_message = strip_tags(html_message)
     send_mail(subject, plain_message, settings.DEFAULT_FROM_EMAIL, [user.email], html_message=html_message)
-
-
-@app.task
-def delete_change_password_request(token):
-    password_change = PasswordChange.objects.filter(pk=token).first()
-    if password_change is not None:
-        password_change.delete()
