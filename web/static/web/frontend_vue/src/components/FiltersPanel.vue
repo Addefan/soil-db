@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from "vuex";
+import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 import CustomDateFilter from "@/components/CustomDateFilter.vue";
 import NumberInput from "@/components/NumberInput.vue";
 import SearchSelect from "@/components/SearchSelect.vue";
@@ -39,18 +39,21 @@ export default {
     ...mapActions(["loadAttributes"]),
     ...mapMutations({setParameter: "SET_PARAMETER", setPlants: "SET_PLANTS"}),
     submitFilters() {
+      if (this.previousParameters === this.getQueryParams) {
+        return
+      }
       this.setPlants({ new_plants: [], reset: true });
       this.setParameter({ param: "page", values: 1 });
       this.$router.push({ query: this.parameters });
     },
     getIsAuthenticated() {
       const value = document.querySelector("#isAuthenticated").value;
-      console.log(value);
       return value === "True";
     }
   },
   computed: {
-    ...mapState(["attributes", "parameters", "isLoading"]),
+    ...mapState(["attributes", "parameters", "isLoading", "previousParameters"]),
+    ...mapGetters(["getQueryParams"]),
   },
   created() {
     this.loadAttributes();

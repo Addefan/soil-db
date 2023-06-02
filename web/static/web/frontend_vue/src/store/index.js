@@ -12,6 +12,7 @@ const store = createStore({
             },
             isMorePlants: true,
             isLoading: false,
+            previousParameters: null,
         }
     },
     getters: {
@@ -25,12 +26,14 @@ const store = createStore({
             try {
                 commit("SWITCH_IS_MORE_PLANTS");
                 const response = await axios.get(`/api/plants${getters.getQueryParams}`);
+                commit("SET_PREVIOUS_PARAMETERS", getters.getQueryParams);
                 commit("SET_PLANTS", { new_plants: response.data.results });
                 if (response.data.next) {
                     commit("SWITCH_IS_MORE_PLANTS");
                     commit("INCREASE_PAGE");
                 }
             } catch (e) {
+                commit("SET_PREVIOUS_PARAMETERS", null);
                 console.error(e);
             }
             commit("SET_IS_LOADING", false);
@@ -73,6 +76,9 @@ const store = createStore({
         },
         SET_IS_LOADING(state, value) {
             state.isLoading = value;
+        },
+        SET_PREVIOUS_PARAMETERS(state, value) {
+            state.previousParameters = value;
         }
     }
 })
